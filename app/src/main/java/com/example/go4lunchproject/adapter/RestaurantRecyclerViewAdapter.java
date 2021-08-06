@@ -1,5 +1,6 @@
 package com.example.go4lunchproject.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -25,6 +26,7 @@ import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +95,16 @@ implements Filterable {
         }
     }
     private void showHowFarFrom(){
-        String distanceFromDeviceLocation = String.format("%sm", currentRestaurant.getDistanceFromDeviceLocation());
+        int howFarFromInMeters = currentRestaurant.getDistanceFromDeviceLocation();
+        String distanceFromDeviceLocation;
+
+        if (howFarFromInMeters >= 1000) {
+            float km = (float) howFarFromInMeters / 1000;
+            String kmWithTwoNumberAfterTheComma = new DecimalFormat("##.##").format(km);
+            distanceFromDeviceLocation = kmWithTwoNumberAfterTheComma + "km";
+        } else
+            distanceFromDeviceLocation = String.format("%sm", howFarFromInMeters);
+
         myViewHolder.howFarFromRestaurantTextView.setText(distanceFromDeviceLocation);
     }
     private void showRestaurantImage(){
@@ -191,6 +202,7 @@ implements Filterable {
                 return filterResults;
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 restaurantList.clear();

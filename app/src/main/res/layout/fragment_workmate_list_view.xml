@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/white"
+    tools:context=".fragment.WorkmateListViewFragment"
+    tools:targetApi="lollipop">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/workmate_list_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/workmate_row"/>
+
+</FrameLayout>

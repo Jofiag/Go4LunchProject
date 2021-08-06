@@ -7,7 +7,6 @@ import android.os.Parcel;
 import androidx.annotation.RequiresApi;
 
 import com.example.go4lunchproject.util.Constants;
-
 import com.google.android.libraries.places.api.model.LocalTime;
 
 public class MyOpeningHours {
@@ -24,6 +23,7 @@ public class MyOpeningHours {
     public String getOpeningStatus(){
         String status;
         String openingStatus = "Opening hour not available!";
+        String pattern12HoursAmPm = "hh:mm:ss a";
         java.time.LocalTime ct = java.time.LocalTime.now();
         LocalTime currentTime = new LocalTime() {
             @Override
@@ -49,20 +49,24 @@ public class MyOpeningHours {
 
         if (isOpenToday) {
             if (compareLocalTime(currentTime, firstOpeningTime) < 0) // (currentTime < firstOpeningTime) If we do not reach the first opening time
-                    openingStatus = Constants.CLOSE_AND_OPEN_AT_TEXT + firstOpeningTime.getHours() + Constants.H_TEXT + getMinuteIfNotZero(firstOpeningTime);
+//                    openingStatus = Constants.CLOSE_AND_OPEN_AT_TEXT + firstOpeningTime.getHours() + Constants.H_TEXT + getMinuteIfNotZero(firstOpeningTime);
+                    openingStatus = Constants.CLOSE_AND_OPEN_AT_TEXT + amPmFormat(firstOpeningTime);
 
             if (compareLocalTime(currentTime, lastClosingTime) < 0){ // (currentTime < lastClosingTime) If we are not at the closing time of the day
                 if (compareLocalTime(firstOpeningTime, currentTime) <= 0 && compareLocalTime(currentTime, firstClosingTime) < 0){ //If we are at the first opening time
                     //open until firstClosingHour
-                    status = Constants.OPEN_UNTIL_TEXT + firstClosingTime.getHours() + Constants.H_TEXT + getMinuteIfNotZero(firstClosingTime);
+//                    status = Constants.OPEN_UNTIL_TEXT + firstClosingTime.getHours() + Constants.H_TEXT + getMinuteIfNotZero(firstClosingTime);
+                    status = Constants.OPEN_UNTIL_TEXT + amPmFormat(firstClosingTime);
                     openingStatus = closingSoon(currentTime, firstClosingTime, status);
                 }
                 else if (compareLocalTime(firstClosingTime, currentTime) <= 0 && compareLocalTime(currentTime, lastOpeningTime) < 0) //If we are at the break time
                     //Closed. Open at lastOpeningHour
-                    openingStatus = Constants.CLOSE_AND_OPEN_AT_TEXT + lastOpeningTime.getHours() + Constants.H_TEXT + getMinuteIfNotZero(lastOpeningTime);
+//                    openingStatus = Constants.CLOSE_AND_OPEN_AT_TEXT + lastOpeningTime.getHours() + Constants.H_TEXT + getMinuteIfNotZero(lastOpeningTime);
+                    openingStatus = Constants.CLOSE_AND_OPEN_AT_TEXT + amPmFormat(lastOpeningTime);
                 else if (compareLocalTime(lastOpeningTime, currentTime) <= 0){ //If we are at the second opening time
                     //open until lastClosingHour
-                    status = Constants.OPEN_UNTIL_TEXT + lastClosingTime.getHours() + Constants.H_TEXT + getMinuteIfNotZero(lastClosingTime);
+//                    status = Constants.OPEN_UNTIL_TEXT + lastClosingTime.getHours() + Constants.H_TEXT + getMinuteIfNotZero(lastClosingTime);
+                    status = Constants.OPEN_UNTIL_TEXT + amPmFormat(lastClosingTime);
                     openingStatus = closingSoon(currentTime, lastClosingTime, status);
                 }
             }
@@ -76,12 +80,30 @@ public class MyOpeningHours {
         return openingStatus;
     }
 
+    private String amPmFormat(LocalTime localTime){
+        String result;
+        String amOrPm;
+        int hoursInAmOrPmFormat = localTime.getHours();
+        if (localTime.getHours() <= 12)
+            amOrPm = "am";
+        else {
+            amOrPm = "pm";
+            hoursInAmOrPmFormat = localTime.getHours() % 12;
+        }
+
+        result = hoursInAmOrPmFormat + ":" + getMinuteIfNotZero(localTime) + amOrPm;
+
+        return result;
+    }
+
     private String getMinuteIfNotZero(LocalTime time){
-        String result ="";
+        String result;
         int minute = time.getMinutes();
 
         if (minute != 0)
             result = String.valueOf(minute);
+        else
+            result = "00";
 
         return result;
     }

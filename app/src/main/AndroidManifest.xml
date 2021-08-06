@@ -34,6 +34,7 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity android:name="com.example.go4lunchproject.controller.HomepageActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

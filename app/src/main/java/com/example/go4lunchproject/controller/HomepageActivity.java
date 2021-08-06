@@ -1,5 +1,7 @@
 package com.example.go4lunchproject.controller;
 
+import static com.example.go4lunchproject.util.Constants.FINE_LOCATION;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -32,11 +34,8 @@ import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
-import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-
-import static com.example.go4lunchproject.util.Constants.FINE_LOCATION;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class HomepageActivity extends AppCompatActivity
@@ -53,9 +52,6 @@ public class HomepageActivity extends AppCompatActivity
 
     private final FragmentManager fragmentManager = getSupportFragmentManager();
 
-//    private final Fragment restaurantMapViewFragment = new RestaurantMapViewFragment();
-//    private final Fragment restaurantListViewFragment = new RestaurantListViewFragment();
-//    private final Fragment workmateListViewFragment = new WorkmateListViewFragment();
     private Fragment fragmentToShow;
     private Fragment activeFragment;
 
@@ -254,7 +250,7 @@ public class HomepageActivity extends AppCompatActivity
             }
             else if (id == R.id.logout_item) {
                 //Attach fragment corresponding
-                //TODO : LOGOUT USER FROM FIREBASE AND GO BACK TO MAINACTIVITY
+                //TODO : LOGOUT USER FROM FIREBASE AND GO BACK TO MAIN ACTIVITY
                 myDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
@@ -294,10 +290,5 @@ public class HomepageActivity extends AppCompatActivity
             startRestaurantDetailsActivity(workmate);
         else
             Toast.makeText(this, Constants.NO_RESTAURANT_TO_SHOW_TEXT, Toast.LENGTH_SHORT).show();
-    }/*
-
-    @Override
-    public void onMarkerClickedGetRestaurant(Restaurant restaurant) {
-        startRestaurantDetailsActivity(Constants.RESTAURANT_ON_MARKER_CODE, restaurant);
-    }*/
+    }
 }

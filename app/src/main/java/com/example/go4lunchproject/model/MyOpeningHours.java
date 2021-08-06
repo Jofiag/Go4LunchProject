@@ -23,7 +23,6 @@ public class MyOpeningHours {
     public String getOpeningStatus(){
         String status;
         String openingStatus = "Opening hour not available!";
-        String pattern12HoursAmPm = "hh:mm:ss a";
         java.time.LocalTime ct = java.time.LocalTime.now();
         LocalTime currentTime = new LocalTime() {
             @Override

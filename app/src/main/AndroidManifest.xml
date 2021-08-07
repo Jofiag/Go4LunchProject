@@ -44,9 +44,12 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name="com.example.go4lunchproject.controller.SettingsActivity" />
-        <activity android:name="com.example.go4lunchproject.controller.RestaurantWebsiteActivity" />
-        <activity android:name="com.example.go4lunchproject.controller.RestaurantDetailsActivity" />
+        <activity android:name="com.example.go4lunchproject.controller.SettingsActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name="com.example.go4lunchproject.controller.RestaurantWebsiteActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name="com.example.go4lunchproject.controller.RestaurantDetailsActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
 
         <provider
             android:name="com.example.go4lunchproject.util.RestaurantSuggestions"

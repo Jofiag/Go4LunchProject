@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".controller.RestaurantDetailsActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/restaurant_image_view_details"
+            android:layout_width="match_parent"
+            android:layout_height="397dp"
+            android:contentDescription="@string/restaurant_image_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/oc_pizza_4_small" />
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="127dp"
+            android:background="#A9C606"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/restaurant_image_view_details">
+
+            <TextView
+                android:id="@+id/restaurant_name_text_view_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="11dp"
+                android:layout_marginTop="11dp"
+                android:layout_marginEnd="11dp"
+                android:layout_marginBottom="11dp"
+                android:textColor="@color/white"
+                android:textSize="37sp"
+                android:textStyle="bold"
+                tools:text="@string/oc_pizza_text" />
+
+            <ImageView
+                android:id="@+id/yellow_star"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:layout_marginTop="11dp"
+                android:layout_toEndOf="@+id/restaurant_name_text_view_details"
+                android:contentDescription="@string/yellow_star_text"
+                app:srcCompat="@drawable/yellow_star_c_foreground"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/food_country_and_restaurant_address_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/restaurant_name_text_view_details"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="11dp"
+                android:layout_marginTop="3dp"
+                android:textColor="@color/white"
+                tools:text="@string/food_country_and_address_text"
+                android:textSize="27sp"/>
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/green_call_image_view"
+            android:layout_width="97dp"
+            android:layout_height="97dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="337dp"
+            android:layout_toStartOf="@+id/green_star_image_view"
+            android:contentDescription="@string/call_icon_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
+            app:srcCompat="@drawable/green_call_foreground" />
+
+        <ImageView
+            android:id="@+id/green_star_image_view"
+            android:layout_width="97dp"
+            android:layout_height="97dp"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/globe_image_view"
+            android:contentDescription="@string/call_icon_text"
+            app:layout_constraintEnd_toStartOf="@+id/globe_image_view"
+            app:layout_constraintStart_toEndOf="@+id/green_call_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
+            app:srcCompat="@drawable/green_star_foreground" />
+
+        <ImageView
+            android:id="@+id/globe_image_view"
+            android:layout_width="97dp"
+            android:layout_height="97dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="337dp"
+            android:contentDescription="@string/call_icon_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
+            app:srcCompat="@drawable/green_globe_foreground" />
+
+        <TextView
+            android:id="@+id/call_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/green_call_image_view"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/green_star_image_view"
+            android:text="@string/call_text"
+            android:textColor="#A9C606"
+            android:textSize="27sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/green_call_image_view"
+            app:layout_constraintStart_toStartOf="@+id/green_call_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/green_call_image_view" />
+
+        <TextView
+            android:id="@+id/like_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/green_call_image_view"
+            android:layout_toStartOf="@+id/globe_image_view"
+            android:text="@string/like_text"
+            android:textColor="#A9C606"
+            android:textSize="27sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/green_star_image_view"
+            app:layout_constraintStart_toStartOf="@+id/green_star_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/green_star_image_view" />
+
+        <TextView
+            android:id="@+id/website_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/green_call_image_view"
+            android:layout_alignParentEnd="true"
+            android:text="@string/website_text"
+            android:textColor="#A9C606"
+            android:textSize="27sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/globe_image_view"
+            app:layout_constraintStart_toStartOf="@+id/globe_image_view"
+            app:layout_constraintTop_toBottomOf="@+id/globe_image_view" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/restaurant_details_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="279dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/like_text_view"
+            tools:listitem="@layout/workmate_row" />
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleImageView"
+        android:layout_width="91dp"
+        android:layout_height="91dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="-45dp"
+        android:src="@color/google_plus_created_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_image_view_details" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/chosenImageView"
+            android:layout_width="31dp"
+            android:layout_height="31dp"
+            app:layout_constraintBottom_toBottomOf="@+id/circleImageView"
+            app:layout_constraintEnd_toEndOf="@+id/circleImageView"
+            app:layout_constraintStart_toStartOf="@+id/circleImageView"
+            app:layout_constraintTop_toTopOf="@+id/circleImageView" />
+
+        <!--    android:src="@mipmap/red_unchecked"-->
+        <!--    android:src="@mipmap/green_check_round"-->
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

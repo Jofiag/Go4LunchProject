@@ -3,15 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".controller.RestaurantDetailsActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".controller.RestaurantDetailsActivity">
+    android:layout_height="wrap_content"
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/restaurant_image_view_details"
         android:layout_width="match_parent"
-        android:layout_height="297dp"
+        android:layout_height="841dp"
         android:contentDescription="@string/restaurant_image_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,7 @@
     <RelativeLayout
         android:id="@+id/relativeLayout2"
         android:layout_width="match_parent"
-        android:layout_height="87dp"
+        android:layout_height="157dp"
         android:background="#A9C606"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,10 +33,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_margin="11dp"
-            android:textSize="17sp"
-            android:textStyle="bold"
+            android:layout_marginStart="11dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginEnd="11dp"
+            android:layout_marginBottom="11dp"
             android:textColor="@color/white"
+            android:textSize="57sp"
+            android:textStyle="bold"
             tools:text="@string/oc_pizza_text" />
 
         <ImageView
@@ -55,20 +58,21 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/restaurant_name_text_view_details"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="3dp"
             android:layout_marginStart="11dp"
+            android:layout_marginTop="1dp"
             android:textColor="@color/white"
+            android:textSize="33sp"
             tools:text="@string/food_country_and_address_text" />
 
     </RelativeLayout>
 
     <ImageView
         android:id="@+id/green_call_image_view"
-        android:layout_width="67dp"
-        android:layout_height="67dp"
+        android:layout_width="117dp"
+        android:layout_height="117dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="137dp"
         android:layout_toStartOf="@+id/green_star_image_view"
         android:contentDescription="@string/call_icon_text"
         app:layout_constraintStart_toStartOf="parent"
@@ -77,8 +81,8 @@
 
     <ImageView
         android:id="@+id/green_star_image_view"
-        android:layout_width="67dp"
-        android:layout_height="67dp"
+        android:layout_width="117dp"
+        android:layout_height="117dp"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/globe_image_view"
         android:contentDescription="@string/call_icon_text"
@@ -89,11 +93,11 @@
 
     <ImageView
         android:id="@+id/globe_image_view"
-        android:layout_width="67dp"
-        android:layout_height="67dp"
+        android:layout_width="117dp"
+        android:layout_height="117dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="137dp"
         android:contentDescription="@string/call_icon_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
@@ -108,7 +112,7 @@
         android:layout_toStartOf="@+id/green_star_image_view"
         android:text="@string/call_text"
         android:textColor="#A9C606"
-        android:textSize="17sp"
+        android:textSize="37sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/green_call_image_view"
         app:layout_constraintStart_toStartOf="@+id/green_call_image_view"
@@ -122,7 +126,7 @@
         android:layout_toStartOf="@+id/globe_image_view"
         android:text="@string/like_text"
         android:textColor="#A9C606"
-        android:textSize="17sp"
+        android:textSize="37sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/green_star_image_view"
         app:layout_constraintStart_toStartOf="@+id/green_star_image_view"
@@ -136,7 +140,7 @@
         android:layout_alignParentEnd="true"
         android:text="@string/website_text"
         android:textColor="#A9C606"
-        android:textSize="17sp"
+        android:textSize="37sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/globe_image_view"
         app:layout_constraintStart_toStartOf="@+id/globe_image_view"
@@ -145,8 +149,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/restaurant_details_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="241dp"
+        android:layout_height="519dp"
         android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -156,13 +161,13 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circleImageView"
-        android:layout_width="71dp"
-        android:layout_height="71dp"
-        android:layout_marginTop="261dp"
+        android:layout_width="131dp"
+        android:layout_height="131dp"
         android:layout_marginEnd="12dp"
+        android:layout_marginTop="-67dp"
         android:src="@color/google_plus_created_background"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_image_view_details" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/chosenImageView"
@@ -173,8 +178,8 @@
         app:layout_constraintStart_toStartOf="@+id/circleImageView"
         app:layout_constraintTop_toTopOf="@+id/circleImageView" />
 
-<!--    android:src="@mipmap/red_unchecked"-->
-<!--    android:src="@mipmap/green_check_round"-->
+    <!--    android:src="@mipmap/red_unchecked"-->
+    <!--    android:src="@mipmap/green_check_round"-->
 
 
 

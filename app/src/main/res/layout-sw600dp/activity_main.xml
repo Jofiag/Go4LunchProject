@@ -6,14 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/go4lunch_2_not_clear"
-    android:gravity="center_horizontal"
+    android:gravity="center"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
     <ImageView
         android:layout_marginTop="67dp"
-        android:layout_width="271dp"
-        android:layout_height="271dp"
+        android:layout_width="571dp"
+        android:layout_height="571dp"
         app:srcCompat="@drawable/baseline_ramen_dining_24"
         android:contentDescription="@string/image_text" />
 
@@ -23,7 +23,7 @@
         android:text="@string/go4lunch_text"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:textSize="71sp"/>
+        android:textSize="101sp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,17 +31,18 @@
         android:text="@string/find_a_nice_restaurant_text"
         android:textColor="@color/white"
         android:textStyle="bold|italic"
-        android:textSize="12sp"/>
+        android:textSize="27sp"/>
 
     <RelativeLayout
         android:layout_marginTop="37dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="17dp">
 
         <ImageView
             android:id="@+id/facebook_image"
-            android:layout_width="37dp"
-            android:layout_height="37dp"
+            android:layout_width="67dp"
+            android:layout_height="67dp"
             android:layout_alignParentTop="true"
             android:layout_marginTop="0dp"
             android:contentDescription="@string/facebook_image_text"
@@ -49,8 +50,8 @@
 
         <ImageView
             android:id="@+id/google_image"
-            android:layout_width="37dp"
-            android:layout_height="37dp"
+            android:layout_width="67dp"
+            android:layout_height="67dp"
             android:layout_below="@+id/facebook_image"
             android:layout_marginTop="27dp"
             android:contentDescription="@string/google_image_text"
@@ -58,25 +59,28 @@
 
         <Button
             android:id="@+id/sign_in_facebook_button"
-            android:layout_width="wrap_content"
-            android:layout_height="37dp"
-            android:text="@string/sign_in_facebook_text"
-            android:textStyle="bold"
-            android:textColor="@color/white"
+            android:layout_width="349dp"
+            android:layout_height="67dp"
+            android:layout_marginStart="17dp"
+            android:layout_toEndOf="@+id/facebook_image"
             android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/facebook_image"/>
+            android:text="@string/sign_in_facebook_text"
+            android:textColor="@color/white"
+            android:textSize="23sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/sign_in_google_button"
-            android:layout_width="wrap_content"
-            android:layout_height="37dp"
-            android:layout_marginTop="27dp"
+            android:layout_width="349dp"
+            android:layout_height="67dp"
             android:layout_below="@+id/sign_in_facebook_button"
+            android:layout_marginTop="27dp"
             android:layout_toEndOf="@+id/google_image"
             android:background="@android:color/transparent"
-            android:textStyle="bold"
+            android:text="@string/sign_in_google_text"
             android:textColor="@color/white"
-            android:text="@string/sign_in_google_text" />
+            android:textSize="23sp"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 

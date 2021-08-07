@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:backgroundTint="#FFFF"
     xmlns:tools="http://schemas.android.com/tools">
-<!--    tools:targetApi="lollipop">-->
+    <!--    tools:targetApi="lollipop">-->
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -22,12 +22,12 @@
             android:layout_toStartOf="@+id/how_far_text_view"
             android:layout_marginBottom="11dp"
             tools:text="@string/oc_pizza_text"
-            android:textSize="17sp"
+            android:textSize="27sp"
             android:textColor="@color/black"
             android:maxLines="1"
             android:ellipsize="end"/>
-<!--        android:textColor="#97000000"-->
-<!--        android:textStyle="bold"-->
+        <!--        android:textColor="#97000000"-->
+        <!--        android:textStyle="bold"-->
 
         <TextView
             android:id="@+id/food_country_and_address_text_view"
@@ -41,7 +41,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="#97000000"
-            android:textSize="13sp"
+            android:textSize="23sp"
             tools:text="@string/food_country_and_address_text" />
 
         <TextView
@@ -52,14 +52,14 @@
             android:layout_alignParentStart="true"
             android:layout_marginBottom="17dp"
             tools:text="@string/until_text"
-            android:textSize="13sp"
+            android:textSize="23sp"
             android:textColor="#97000000"
             android:textStyle="italic"/>
 
         <ImageView
             android:id="@+id/restaurant_image_view"
-            android:layout_width="77dp"
-            android:layout_height="77dp"
+            android:layout_width="97dp"
+            android:layout_height="97dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:contentDescription="@string/restaurant_image_text"
@@ -75,6 +75,7 @@
             android:ellipsize="end"
             android:textColor="#C2BCBC"
             tools:text="@string/m_text"
+            android:textSize="23sp"
             android:singleLine="true" />
 
 
@@ -88,12 +89,12 @@
             android:layout_marginEnd="11dp"
             tools:text="@string/parentheses_text"
             android:textColor="#97000000"
-            android:textSize="12sp"/>
+            android:textSize="22sp"/>
 
         <ImageView
             android:id="@+id/avatar_image_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="37dp"
+            android:layout_height="37dp"
             android:layout_below="@+id/how_far_text_view"
             android:layout_toStartOf="@+id/number_of_interested_workmate"
             android:layout_marginTop="7dp"
@@ -102,8 +103,8 @@
 
         <ImageView
             android:id="@+id/yellow_star_1"
-            android:layout_width="17dp"
-            android:layout_height="17dp"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:layout_below="@+id/avatar_image_view"
             android:layout_toStartOf="@+id/restaurant_image_view"
             android:layout_marginTop="7dp"
@@ -113,8 +114,8 @@
 
         <ImageView
             android:id="@+id/yellow_star_2"
-            android:layout_width="17dp"
-            android:layout_height="17dp"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:layout_below="@+id/avatar_image_view"
             android:layout_toStartOf="@+id/yellow_star_1"
             android:layout_marginTop="7dp"
@@ -123,8 +124,8 @@
 
         <ImageView
             android:id="@+id/yellow_star_3"
-            android:layout_width="17dp"
-            android:layout_height="17dp"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
             android:layout_below="@+id/avatar_image_view"
             android:layout_toStartOf="@+id/yellow_star_2"
             android:layout_marginTop="7dp"

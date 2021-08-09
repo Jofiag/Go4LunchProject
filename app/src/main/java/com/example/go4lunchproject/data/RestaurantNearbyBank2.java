@@ -213,7 +213,7 @@ public class RestaurantNearbyBank2 {
 
         if (openingHours != null){
             int size = openingHours.getPeriods().size();
-            boolean isOpen = isOpenToday(openingHours);
+            boolean openToday = isOpenToday(openingHours);
             String currentDayOfWeek = LocalDate.now().getDayOfWeek().toString();
 
             for (int i = 0; i < size; i++) {
@@ -228,18 +228,18 @@ public class RestaurantNearbyBank2 {
                     LocalTime firstClosingTime = Objects.requireNonNull(period.getClose()).getTime();
                     LocalTime lastClosingTime = Objects.requireNonNull(nextPeriod.getClose()).getTime();
 
-                    if (isOpen) {
+                    if (openToday) {
                         myOpeningHours.setOpenToday(true);
                         if (openDay.equals(currentDayOfWeek) && nextOpenDay.equals(currentDayOfWeek)){
                             myOpeningHours.setFirstOpeningTime(firstOpeningTime);
                             myOpeningHours.setFirstClosingTime(firstClosingTime);
-                            myOpeningHours.setLastClosingTime(lastOpeningTime);
+                            myOpeningHours.setLastOpeningTime(lastOpeningTime);
                             myOpeningHours.setLastClosingTime(lastClosingTime);
                         }
                         else if (openDay.equals(currentDayOfWeek)){
                             myOpeningHours.setFirstOpeningTime(firstOpeningTime);
                             myOpeningHours.setFirstClosingTime(firstClosingTime);
-                            myOpeningHours.setLastClosingTime(firstOpeningTime);
+                            myOpeningHours.setLastOpeningTime(firstOpeningTime);
                             myOpeningHours.setLastClosingTime(firstClosingTime);
                         }
                     }

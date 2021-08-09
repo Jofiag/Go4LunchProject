@@ -33,10 +33,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_margin="11dp"
+            android:layout_marginStart="11dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginEnd="11dp"
+            android:layout_marginBottom="11dp"
+            android:textColor="@color/white"
             android:textSize="17sp"
             android:textStyle="bold"
-            android:textColor="@color/white"
             tools:text="@string/oc_pizza_text" />
 
         <ImageView
@@ -44,10 +47,12 @@
             android:layout_width="27dp"
             android:layout_height="27dp"
             android:layout_marginTop="11dp"
+            android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/restaurant_name_text_view_details"
             android:contentDescription="@string/yellow_star_text"
             app:srcCompat="@drawable/yellow_star_c_foreground"
             android:visibility="gone"/>
+
 
         <TextView
             android:id="@+id/food_country_and_restaurant_address_details"

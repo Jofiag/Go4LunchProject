@@ -90,7 +90,7 @@ public class MyOpeningHours {
             hoursInAmOrPmFormat = localTime.getHours() % 12;
         }
 
-        result = hoursInAmOrPmFormat + ":" + getMinuteIfNotZero(localTime) + amOrPm;
+        result = hoursInAmOrPmFormat + getMinuteIfNotZero(localTime) + amOrPm;
 
         return result;
     }
@@ -100,9 +100,9 @@ public class MyOpeningHours {
         int minute = time.getMinutes();
 
         if (minute != 0)
-            result = String.valueOf(minute);
+            result = ":" + minute;
         else
-            result = "00";
+            result = "";
 
         return result;
     }
@@ -156,7 +156,6 @@ public class MyOpeningHours {
         return time;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private int compareLocalTime(LocalTime l1, LocalTime l2){
         int compare = 0;
 

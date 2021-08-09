@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "172032042291-3nvuhpi8q972rsjmuq8m83g6vsefqqqf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.go4lunchproject",
+            "certificate_hash": "9ceb92b83f9c026ce4d229e470f6614cd4992594"
+          }
+        },
+        {
           "client_id": "172032042291-aa3396bahnsf4hjv90093mi5ff28uhdf.apps.googleusercontent.com",
           "client_type": 3
         }

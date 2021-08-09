@@ -20,7 +20,7 @@
 
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_circle_image_view"
+        android:id="@+id/profile_circle_image_view_nav_header"
         android:layout_width="67dp"
         android:layout_height="67dp"
         android:layout_marginTop="57dp"
@@ -32,25 +32,25 @@
         android:src="#EFA92F"/>
 
     <TextView
-        android:id="@+id/name_text"
+        android:id="@+id/name_text_nav_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="71dp"
         android:layout_marginStart="17dp"
         android:layout_below="@+id/title"
-        android:layout_toEndOf="@+id/profile_circle_image_view"
+        android:layout_toEndOf="@+id/profile_circle_image_view_nav_header"
         tools:text="John SMITH"
         android:textColor="@color/white"
         android:textStyle="bold"/>
 
     <TextView
-        android:id="@+id/email_text"
+        android:id="@+id/email_text_nav_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
         android:layout_marginStart="17dp"
-        android:layout_below="@+id/name_text"
-        android:layout_toEndOf="@+id/profile_circle_image_view"
+        android:layout_below="@+id/name_text_nav_header"
+        android:layout_toEndOf="@+id/profile_circle_image_view_nav_header"
         tools:text="jsmith.1337@gmail.com"
         android:textColor="@color/white"/>
 

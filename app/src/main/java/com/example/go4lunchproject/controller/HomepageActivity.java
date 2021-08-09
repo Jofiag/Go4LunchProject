@@ -10,6 +10,8 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -36,6 +38,11 @@ import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class HomepageActivity extends AppCompatActivity
@@ -66,6 +73,7 @@ public class HomepageActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_homepage);
         setReferences();
+
 
         fragmentViewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 
@@ -154,6 +162,8 @@ public class HomepageActivity extends AppCompatActivity
         myDrawerLayout = findViewById(R.id.my_drawer);
         myNavigationView = findViewById(R.id.my_navigation_view);
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+
+
     }
 
     private void addFragments(){
@@ -226,6 +236,7 @@ public class HomepageActivity extends AppCompatActivity
     }
 
     private void setMyNavigationView(){
+        showUserProfileInNavHeader();
         myNavigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -234,7 +245,6 @@ public class HomepageActivity extends AppCompatActivity
 
                 if (restaurantChosen != null){
                     RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurantChosen);
-                    myDrawerLayout.closeDrawers(); // OR myDrawerLayout.closeDrawer(GravityCompat.START);
                     startActivity(new Intent(HomepageActivity.this, RestaurantDetailsActivity.class));
                 }
                 else
@@ -258,6 +268,25 @@ public class HomepageActivity extends AppCompatActivity
 
             return true;
         });
+    }
+
+    private void showUserProfileInNavHeader(){
+        View navHeaderView = myNavigationView.getHeaderView(0);
+        TextView userNameTextView = navHeaderView.findViewById(R.id.name_text_nav_header);
+        TextView userEmailTextView = navHeaderView.findViewById(R.id.email_text_nav_header);
+        CircleImageView profileCircleImageView = navHeaderView.findViewById(R.id.profile_circle_image_view_nav_header);
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null){
+            Picasso.get().load(currentUser.getPhotoUrl())
+                    .placeholder(android.R.drawable.stat_sys_download)
+                    .error(android.R.drawable.stat_notify_error)
+//                    .resize(154, 154)
+                    .into(profileCircleImageView);
+
+            userNameTextView.setText(currentUser.getDisplayName());
+            userEmailTextView.setText(currentUser.getEmail());
+        }
     }
 
 

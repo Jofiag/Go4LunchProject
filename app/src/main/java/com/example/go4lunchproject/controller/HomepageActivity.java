@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.go4lunchproject.MainActivity;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
 import com.example.go4lunchproject.data.FragmentViewModel;
@@ -65,6 +66,8 @@ public class HomepageActivity extends AppCompatActivity
     private Restaurant restaurantChosen;
 
     private FragmentViewModel fragmentViewModel;
+    FirebaseAuth mAuth;
+    FirebaseUser currentUser;
 
 
     @Override
@@ -74,6 +77,8 @@ public class HomepageActivity extends AppCompatActivity
         setContentView(R.layout.activity_homepage);
         setReferences();
 
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
 
         fragmentViewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 
@@ -241,8 +246,6 @@ public class HomepageActivity extends AppCompatActivity
             int id = item.getItemId();
 
             if (id == R.id.your_lunch_item) {
-                //Attach fragment corresponding
-
                 if (restaurantChosen != null){
                     RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurantChosen);
                     startActivity(new Intent(HomepageActivity.this, RestaurantDetailsActivity.class));
@@ -253,15 +256,12 @@ public class HomepageActivity extends AppCompatActivity
                 return true;
             }
             else if (id == R.id.settings_item) {
-                //Attach fragment corresponding
                 myDrawerLayout.closeDrawer(GravityCompat.START);
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             }
             else if (id == R.id.logout_item) {
-                //Attach fragment corresponding
-                //TODO : LOGOUT USER FROM FIREBASE AND GO BACK TO MAIN ACTIVITY
-                myDrawerLayout.closeDrawer(GravityCompat.START);
+                logoutUserAndBackToMainActivity();
                 return true;
             }
 
@@ -270,13 +270,27 @@ public class HomepageActivity extends AppCompatActivity
         });
     }
 
+    private void logoutUserAndBackToMainActivity(){
+        new AlertDialog.Builder(HomepageActivity.this)
+                .setTitle("SIGNING OUT")
+                .setMessage("Are you sure you want to sign out ?")
+                .setPositiveButton("YES", (dialog, which) -> {
+                    mAuth.signOut();
+                    startActivity(new Intent(HomepageActivity.this, MainActivity.class));
+                    finish();
+                })
+                .setNegativeButton("NO", null)
+                .create()
+                .show();
+
+    }
+
     private void showUserProfileInNavHeader(){
         View navHeaderView = myNavigationView.getHeaderView(0);
         TextView userNameTextView = navHeaderView.findViewById(R.id.name_text_nav_header);
         TextView userEmailTextView = navHeaderView.findViewById(R.id.email_text_nav_header);
         CircleImageView profileCircleImageView = navHeaderView.findViewById(R.id.profile_circle_image_view_nav_header);
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+
         if (currentUser != null){
             Picasso.get().load(currentUser.getPhotoUrl())
                     .placeholder(android.R.drawable.stat_sys_download)

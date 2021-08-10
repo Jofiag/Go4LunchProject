@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         if (user != null) {
             Toast.makeText(MainActivity.this, "Welcome " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
             startActivity(new Intent(MainActivity.this, HomepageActivity.class));
-
+            finish();
         }
         else
             Toast.makeText(MainActivity.this, "No user founded", Toast.LENGTH_SHORT).show();

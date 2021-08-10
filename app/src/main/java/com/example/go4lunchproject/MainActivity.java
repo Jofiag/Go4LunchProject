@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.go4lunchproject.controller.HomepageActivity;
+import com.example.go4lunchproject.data.Firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.UserApi;
 import com.example.go4lunchproject.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     private Button signInGoogleButton;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
-    private User user;
 
 
     @Override
@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         sendGoogleSignInRequest();
-        setUserAndFirebaseAuth();
 
         setReferences();
         signInWithFacebook();
@@ -51,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        startHomePageActivityIfUserConnected(user.getFirebaseUser());  //updateUI(user)//DO WANT NEEDED WITH USER
+        setUserAndFirebaseAuth();
+
+        startHomePageActivityIfUserConnected(mAuth.getCurrentUser());  //updateUI(user)//DO WANT NEEDED WITH USER
     }
 
     private void setReferences(){
@@ -60,17 +61,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUserAndFirebaseAuth(){
-        user = new User();
+        User user = new User();
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
         if (firebaseUser != null){
-            user.setId(firebaseUser.getUid());
-            user.setFirebaseUser(firebaseUser);
+            user.setId(firebaseUser.getDisplayName() + "_" +  firebaseUser.getUid());
+            user.setFirebaseId(firebaseUser.getUid());
             user.setUserEmail(firebaseUser.getEmail());
             user.setName(firebaseUser.getDisplayName());
-            user.setImageUri(firebaseUser.getPhotoUrl());
+            user.setImageUri(Objects.requireNonNull(firebaseUser.getPhotoUrl()).toString());
             UserApi.getInstance().setUser(user);
+            MyFirebaseDatabase.getInstance().saveUser(UserApi.getInstance().getUser());
         }
     }
 
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private void signInWithGoogle(){
         signInGoogleButton.setOnClickListener(v -> {
             signIn();
-//            finish();
+            finish();
         });
     }
 
@@ -135,8 +137,7 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Toast.makeText(MainActivity.this, "signInWithCredential:success", Toast.LENGTH_SHORT).show();
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        startHomePageActivityIfUserConnected(user);  //updateUI(user)//DO WANT NEEDED WITH USER
+                        startHomePageActivityIfUserConnected(mAuth.getCurrentUser());
                     } else {
                         // If sign in fails, display a message to the user.
                         Toast.makeText(MainActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();

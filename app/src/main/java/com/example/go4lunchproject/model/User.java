@@ -1,11 +1,9 @@
 package com.example.go4lunchproject.model;
 
-import com.google.firebase.auth.FirebaseUser;
-
 public class User extends Workmate {
     private String id;
     private String userEmail;
-    private FirebaseUser firebaseUser;
+    private String firebaseId;
 
     public User() {
     }
@@ -24,10 +22,11 @@ public class User extends Workmate {
         this.userEmail = userEmail;
     }
 
-    public FirebaseUser getFirebaseUser() {
-        return firebaseUser;
+    public String getFirebaseId() {
+        return firebaseId;
     }
-    public void setFirebaseUser(FirebaseUser firebaseUser) {
-        this.firebaseUser = firebaseUser;
+
+    public void setFirebaseId(String firebaseId) {
+        this.firebaseId = firebaseId;
     }
 }

@@ -1,6 +1,8 @@
 package com.example.go4lunchproject.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +68,9 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
             holder.workmateNameTextView.setVisibility(View.GONE);
             holder.hasNotDecidedTextView.setText(String.format("%s%s", workmate.getName(), Constants.HAS_NOT_DECIDED_YET));
         }
-        holder.circleImageView.setImageURI(workmate.getImageUri());
+        Uri uri = Uri.parse(workmate.getImageUri());
+
+        holder.circleImageView.setImageURI(uri);
 
         holder.itemView.setOnClickListener(v -> mCallback.onWorkmateSelected(workmate));
     }
@@ -131,6 +135,7 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
                 return filterResults;
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 workmateList.clear();

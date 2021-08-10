@@ -71,6 +71,8 @@ public class Constants {
     public static final String INFO = "INFO";
     public static final String LIST = "Restaurant list";
     public static final String SEND_LIST_ACTION = "Send list action";
+    public static final String USER_LIST_FIREBASE_PATH = "User_list";
+    public static final String USER_DATA_REF = "Users_data_ref";
 
     public static List<Restaurant> getRestaurantList(){
         List<Restaurant> restaurantList = new ArrayList<>();

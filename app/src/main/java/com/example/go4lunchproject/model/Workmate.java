@@ -1,6 +1,5 @@
 package com.example.go4lunchproject.model;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -8,7 +7,7 @@ import java.util.List;
 
 public class Workmate implements Parcelable {
     private String name;
-    private Uri imageUri;
+    private String imageUri;
     private Restaurant restaurantChosen;
     private List<Restaurant> restaurantLikedList;
 
@@ -17,7 +16,7 @@ public class Workmate implements Parcelable {
 
     protected Workmate(Parcel in) {
         name = in.readString();
-        imageUri = in.readParcelable(Uri.class.getClassLoader());
+        imageUri = in.readString();
         restaurantChosen = in.readParcelable(Restaurant.class.getClassLoader());
         restaurantLikedList = in.createTypedArrayList(Restaurant.CREATOR);
     }
@@ -42,11 +41,11 @@ public class Workmate implements Parcelable {
         this.name = name;
     }
 
-    public Uri getImageUri() {
+    public String getImageUri() {
         return imageUri;
     }
 
-    public void setImageUri(Uri imageUri) {
+    public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
     }
 
@@ -74,7 +73,7 @@ public class Workmate implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
-        dest.writeParcelable(imageUri, flags);
+        dest.writeString(imageUri);
         dest.writeParcelable(restaurantChosen, flags);
         dest.writeTypedList(restaurantLikedList);
     }

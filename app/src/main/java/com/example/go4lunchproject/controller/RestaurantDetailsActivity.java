@@ -170,9 +170,10 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 status = " removed from liked list.";
             }
 
-            Toast.makeText(this, restaurant.getName() + status, Toast.LENGTH_SHORT).show();
             user.setRestaurantLikedList(restaurantLikedList);
             //TODO : update user to firebase
+            Toast.makeText(this, restaurant.getName() + status, Toast.LENGTH_SHORT).show();
+
         });
     }
 

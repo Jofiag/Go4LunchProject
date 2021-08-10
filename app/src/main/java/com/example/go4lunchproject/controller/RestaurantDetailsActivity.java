@@ -36,7 +36,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RestaurantDetailsActivity extends AppCompatActivity {
     public static final String CALL_PERMISSION = Manifest.permission.CALL_PHONE;
     public static final int PERMISSION_GRANTED = PackageManager.PERMISSION_GRANTED;
-//    public static final String WEB_PERMISSION = Manifest.permission.;
 
     private ImageView yellowStar;
     private ImageView callImageView;
@@ -120,32 +119,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         else
             chosenImageView.setImageResource(R.mipmap.red_unchecked);
     }
-
-    //    private Restaurant getRestaurantSelected(){
-//        Restaurant restaurantSelected = new Restaurant();
-//        Workmate workmate;
-//
-//        Bundle bundle = getIntent().getExtras();
-//
-//        if (bundle != null) {
-//            if (bundle.get(Constants.RESTAURANT_SELECTED_CODE) != null)
-//                restaurantSelected = (Restaurant) bundle.get(Constants.RESTAURANT_SELECTED_CODE);
-//
-//            if (bundle.get(Constants.WORKMATE_SELECTED_CODE) != null) {
-//                workmate = (Workmate) bundle.get(Constants.WORKMATE_SELECTED_CODE);
-//                restaurantSelected = workmate.getRestaurantChosen();
-//            }
-//
-//            if (bundle.get(Constants.RESTAURANT_ON_MARKER_CODE) != null){
-//                restaurantSelected = (Restaurant) bundle.get(Constants.RESTAURANT_ON_MARKER_CODE);
-//                Toast.makeText(this, "Name = " + restaurantSelected.getName(), Toast.LENGTH_SHORT).show();
-//
-//            }
-//
-//        }
-//
-//        return restaurantSelected;
-//    }
 
     private void setRecyclerView(){
         WorkmateRecyclerViewAdapter workmateAdapter;
@@ -239,18 +212,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
 
-//    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-//            new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
-//                @RequiresApi(api = Build.VERSION_CODES.M)
-//                @Override
-//                public void onActivityResult(Boolean result) {
-//                    if (result)
-//                        callPhoneNumberIfPermissionGranted();
-//                    else
-//                        askPermissionWithinDialog();
-//                }
-//            }
-//    );
+
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), result -> {
                 if (result)
@@ -295,15 +257,4 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 .create()
                 .show();
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == REQUEST_CALL_PERMISSION_CODE){
-//            if (grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED)
-//                call(restaurant.getPhoneNumber());
-//        }
-//        else
-//            askPermissionWithinDialog();
-//    }
 }

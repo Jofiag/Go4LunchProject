@@ -236,29 +236,18 @@ public class HomepageActivity extends AppCompatActivity
     }
     private void setMyNavigationView(){
         showUserProfileInNavHeader();
+
         myNavigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 
-            if (id == R.id.your_lunch_item) {
-                if (restaurantChosen != null){
-                    RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurantChosen);
-                    startActivity(new Intent(HomepageActivity.this, RestaurantDetailsActivity.class));
-                }
-                else
-                    Toast.makeText(this, "You don't chose any restaurant yet!", Toast.LENGTH_SHORT).show();
+            if (id == R.id.your_lunch_item)
+                startRestaurantDetailsActivity();
 
-                return true;
-            }
-            else if (id == R.id.settings_item) {
-                myDrawerLayout.closeDrawer(GravityCompat.START);
+            else if (id == R.id.settings_item)
                 startActivity(new Intent(this, SettingsActivity.class));
-                return true;
-            }
-            else if (id == R.id.logout_item) {
-                logoutUserAndBackToMainActivity();
-                return true;
-            }
 
+            else if (id == R.id.logout_item)
+                logoutUserAndBackToMainActivity();
 
             return true;
         });
@@ -293,6 +282,14 @@ public class HomepageActivity extends AppCompatActivity
             userNameTextView.setText(currentUser.getDisplayName());
             userEmailTextView.setText(currentUser.getEmail());
         }
+    }
+    private void startRestaurantDetailsActivity(){
+        if (restaurantChosen != null){
+            RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurantChosen);
+            startActivity(new Intent(HomepageActivity.this, RestaurantDetailsActivity.class));
+        }
+        else
+            Toast.makeText(this, "You don't chose any restaurant yet!", Toast.LENGTH_SHORT).show();
     }
 
 

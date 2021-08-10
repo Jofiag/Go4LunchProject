@@ -11,7 +11,7 @@ import java.util.List;
 public class Restaurant implements Parcelable {
     private String name;
     private String address;
-    private Uri websiteUrl;
+    private String websiteUrl;
     private String placeId;
     private String imageUrl;
     private LatLng position;
@@ -31,7 +31,7 @@ public class Restaurant implements Parcelable {
     protected Restaurant(Parcel in) {
         name = in.readString();
         address = in.readString();
-        websiteUrl = in.readParcelable(Uri.class.getClassLoader());
+        websiteUrl = in.readString();
         placeId = in.readString();
         imageUrl = in.readString();
         position = in.readParcelable(LatLng.class.getClassLoader());
@@ -151,11 +151,11 @@ public class Restaurant implements Parcelable {
         this.phoneNumber = phoneNumber;
     }
 
-    public Uri getWebsiteUrl() {
+    public String getWebsiteUrl() {
         return websiteUrl;
     }
 
-    public void setWebsiteUrl(Uri websiteUrl) {
+    public void setWebsiteUrl(String websiteUrl) {
         this.websiteUrl = websiteUrl;
     }
 
@@ -169,7 +169,7 @@ public class Restaurant implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(address);
-        dest.writeParcelable(websiteUrl, flags);
+        dest.writeString(websiteUrl);
         dest.writeString(placeId);
         dest.writeString(imageUrl);
         dest.writeParcelable(position, flags);

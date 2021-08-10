@@ -303,7 +303,7 @@ public class RestaurantNearbyBank {
                 getAndSetRestaurantMyOpeningHours(restaurant, openingHours);
 
                 restaurant.setPhoneNumber(phoneNumber);
-                restaurant.setWebsiteUrl(website);
+                restaurant.setWebsiteUrl(website.toString());
                 if (place.getLatLng() != null)
                     restaurant.setDistanceFromDeviceLocation(getHowFarFrom(place.getLatLng()));
             }

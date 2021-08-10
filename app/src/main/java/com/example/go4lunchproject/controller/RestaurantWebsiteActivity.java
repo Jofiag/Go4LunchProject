@@ -24,7 +24,7 @@ public class RestaurantWebsiteActivity extends AppCompatActivity {
         WebView myWebview = new WebView(this);
         setContentView(myWebview);
 
-        String restaurantWebsiteUrl = String.valueOf(RestaurantSelectedApi.getInstance().getRestaurantSelected().getWebsiteUrl());
+        String restaurantWebsiteUrl = RestaurantSelectedApi.getInstance().getRestaurantSelected().getWebsiteUrl();
         myWebview.loadUrl(restaurantWebsiteUrl);
     }
 }

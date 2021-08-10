@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.go4lunchproject.data.UserApi;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.util.Constants;
 import com.google.firebase.database.DataSnapshot;
@@ -33,9 +34,24 @@ public class MyFirebaseDatabase {
     }
 
     public void saveUser(User user){
-        userDataRef.child(user.getId()).setValue(user)
-                .addOnSuccessListener(unused -> Log.d("SAVING", "onSuccess: User saved with success!!!"))
-                .addOnFailureListener(e -> Log.d("SAVING", "onFailure: " + e.getMessage()));
+        userDataRef.child(user.getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()){
+                    User userFromApi = UserApi.getInstance().getUser();
+                    userDataRef.child(userFromApi.getId()).setValue(userFromApi)
+                            .addOnSuccessListener(unused -> Log.d("SAVING", "onSuccess: User saved with success!!!"))
+                            .addOnFailureListener(e -> Log.d("SAVING", "onFailure: " + e.getMessage()));
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     public void getAllUsers(UserListFromFirebase callback) {

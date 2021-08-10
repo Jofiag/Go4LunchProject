@@ -115,7 +115,8 @@ public class RestaurantNearbyBank2 {
                     String phoneNumber = place.getPhoneNumber();
                     OpeningHours openingHours = place.getOpeningHours();
 
-                    setRestaurantPhoneWebsiteAndMyOpeningHours(restaurant, place, phoneNumber, website, openingHours);
+                    setRestaurantPhoneWebsiteAndMyOpeningHours(restaurant, place, phoneNumber, Objects.requireNonNull(website), openingHours);
+
 
                     if (!mRestaurantList.contains(restaurant))
                         mRestaurantList.add(restaurant);
@@ -277,7 +278,9 @@ public class RestaurantNearbyBank2 {
         getAndSetRestaurantMyOpeningHours(restaurant, openingHours);
 
         restaurant.setPhoneNumber(phoneNumber);
-        restaurant.setWebsiteUrl(website);
+        if (website != null)
+            restaurant.setWebsiteUrl(website.toString());
+
         if (place.getLatLng() != null)
             restaurant.setDistanceFromDeviceLocation(getHowFarFrom(place.getLatLng()));
     }

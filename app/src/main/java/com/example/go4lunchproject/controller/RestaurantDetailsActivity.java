@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
+import com.example.go4lunchproject.data.Firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
@@ -171,7 +172,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             }
 
             user.setRestaurantLikedList(restaurantLikedList);
-            //TODO : update user to firebase
+            MyFirebaseDatabase.getInstance().updateUser(user);
+            UserApi.getInstance().setUser(user);
             Toast.makeText(this, restaurant.getName() + status, Toast.LENGTH_SHORT).show();
 
         });

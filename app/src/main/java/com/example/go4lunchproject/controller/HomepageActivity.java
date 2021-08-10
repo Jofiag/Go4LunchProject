@@ -33,6 +33,7 @@ import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
 import com.example.go4lunchproject.data.FragmentViewModel;
 import com.example.go4lunchproject.data.LocationApi;
 import com.example.go4lunchproject.data.RestaurantSelectedApi;
+import com.example.go4lunchproject.data.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
@@ -62,13 +63,11 @@ public class HomepageActivity extends AppCompatActivity
 
     private Fragment fragmentToShow;
     private Fragment activeFragment;
-
     private Restaurant restaurantChosen;
 
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
     private FragmentViewModel fragmentViewModel;
-    FirebaseAuth mAuth;
-    FirebaseUser currentUser;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,22 +78,17 @@ public class HomepageActivity extends AppCompatActivity
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
         fragmentViewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 
         setLocationManagerAndListener();
         requestLocationIfPermissionIsGranted();
 
-        User user = new User(); //TODO : get user connected from firebase
+//        User user = UserApi.getInstance().getUser();
 
-        restaurantChosen = user.getRestaurantChosen();
-
+//        restaurantChosen = user.getRestaurantChosen();
         setBottomNavigationView();
-
         setMyToolbarAsAppBar();
-
         setMyDrawerLayout();
-
         setMyNavigationView();
     }
 
@@ -161,7 +155,6 @@ public class HomepageActivity extends AppCompatActivity
                 .create()
                 .show();
     }
-
     private void setReferences() {
         myToolbar = findViewById(R.id.my_toolbar);
         myDrawerLayout = findViewById(R.id.my_drawer);
@@ -170,7 +163,6 @@ public class HomepageActivity extends AppCompatActivity
 
 
     }
-
     private void addFragments(){
         activeFragment = fragmentViewModel.getRestaurantMapViewFragment();
 
@@ -194,7 +186,6 @@ public class HomepageActivity extends AppCompatActivity
                     .commit();
         }
     }
-
     private void showFragment(){
         fragmentManager.beginTransaction()
                 .hide(activeFragment)
@@ -203,7 +194,6 @@ public class HomepageActivity extends AppCompatActivity
 
         activeFragment = fragmentToShow;
     }
-
     private void setBottomNavigationView(){
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -225,11 +215,9 @@ public class HomepageActivity extends AppCompatActivity
             return true;
         });
     }
-
     private void setMyToolbarAsAppBar(){
         setSupportActionBar(myToolbar);
     }
-
     private void setMyDrawerLayout(){
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(HomepageActivity.this,
                 myDrawerLayout,
@@ -239,7 +227,6 @@ public class HomepageActivity extends AppCompatActivity
         myDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
-
     private void setMyNavigationView(){
         showUserProfileInNavHeader();
         myNavigationView.setNavigationItemSelectedListener(item -> {
@@ -269,7 +256,6 @@ public class HomepageActivity extends AppCompatActivity
             return true;
         });
     }
-
     private void logoutUserAndBackToMainActivity(){
         new AlertDialog.Builder(HomepageActivity.this)
                 .setTitle("SIGNING OUT")
@@ -284,7 +270,6 @@ public class HomepageActivity extends AppCompatActivity
                 .show();
 
     }
-
     private void showUserProfileInNavHeader(){
         View navHeaderView = myNavigationView.getHeaderView(0);
         TextView userNameTextView = navHeaderView.findViewById(R.id.name_text_nav_header);
@@ -325,7 +310,6 @@ public class HomepageActivity extends AppCompatActivity
         intent.putExtra(Constants.WORKMATE_SELECTED_CODE, parcelable);
         startActivity(intent);
     }
-
 
     @Override
     public void onWorkmateSelected(Workmate workmate) {

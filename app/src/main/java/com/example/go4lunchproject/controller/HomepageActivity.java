@@ -33,6 +33,7 @@ import com.example.go4lunchproject.data.FragmentViewModel;
 import com.example.go4lunchproject.data.LocationApi;
 import com.example.go4lunchproject.data.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.UserApi;
+import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
@@ -112,7 +113,8 @@ public class HomepageActivity extends AppCompatActivity
             @Override
             public void onLocationChanged(Location location) {
                 deviceLocation = location;
-                LocationApi.getInstance(HomepageActivity.this).setLocation(location);
+                MyPositionObject positionObject = new MyPositionObject(location.getLatitude(), location.getLongitude());
+                LocationApi.getInstance(HomepageActivity.this).setPosition(positionObject);
             }
 
             @Override
@@ -136,7 +138,8 @@ public class HomepageActivity extends AppCompatActivity
         if (checkSelfPermission(FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 100, locationListener);
             deviceLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            LocationApi.getInstance(this).setLocation(deviceLocation);
+            MyPositionObject positionObject = new MyPositionObject(deviceLocation.getLatitude(), deviceLocation.getLongitude());
+            LocationApi.getInstance(this).setPosition(positionObject);
             if (deviceLocation != null)
                 addFragments();
             else

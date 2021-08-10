@@ -1,10 +1,7 @@
 package com.example.go4lunchproject.model;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -14,7 +11,7 @@ public class Restaurant implements Parcelable {
     private String websiteUrl;
     private String placeId;
     private String imageUrl;
-    private LatLng position;
+    private MyPositionObject position;
     private String foodCountry;
     private String phoneNumber;
     private int favorableOpinion;
@@ -34,7 +31,7 @@ public class Restaurant implements Parcelable {
         websiteUrl = in.readString();
         placeId = in.readString();
         imageUrl = in.readString();
-        position = in.readParcelable(LatLng.class.getClassLoader());
+        position = in.readParcelable(MyPositionObject.class.getClassLoader());
         foodCountry = in.readString();
         phoneNumber = in.readString();
         favorableOpinion = in.readInt();
@@ -71,11 +68,11 @@ public class Restaurant implements Parcelable {
         this.placeId = placeId;
     }
 
-    public LatLng getPosition() {
+    public MyPositionObject getPosition() {
         return position;
     }
 
-    public void setPosition(LatLng position) {
+    public void setPosition(MyPositionObject position) {
         this.position = position;
     }
 
@@ -166,18 +163,21 @@ public class Restaurant implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(address);
-        dest.writeString(websiteUrl);
-        dest.writeString(placeId);
-        dest.writeString(imageUrl);
-        dest.writeParcelable(position, flags);
-        dest.writeString(foodCountry);
-        dest.writeString(phoneNumber);
-        dest.writeInt(favorableOpinion);
-        dest.writeTypedList(workmateList);
-        dest.writeInt(numberOfInterestedWorkmate);
-        dest.writeInt(distanceFromDeviceLocation);
+    public void writeToParcel(Parcel parcel, int i) {
+
+        parcel.writeString(name);
+        parcel.writeString(address);
+        parcel.writeString(websiteUrl);
+        parcel.writeString(placeId);
+        parcel.writeString(imageUrl);
+        parcel.writeParcelable(position, i);
+        parcel.writeString(foodCountry);
+        parcel.writeString(phoneNumber);
+        parcel.writeInt(favorableOpinion);
+        parcel.writeTypedList(workmateList);
+        parcel.writeInt(numberOfInterestedWorkmate);
+        parcel.writeInt(distanceFromDeviceLocation);
     }
+
+
 }

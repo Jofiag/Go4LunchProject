@@ -4,14 +4,14 @@ import static com.example.go4lunchproject.util.Constants.NEARBY_SEARCH_URL;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.location.Location;
 
 import com.example.go4lunchproject.R;
+import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.util.Constants;
 
 public class RestaurantListUrlApi {
     private String url;
-    private Location location;
+    private MyPositionObject position;
     private final Context context;
     @SuppressLint("StaticFieldLeak")
     private static RestaurantListUrlApi INSTANCE;
@@ -27,14 +27,14 @@ public class RestaurantListUrlApi {
         return INSTANCE;
     }
 
-    private void setLocation() {
-        location = LocationApi.getInstance(context).getLocation();
+    private void setPosition() {
+        position = LocationApi.getInstance(context).getPosition();
     }
 
     private void setUrl(){
-        if (location != null){
+        if (position != null){
             url = NEARBY_SEARCH_URL +
-                    "location=" + location.getLatitude() + "," + location.getLongitude() +
+                    "location=" + position.getLatitude() + "," + position.getLongitude() +
 //                    "&rankby=" + Constants.PROMINENCE +
                     "&radius=" + Constants.PROXIMITY_RADIUS +
                     "&type=" + Constants.RESTAURANT +
@@ -44,7 +44,7 @@ public class RestaurantListUrlApi {
     }
 
     public String getUrlThroughDeviceLocation() {
-        setLocation();
+        setPosition();
         setUrl();
         return url;
     }

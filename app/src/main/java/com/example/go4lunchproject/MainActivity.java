@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         if (user != null) {
             Toast.makeText(MainActivity.this, "Welcome " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
             startActivity(new Intent(MainActivity.this, HomepageActivity.class));
-            finish();
+//            finish();
         }
         else
             Toast.makeText(MainActivity.this, "No user founded", Toast.LENGTH_SHORT).show();
@@ -94,10 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void signInWithGoogle(){
-        signInGoogleButton.setOnClickListener(v -> {
-            signIn();
-            finish();
-        });
+        signInGoogleButton.setOnClickListener(v -> signIn());
     }
 
     private void sendGoogleSignInRequest(){
@@ -141,8 +138,6 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         // If sign in fails, display a message to the user.
                         Toast.makeText(MainActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
-                        startHomePageActivityIfUserConnected(null); //DO WANT NEEDED WITH USER
-
                     }
                 });
     }

@@ -51,7 +51,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
     private List<Restaurant> restaurantLikedList = new ArrayList<>();
 
-    private Restaurant restaurant;
+    private Restaurant restaurantActuallyShowed;
     private User user;
 
     @Override
@@ -63,7 +63,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         user = getUserConnected();
         restaurantLikedList = getRestaurantLikedList();
-        restaurant = RestaurantSelectedApi.getInstance().getRestaurantSelected();
+        restaurantActuallyShowed = RestaurantSelectedApi.getInstance().getRestaurantSelected();
 
         showRestaurantImageNameAndAddress();
         setRecyclerView();
@@ -107,14 +107,27 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void setYellowStarVisibility(){
-        if (restaurantLikedList.contains(restaurant))
-            yellowStar.setVisibility(View.VISIBLE);
-        else
-            yellowStar.setVisibility(View.GONE);
+        MyFirebaseDatabase.getInstance().getUser(user.getId(), singleUser -> {
+            List<Restaurant> list = singleUser.getRestaurantLikedList();
+            boolean isFavorite = false;
+            if (list != null){
+                for (Restaurant restaurant : list) {
+                    if (restaurant.getName().equals(restaurantActuallyShowed.getName())) {
+                        isFavorite = true;
+                        yellowStar.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            if (!isFavorite)
+                yellowStar.setVisibility(View.GONE);
+
+        });
+
     }
 
     private void setChosenImageViewSource(){
-        if (user.getRestaurantChosen() == restaurant)
+        if (user.getRestaurantChosen() == restaurantActuallyShowed)
             chosenImageView.setImageResource(R.mipmap.green_check_round);
         else
             chosenImageView.setImageResource(R.mipmap.red_unchecked);
@@ -122,8 +135,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
     private void setRecyclerView(){
         WorkmateRecyclerViewAdapter workmateAdapter;
-        if (restaurant != null)
-            workmateAdapter = new WorkmateRecyclerViewAdapter(restaurant.getWorkmateList());
+        if (restaurantActuallyShowed != null)
+            workmateAdapter = new WorkmateRecyclerViewAdapter(restaurantActuallyShowed.getWorkmateList());
         else
             workmateAdapter = new WorkmateRecyclerViewAdapter(new ArrayList<>());
 
@@ -133,9 +146,9 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void showRestaurantImageNameAndAddress(){
-        if (restaurant != null) {
-            if (restaurant.getImageUrl() != null)
-                Picasso.get().load(restaurant.getImageUrl())
+        if (restaurantActuallyShowed != null) {
+            if (restaurantActuallyShowed.getImageUrl() != null)
+                Picasso.get().load(restaurantActuallyShowed.getImageUrl())
                         .placeholder(android.R.drawable.stat_sys_download)
                         .error(android.R.drawable.stat_notify_error)
                         .resize(445, 445)
@@ -144,13 +157,24 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             /*if (restaurant.getFoodCountry() != null || restaurant.getFoodCountry().isEmpty())
                 RestaurantFoodCountryAndRestaurantAddress.setText(MessageFormat.format("{0} - {1}", restaurant.getFoodCountry(), restaurant.getAddress()));
             else*/
-                RestaurantFoodCountryAndRestaurantAddress.setText(restaurant.getAddress());
+                RestaurantFoodCountryAndRestaurantAddress.setText(restaurantActuallyShowed.getAddress());
 
-            restaurantNameTextView.setText(restaurant.getName());
+            restaurantNameTextView.setText(restaurantActuallyShowed.getName());
         }
     }
 
     private void setLikeRestaurantFunction(){
+
+//        MyFirebaseDatabase.getInstance().getUser(user.getId(), singleUser -> {
+//            List<Restaurant> list = singleUser.getRestaurantLikedList();
+//
+//            if (list != null){
+//                if (!list.contains(restaurantActuallyShowed))
+//                    list.add(restaurantActuallyShowed);
+//
+//            }
+//
+//        });
 
         starImageView.setOnClickListener(v -> {
             //Add actual restaurant to the liked restaurant list of the workmate connected and set yellowStar visibility to VISIBLE
@@ -159,22 +183,28 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             if (visibility != View.VISIBLE) {
                 yellowStar.setVisibility(View.VISIBLE);
 
-                if (!restaurantLikedList.contains(restaurant))
-                    restaurantLikedList.add(restaurant);
+                if (!restaurantLikedList.contains(restaurantActuallyShowed))
+                    restaurantLikedList.add(restaurantActuallyShowed);
 
                 status = " added to liked list.";
             }
 
             if (visibility == View.VISIBLE){
                 yellowStar.setVisibility(View.GONE);
-                restaurantLikedList.remove(restaurant);
+                restaurantLikedList.remove(restaurantActuallyShowed);
                 status = " removed from liked list.";
             }
 
-            user.setRestaurantLikedList(restaurantLikedList);
+            List<Restaurant> tempList = user.getRestaurantLikedList();
+            if (tempList == null)
+                tempList = new ArrayList<>(restaurantLikedList);
+            else
+                tempList.addAll(restaurantLikedList);
+
+            user.setRestaurantLikedList(tempList);
             MyFirebaseDatabase.getInstance().updateUser(user);
             UserApi.getInstance().setUser(user);
-            Toast.makeText(this, restaurant.getName() + status, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, restaurantActuallyShowed.getName() + status, Toast.LENGTH_SHORT).show();
 
         });
     }
@@ -182,10 +212,10 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private void setGoToRestaurantWebsiteFunction(){
         globeImageView.setOnClickListener(v -> {
             //Go to restaurant website if its available.
-            if(restaurant.getWebsiteUrl() != null)
+            if(restaurantActuallyShowed.getWebsiteUrl() != null)
                 startActivity(new Intent(this, RestaurantWebsiteActivity.class));
             else
-                Toast.makeText(this, "Website not available for " + restaurant.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Website not available for " + restaurantActuallyShowed.getName(), Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -195,19 +225,19 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             String status;
             Restaurant restaurantTemp;
 
-            if (user.getRestaurantChosen() == restaurant){
+            if (user.getRestaurantChosen() == restaurantActuallyShowed){
                 chosenImageView.setImageResource(R.mipmap.red_unchecked);
                 restaurantTemp = null;
                 status = " not chosen anymore.";
             }
             else{
-                restaurantTemp = restaurant;
+                restaurantTemp = restaurantActuallyShowed;
                 chosenImageView.setImageResource(R.mipmap.green_check_round);
                 status = " chosen.";
             }
 
             user.setRestaurantChosen(restaurantTemp);
-            Toast.makeText(RestaurantDetailsActivity.this, restaurant.getName() + status, Toast.LENGTH_SHORT).show();
+            Toast.makeText(RestaurantDetailsActivity.this, restaurantActuallyShowed.getName() + status, Toast.LENGTH_SHORT).show();
             //TODO : update user to firebase
         });
     }
@@ -231,7 +261,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void callRestaurant(){
-        String dial = "tel:" + restaurant.getPhoneNumber();
+        String dial = "tel:" + restaurantActuallyShowed.getPhoneNumber();
         Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse(dial));
         startActivity(callIntent);
     }

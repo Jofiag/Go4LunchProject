@@ -7,13 +7,14 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.util.Log;
 
+import com.example.go4lunchproject.model.MyPositionObject;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.util.List;
 
 public class LocationApi {
-    private Location location;
+    private MyPositionObject position;
     private final Context context;
     private final Geocoder geocoder;
     @SuppressLint("StaticFieldLeak")
@@ -32,16 +33,21 @@ public class LocationApi {
         return INSTANCE;
     }
 
-    public Location getLocation() {
-        return location;
+    public MyPositionObject getPosition() {
+        return position;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setPosition(MyPositionObject position) {
+        this.position = position;
     }
 
     public LatLng getPositionFromLocation(){
-        return new LatLng(location.getLatitude(), location.getLongitude());
+        LatLng position = null;
+
+        if (this.position != null)
+            position = new LatLng(this.position.getLatitude(), this.position.getLongitude());
+
+        return position;
     }
 
     public String getStreetAddressFromPositions() {

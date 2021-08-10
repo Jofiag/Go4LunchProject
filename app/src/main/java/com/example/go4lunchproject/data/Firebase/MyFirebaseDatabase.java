@@ -20,6 +20,10 @@ public class MyFirebaseDatabase {
     public interface UserListFromFirebase{
         void onListGotten(List<User> userList);
     }
+
+    public interface SingleUserFromFirebase{
+        void onSingleUserGotten(User singleUser);
+    }
     private final FirebaseDatabase database = FirebaseDatabase.getInstance("https://go4lunchproject-6c727-default-rtdb.europe-west1.firebasedatabase.app");
     private final DatabaseReference userDataRef = database.getReference(Constants.USER_DATA_REF);
     private static MyFirebaseDatabase INSTANCE;
@@ -39,7 +43,7 @@ public class MyFirebaseDatabase {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()){
                     User userFromApi = UserApi.getInstance().getUser();
-                    userDataRef.child(userFromApi.getId()).setValue(userFromApi)
+                    userDataRef.child(user.getId()).setValue(user)
                             .addOnSuccessListener(unused -> Log.d("SAVING", "onSuccess: User saved with success!!!"))
                             .addOnFailureListener(e -> Log.d("SAVING", "onFailure: " + e.getMessage()));
 
@@ -52,6 +56,24 @@ public class MyFirebaseDatabase {
             }
         });
 
+    }
+
+    public void getUser(String path, SingleUserFromFirebase callback){
+        userDataRef.child(path).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    User user = snapshot.getValue(User.class);
+                    if (callback != null)
+                        callback.onSingleUserGotten(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     public void getAllUsers(UserListFromFirebase callback) {

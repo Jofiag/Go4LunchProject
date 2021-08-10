@@ -16,6 +16,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.model.MyOpeningHours;
+import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
 import com.google.android.gms.maps.GoogleMap;
@@ -147,7 +148,8 @@ public class RestaurantNearbyBank {
             double lng = location.getDouble(Constants.LONGITUDE);
 
             LatLng position = new LatLng(lat, lng);
-            restaurant.setPosition(position);
+            MyPositionObject myPositionObject = new MyPositionObject(lat, lng);
+            restaurant.setPosition(myPositionObject);
 
             String address = getStreetAddressFromPositions(position);
             restaurant.setAddress(address);
@@ -184,9 +186,10 @@ public class RestaurantNearbyBank {
             if (typeList.contains(Constants.RESTAURANT) && !typeList.contains(Constants.LODGING)){
                 getAndSetRestaurantName(restaurant, jsonObject);
                 getAndSetRestaurantPositionAndAddress(restaurant, jsonObject);
+                LatLng position = new LatLng(restaurant.getPosition().getLatitude(), restaurant.getPosition().getLongitude());
 
                 if (mGoogleMap != null)
-                    addMarkerOnPosition(mGoogleMap, restaurant.getPosition(), restaurant.getName(), restaurant.getAddress());
+                    addMarkerOnPosition(mGoogleMap, position, restaurant.getName(), restaurant.getAddress());
 
                 getAndSetRestaurantImageUrl(restaurant, jsonObject);
                 getAndSetRestaurantRating(restaurant, jsonObject);
@@ -308,7 +311,10 @@ public class RestaurantNearbyBank {
                     restaurant.setDistanceFromDeviceLocation(getHowFarFrom(place.getLatLng()));
             }
         private int getHowFarFrom(LatLng destination){
-        Location deviceLocation = LocationApi.getInstance(mActivity).getLocation();
+        MyPositionObject devicePosition = LocationApi.getInstance(mActivity).getPosition();
+        Location deviceLocation = new Location("");
+        deviceLocation.setLatitude(devicePosition.getLatitude());
+        deviceLocation.setLongitude(devicePosition.getLongitude());
         Location destinationLocation = new Location("");
         destinationLocation.setLatitude(destination.latitude);
         destinationLocation.setLongitude(destination.longitude);

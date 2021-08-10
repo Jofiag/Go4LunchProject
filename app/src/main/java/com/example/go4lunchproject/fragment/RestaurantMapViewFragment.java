@@ -12,7 +12,6 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,16 +55,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class RestaurantMapViewFragment extends Fragment {
 
     private String url;
-    private GoogleMap mGoogleMap;
     private LatLng devicePosition;
     private CursorAdapter adapter;
     private String[] columnPlaces;
@@ -166,7 +161,7 @@ public class RestaurantMapViewFragment extends Fragment {
     private void setGoogleMap(GoogleMap googleMap) {
         Log.d("ORDER", "setGoogleMap: ");
         dataViewModel.setGoogleMap(googleMap);
-        mGoogleMap = dataViewModel.getGoogleMap();
+        GoogleMap mGoogleMap = dataViewModel.getGoogleMap();
     }
 
     private void setDevicePositionAndListUrl(){
@@ -210,8 +205,11 @@ public class RestaurantMapViewFragment extends Fragment {
             dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLat, lastLng), lastZoom));
         }
         else{
-            for (Restaurant restaurant : restaurantList)
-                addMarkerOnPosition(restaurant.getPosition(), restaurant.getName(), restaurant.getAddress(), BitmapDescriptorFactory.HUE_ORANGE);
+            for (Restaurant restaurant : restaurantList) {
+                LatLng position = new LatLng(restaurant.getPosition().getLatitude(), restaurant.getPosition().getLongitude());
+                addMarkerOnPosition(position, restaurant.getName(), restaurant.getAddress(), BitmapDescriptorFactory.HUE_ORANGE);
+
+            }
 
             addMarkerOnPosition(devicePosition, LocationApi.getInstance(requireContext()).getStreetAddressFromPositions(), Constants.DEVICE_POSITION, BitmapDescriptorFactory.HUE_RED);
         }
@@ -256,9 +254,9 @@ public class RestaurantMapViewFragment extends Fragment {
 
             RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(dataViewModel.getUrl(), restaurantList -> {
                 for (Restaurant restaurant : restaurantList) {
-                    LatLng restaurantPosition = restaurant.getPosition();
+                    LatLng restaurantPosition = new LatLng(restaurant.getPosition().getLatitude(), restaurant.getPosition().getLongitude());
                     //Zooming on the restaurant clicked
-                    if (restaurantPosition != null && restaurant.getAddress().equals(getFromQuery(query, ADDRESS))) {
+                    if (restaurant.getAddress().equals(getFromQuery(query, ADDRESS))) {
                         dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(restaurantPosition, 20));
                         addMarkerOnPosition(restaurantPosition, restaurant.getName(), restaurant.getAddress(), BitmapDescriptorFactory.HUE_ORANGE);
                     }

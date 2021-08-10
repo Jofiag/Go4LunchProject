@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
 import com.example.go4lunchproject.data.RestaurantSelectedApi;
+import com.example.go4lunchproject.data.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.squareup.picasso.Picasso;
@@ -92,9 +93,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private User getUserConnected(){
-
-
-        return new User();
+        return UserApi.getInstance().getUser();
     }
 
     public List<Restaurant> getRestaurantLikedList() {
@@ -199,18 +198,16 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 status = " not chosen anymore.";
             }
             else{
-                chosenImageView.setImageResource(R.mipmap.green_check_round);
                 restaurantTemp = restaurant;
+                chosenImageView.setImageResource(R.mipmap.green_check_round);
                 status = " chosen.";
             }
 
-            Toast.makeText(RestaurantDetailsActivity.this, restaurant.getName() + status, Toast.LENGTH_SHORT).show();
             user.setRestaurantChosen(restaurantTemp);
+            Toast.makeText(RestaurantDetailsActivity.this, restaurant.getName() + status, Toast.LENGTH_SHORT).show();
             //TODO : update user to firebase
         });
     }
-
-
 
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
@@ -230,16 +227,15 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void call(){
+    private void callRestaurant(){
         String dial = "tel:" + restaurant.getPhoneNumber();
         Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse(dial));
         startActivity(callIntent);
     }
 
     private void callPhoneNumberIfPermissionGranted(){
-        if (checkSelfPermission(CALL_PERMISSION) == PERMISSION_GRANTED){
-            call();
-        }
+        if (checkSelfPermission(CALL_PERMISSION) == PERMISSION_GRANTED)
+            callRestaurant();
         else{
             if (shouldShowRequestPermissionRationale(CALL_PERMISSION))
                 Toast.makeText(this, "Location permission is required", Toast.LENGTH_SHORT).show();

@@ -83,13 +83,20 @@ public class HomepageActivity extends AppCompatActivity
         setLocationManagerAndListener();
         requestLocationIfPermissionIsGranted();
 
-//        User user = UserApi.getInstance().getUser();
-
-//        restaurantChosen = user.getRestaurantChosen();
         setBottomNavigationView();
         setMyToolbarAsAppBar();
         setMyDrawerLayout();
         setMyNavigationView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getRestaurantChosenByUser();
+    }
+
+    private void getRestaurantChosenByUser() {
+        restaurantChosen = UserApi.getInstance().getUser().getRestaurantChosen();
     }
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(

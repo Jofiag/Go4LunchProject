@@ -1,30 +1,25 @@
 package com.example.go4lunchproject;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.go4lunchproject.controller.HomepageActivity;
+import com.example.go4lunchproject.data.UserApi;
+import com.example.go4lunchproject.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -33,21 +28,20 @@ import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final int RC_SIGN_IN = 7;
     private Button signInFacebookButton;
     private Button signInGoogleButton;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
+    private User user;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        FirebaseApp.initializeApp(this);
-//        mAuth = FirebaseAuth.getInstance();
+
         sendGoogleSignInRequest();
-        mAuth = FirebaseAuth.getInstance();
+        setUserAndFirebaseAuth();
 
         setReferences();
         signInWithFacebook();
@@ -57,13 +51,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        startHomePageActivityIfUserConnected(currentUser);  //updateUI(user)//DO WANT NEEDED WITH USER
+        startHomePageActivityIfUserConnected(user.getFirebaseUser());  //updateUI(user)//DO WANT NEEDED WITH USER
     }
 
     private void setReferences(){
         signInFacebookButton = findViewById(R.id.sign_in_facebook_button);
         signInGoogleButton = findViewById(R.id.sign_in_google_button);
+    }
+
+    private void setUserAndFirebaseAuth(){
+        user = new User();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+
+        if (firebaseUser != null){
+            user.setId(firebaseUser.getUid());
+            user.setFirebaseUser(firebaseUser);
+            user.setUserEmail(firebaseUser.getEmail());
+            user.setName(firebaseUser.getDisplayName());
+            user.setImageUri(firebaseUser.getPhotoUrl());
+            UserApi.getInstance().setUser(user);
+        }
     }
 
     private void startHomePageActivityIfUserConnected(FirebaseUser user){

@@ -6,6 +6,9 @@ public class UserApi {
     private User user;
     private static UserApi INSTANCE;
 
+    public UserApi() {
+        user = new User();
+    }
 
     public static UserApi getInstance() {
         if (INSTANCE == null)

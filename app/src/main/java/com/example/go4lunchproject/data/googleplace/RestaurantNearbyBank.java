@@ -1,4 +1,4 @@
-package com.example.go4lunchproject.data;
+package com.example.go4lunchproject.data.googleplace;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -15,6 +15,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.go4lunchproject.R;
+import com.example.go4lunchproject.data.api.LocationApi;
+import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.model.MyOpeningHours;
 import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;
@@ -229,6 +231,7 @@ public class RestaurantNearbyBank {
                         String phoneNumber = place.getPhoneNumber();
                         OpeningHours openingHours = place.getOpeningHours();
 
+                        assert website != null;
                         setRestaurantPhoneWebsiteAndMyOpeningHours(restaurant, place, phoneNumber, website, openingHours);
                         mRestaurantList.add(restaurant);
                         setTheOnMarkerClickListener();

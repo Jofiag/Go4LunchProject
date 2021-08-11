@@ -1,5 +1,6 @@
 package com.example.go4lunchproject.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,8 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.RestaurantRecyclerViewAdapter;
-import com.example.go4lunchproject.data.RestaurantListUrlApi;
-import com.example.go4lunchproject.data.RestaurantNearbyBank2;
+import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
+import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
 
@@ -56,6 +57,7 @@ public class RestaurantListViewFragment extends Fragment{
         return inflater.inflate(R.layout.fragment_restaurant_list_view, container, false);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -107,6 +109,7 @@ public class RestaurantListViewFragment extends Fragment{
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private void filterList(String query){
 
         RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(url, restaurantList -> {

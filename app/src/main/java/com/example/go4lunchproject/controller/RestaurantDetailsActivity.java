@@ -22,9 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
-import com.example.go4lunchproject.data.Firebase.MyFirebaseDatabase;
-import com.example.go4lunchproject.data.RestaurantSelectedApi;
-import com.example.go4lunchproject.data.UserApi;
+import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
+import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
+import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.util.Constants;

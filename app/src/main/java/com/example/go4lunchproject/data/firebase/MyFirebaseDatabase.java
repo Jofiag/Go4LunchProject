@@ -1,10 +1,10 @@
-package com.example.go4lunchproject.data.Firebase;
+package com.example.go4lunchproject.data.firebase;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.go4lunchproject.data.UserApi;
+import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.util.Constants;
 import com.google.firebase.database.DataSnapshot;

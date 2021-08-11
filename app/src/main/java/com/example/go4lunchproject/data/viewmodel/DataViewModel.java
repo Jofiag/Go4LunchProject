@@ -1,10 +1,10 @@
-package com.example.go4lunchproject.data;
+package com.example.go4lunchproject.data.viewmodel;
 
 import androidx.lifecycle.ViewModel;
 
+import com.example.go4lunchproject.data.googleplace.RestaurantListManager;
 import com.example.go4lunchproject.model.MyMarker;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
 

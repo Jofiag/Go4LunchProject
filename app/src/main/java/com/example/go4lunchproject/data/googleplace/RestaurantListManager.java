@@ -1,4 +1,4 @@
-package com.example.go4lunchproject.data;
+package com.example.go4lunchproject.data.googleplace;
 
 import android.annotation.SuppressLint;
 import android.app.job.JobInfo;

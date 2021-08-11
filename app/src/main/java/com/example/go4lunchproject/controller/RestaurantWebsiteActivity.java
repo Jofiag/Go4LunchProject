@@ -6,7 +6,7 @@ import android.webkit.WebView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.go4lunchproject.R;
-import com.example.go4lunchproject.data.RestaurantSelectedApi;
+import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 
 public class RestaurantWebsiteActivity extends AppCompatActivity {
 

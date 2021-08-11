@@ -11,8 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.go4lunchproject.controller.HomepageActivity;
-import com.example.go4lunchproject.data.Firebase.MyFirebaseDatabase;
-import com.example.go4lunchproject.data.UserApi;
+import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
+import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

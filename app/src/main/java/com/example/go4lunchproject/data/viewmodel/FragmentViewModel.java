@@ -1,4 +1,4 @@
-package com.example.go4lunchproject.data;
+package com.example.go4lunchproject.data.viewmodel;
 
 import android.os.Build;
 

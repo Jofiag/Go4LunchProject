@@ -1,10 +1,9 @@
-package com.example.go4lunchproject.data;
+package com.example.go4lunchproject.data.api;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.util.Log;
 
 import com.example.go4lunchproject.model.MyPositionObject;

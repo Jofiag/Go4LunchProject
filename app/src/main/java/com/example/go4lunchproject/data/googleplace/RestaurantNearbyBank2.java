@@ -1,4 +1,4 @@
-package com.example.go4lunchproject.data;
+package com.example.go4lunchproject.data.googleplace;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,6 +15,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.go4lunchproject.R;
+import com.example.go4lunchproject.data.api.LocationApi;
 import com.example.go4lunchproject.model.MyOpeningHours;
 import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;

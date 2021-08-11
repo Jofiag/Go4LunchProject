@@ -7,14 +7,14 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.go4lunchproject.data.RestaurantListUrlApi;
-import com.example.go4lunchproject.data.RestaurantNearbyBank2;
+import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
+import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
 
 import java.util.ArrayList;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MyJobService extends android.app.job.JobService {
     private boolean jobCancelled = false;
 

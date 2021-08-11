@@ -1,4 +1,4 @@
-package com.example.go4lunchproject.data;
+package com.example.go4lunchproject.data.api;
 
 import static com.example.go4lunchproject.util.Constants.NEARBY_SEARCH_URL;
 

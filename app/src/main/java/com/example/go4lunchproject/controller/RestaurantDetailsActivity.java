@@ -27,6 +27,7 @@ import com.example.go4lunchproject.data.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
+import com.example.go4lunchproject.util.Constants;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -112,7 +113,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             boolean isFavorite = false;
             if (list != null){
                 for (Restaurant restaurant : list) {
-                    if (restaurant.getName().equals(restaurantActuallyShowed.getName())) {
+                    if (restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())) {
                         isFavorite = true;
                         yellowStar.setVisibility(View.VISIBLE);
                     }
@@ -163,51 +164,71 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         }
     }
 
+    private void saveOrRemoveActualRestaurantLikedToFirebase(List<Restaurant> firebaseList, String action){
+        String status = "";
+        if (action.equals(Constants.SAVE_RESTAURANT_ACTION)){
+            if (firebaseList != null){
+                boolean contains = false;
+                for (Restaurant restaurant : firebaseList) {
+                    if (restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())){
+                        contains = true;
+                        break;
+                    }
+                }
+                if (!contains) {
+                    firebaseList.add(restaurantActuallyShowed);
+                    user.setRestaurantLikedList(firebaseList);
+                }
+            }
+            else{
+                firebaseList = new ArrayList<>();
+                firebaseList.add(restaurantActuallyShowed);
+                user.setRestaurantLikedList(firebaseList);
+            }
+            status = " added to liked list.";
+        }
+        else if(action.equals(Constants.REMOVE_RESTAURANT_ACTION)){
+            if (firebaseList != null) {
+                for (Restaurant restaurant : firebaseList) {
+                    if (restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())) {
+                        firebaseList.remove(restaurant);
+                        user.setRestaurantLikedList(firebaseList);
+                        break;
+                    }
+                }
+            }
+
+            status = " removed from liked list.";
+        }
+
+        UserApi.getInstance().setUser(user);
+        MyFirebaseDatabase.getInstance().updateUser(user);
+        Toast.makeText(this, restaurantActuallyShowed.getName() + status, Toast.LENGTH_SHORT).show();
+    }
+
     private void setLikeRestaurantFunction(){
-        MyFirebaseDatabase.getInstance().getUser(user.getId(), singleUser -> {
+        MyFirebaseDatabase.getInstance().getUser(user.getId(), singleUser -> starImageView.setOnClickListener(v -> {
+
             int visibility = yellowStar.getVisibility();
-            starImageView.setOnClickListener(v -> {
-                List<Restaurant> list = singleUser.getRestaurantLikedList();
-                String status = "";
-                if (visibility != View.VISIBLE) { // If actual restaurant IS NOT IN the liked list of the workmate connected
-                    // Set yellowStar visibility to VISIBLE
-                    yellowStar.setVisibility(View.VISIBLE);
+            List<Restaurant> list = singleUser.getRestaurantLikedList();
 
-                    //Add actual restaurant to the liked restaurant list of the workmate connected
-                    if (list != null){
-                        if (!list.contains(restaurantActuallyShowed)) {
-                            list.add(restaurantActuallyShowed);
-                            user.setRestaurantLikedList(list);
-                        }
-                    }
-                    else{
-                        list = new ArrayList<>();
-                        list.add(restaurantActuallyShowed);
-                        user.setRestaurantLikedList(list);
-                    }
+            if (visibility != View.VISIBLE) {
+                // If actual restaurant IS NOT IN the liked list of the workmate connected
+                // Set yellowStar visibility to VISIBLE
+                yellowStar.setVisibility(View.VISIBLE);
 
-                    status = " added to liked list.";
-                }
-                if (visibility == View.VISIBLE){ // If actual restaurant IS IN the liked list of the workmate connected
-                    // Set yellowStar visibility to GONE
-                    yellowStar.setVisibility(View.GONE);
+                //Add actual restaurant to the liked restaurant list of the workmate connected
+                saveOrRemoveActualRestaurantLikedToFirebase(list, Constants.SAVE_RESTAURANT_ACTION);
+            }
+            else {
+                // If actual restaurant IS IN the liked list of the workmate connected
+                // Set yellowStar visibility to GONE
+                yellowStar.setVisibility(View.GONE);
 
-                    //Remove actual restaurant to the liked restaurant list of the workmate connected
-                    if (list != null) {
-                        list.remove(restaurantActuallyShowed);
-                        user.setRestaurantLikedList(list);
-                    }
-
-                    status = " removed from liked list.";
-                }
-
-                MyFirebaseDatabase.getInstance().updateUser(user);
-                UserApi.getInstance().setUser(user);
-                Toast.makeText(this, restaurantActuallyShowed.getName() + status, Toast.LENGTH_SHORT).show();
-            });
-        });
-
-
+                //Remove actual restaurant to the liked restaurant list of the workmate connected
+                saveOrRemoveActualRestaurantLikedToFirebase(list, Constants.REMOVE_RESTAURANT_ACTION);
+            }
+        }));
     }
 
     private void setGoToRestaurantWebsiteFunction(){

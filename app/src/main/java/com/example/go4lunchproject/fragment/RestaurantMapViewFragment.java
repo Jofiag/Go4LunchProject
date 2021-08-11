@@ -58,6 +58,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class RestaurantMapViewFragment extends Fragment {
@@ -99,7 +100,6 @@ public class RestaurantMapViewFragment extends Fragment {
 
         setDevicePositionAndListUrl();
         showRestaurantsAndSetOnMarkerClickListener(savedInstanceState);
-//        addGreenMarkerOnRestaurantChosenByAllWorkmates();
 
     }
 
@@ -149,10 +149,7 @@ public class RestaurantMapViewFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-//        if (savedState == null){
-            inflater.inflate(R.menu.search_view_menu, menu);
-//        }
-
+        inflater.inflate(R.menu.search_view_menu, menu);
         setOurSearchView(menu);
         Log.d("ORDER", "onCreateOptionsMenu: ");
     }
@@ -238,7 +235,8 @@ public class RestaurantMapViewFragment extends Fragment {
                     Restaurant restaurantChosen = user.getRestaurantChosen();
                     dataViewModel.getGoogleMap().setOnMarkerClickListener(marker -> {
                         if (restaurantChosen != null && restaurantChosen.getPosition() != null){
-                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                            if (Objects.requireNonNull(marker.getTag()).equals(restaurantChosen.getAddress()))
+                                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                         }
                         for (Restaurant restaurant : restaurantList) {
                             if (restaurant.getAddress().equals(marker.getTag())){

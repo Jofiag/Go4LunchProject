@@ -35,6 +35,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.controller.RestaurantDetailsActivity;
 import com.example.go4lunchproject.data.DataViewModel;
+import com.example.go4lunchproject.data.Firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.LocationApi;
 import com.example.go4lunchproject.data.RestaurantListManager;
 import com.example.go4lunchproject.data.RestaurantListUrlApi;
@@ -42,6 +43,7 @@ import com.example.go4lunchproject.data.RestaurantNearbyBank2;
 import com.example.go4lunchproject.data.RestaurantSelectedApi;
 import com.example.go4lunchproject.model.MyMarker;
 import com.example.go4lunchproject.model.Restaurant;
+import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.util.Constants;
 import com.example.go4lunchproject.util.LoadingDialog;
 import com.google.android.gms.common.ConnectionResult;
@@ -66,14 +68,11 @@ public class RestaurantMapViewFragment extends Fragment {
     private String[] columnPlaces;
     private SearchView searchView;
     private ImageButton locationButton;
-    private RestaurantListManager listManager;
     private final OnMapReadyCallback callback;
 
     private DataViewModel dataViewModel;
 
-    private ArrayList<MyMarker> markerList = new ArrayList<>();
-    private Bundle savedState;
-    private MenuItem searchItem;
+    private final ArrayList<MyMarker> markerList = new ArrayList<>();
 
     public RestaurantMapViewFragment() {
         callback = this::setGoogleMap;
@@ -100,8 +99,22 @@ public class RestaurantMapViewFragment extends Fragment {
 
         setDevicePositionAndListUrl();
         showRestaurantsAndSetOnMarkerClickListener(savedInstanceState);
+//        addGreenMarkerOnRestaurantChosenByAllWorkmates();
 
+    }
 
+    private void addGreenMarkerOnRestaurantChosenByAllWorkmates(){
+        MyFirebaseDatabase.getInstance().getAllUsers(userList -> {
+            if (userList != null && !userList.isEmpty()){
+                for (User user : userList) {
+                    Restaurant restaurantChosen = user.getRestaurantChosen();
+                    if (restaurantChosen != null && restaurantChosen.getPosition() != null){
+                        LatLng restaurantPosition = new LatLng(restaurantChosen.getPosition().getLatitude(), restaurantChosen.getPosition().getLongitude());
+                        addMarkerOnPosition(restaurantPosition, restaurantChosen.getName(), restaurantChosen.getAddress(), BitmapDescriptorFactory.HUE_GREEN);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -161,7 +174,6 @@ public class RestaurantMapViewFragment extends Fragment {
     private void setGoogleMap(GoogleMap googleMap) {
         Log.d("ORDER", "setGoogleMap: ");
         dataViewModel.setGoogleMap(googleMap);
-        GoogleMap mGoogleMap = dataViewModel.getGoogleMap();
     }
 
     private void setDevicePositionAndListUrl(){
@@ -180,6 +192,7 @@ public class RestaurantMapViewFragment extends Fragment {
         dataViewModel.getListManager().receiveRestaurantList(restaurantList -> {
             if (dataViewModel.getGoogleMap() != null){
                 addMarkerOnAllRestaurantsAndDevicePosition(restaurantList, state);
+                addGreenMarkerOnRestaurantChosenByAllWorkmates();
                 startRestaurantDetailsActivityWhenMarkerIsClicked(restaurantList);
             }
         });
@@ -213,22 +226,35 @@ public class RestaurantMapViewFragment extends Fragment {
 
             addMarkerOnPosition(devicePosition, LocationApi.getInstance(requireContext()).getStreetAddressFromPositions(), Constants.DEVICE_POSITION, BitmapDescriptorFactory.HUE_RED);
         }
-
         dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(devicePosition, 12));
         dataViewModel.getGoogleMap().getUiSettings().setMyLocationButtonEnabled(false);
         locationButton.setOnClickListener(v -> dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(devicePosition, 15)));
     }
     private void startRestaurantDetailsActivityWhenMarkerIsClicked(@org.jetbrains.annotations.NotNull ArrayList<Restaurant> restaurantList){
-        dataViewModel.getGoogleMap().setOnMarkerClickListener(marker -> {
-            for (Restaurant restaurant : restaurantList) {
-                if (restaurant.getAddress().equals(marker.getTag())){
-                    RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurant);
-                    startActivity(new Intent(requireActivity(), RestaurantDetailsActivity.class));
+        //  Making sure the marker icon is still green when user clicks on a marker of a restaurant chosen by any workmate
+        MyFirebaseDatabase.getInstance().getAllUsers(userList -> {
+            if (userList != null && !userList.isEmpty()){
+                for (User user : userList) {
+                    Restaurant restaurantChosen = user.getRestaurantChosen();
+                    dataViewModel.getGoogleMap().setOnMarkerClickListener(marker -> {
+                        if (restaurantChosen != null && restaurantChosen.getPosition() != null){
+                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        }
+                        for (Restaurant restaurant : restaurantList) {
+                            if (restaurant.getAddress().equals(marker.getTag())){
+                                RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurant);
+                                startActivity(new Intent(requireActivity(), RestaurantDetailsActivity.class));
+                            }
+                        }
+
+                        return false;
+                    });
+
                 }
             }
-
-            return false;
         });
+
+
     }
     private void addMarkerOnPosition(LatLng position, String title, String tag, float color){
         Marker marker = dataViewModel.getGoogleMap().addMarker(new MarkerOptions()
@@ -243,9 +269,6 @@ public class RestaurantMapViewFragment extends Fragment {
 
         if (!markerList.contains(myMarker))
             markerList.add(myMarker);
-
-        if (savedState == null)
-            dataViewModel.setMarkerList(markerList);
 
     }
     private void ZoomOnRestaurantSearched(String query){
@@ -289,10 +312,7 @@ public class RestaurantMapViewFragment extends Fragment {
                 CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
     }
     private void setOurSearchView(Menu menu){
-//        if (savedState != null)
-//            searchItem = (MenuItem) savedState.getParcelable("search");
-//        else
-            searchItem = menu.findItem(R.id.search_item);
+        MenuItem searchItem = menu.findItem(R.id.search_item);
 
         LoadingDialog dialog = LoadingDialog.getInstance(requireActivity());
 
@@ -303,7 +323,7 @@ public class RestaurantMapViewFragment extends Fragment {
         searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().getComponentName()));
         searchView.setIconifiedByDefault(false);
 
-        /*String[] SUGGESTIONS = {
+        /*//String[] SUGGESTIONS = {
                 "Pizza",
                 "Burger",
                 "Salad",
@@ -444,8 +464,8 @@ public class RestaurantMapViewFragment extends Fragment {
                     searchView.setSuggestionsAdapter(adapter);
             }
         });
-
-        /* AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+        /*//
+        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
         RectangularBounds bounds = RectangularBounds.newInstance(
                 addDistanceToPosition(devicePosition, - 1000, - 1000),
                 addDistanceToPosition(devicePosition, 1000, 1000)
@@ -498,7 +518,7 @@ public class RestaurantMapViewFragment extends Fragment {
             }
         }).addOnFailureListener(e -> {
 
-        });
+        });//
 */
     }
 
@@ -522,13 +542,13 @@ public class RestaurantMapViewFragment extends Fragment {
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /*private void addMarkerToAllRestaurants(){
+    /*// private void addMarkerToAllRestaurants(){
         LoadingDialog dialog  = LoadingDialog.getInstance(getActivity());
         dialog.startLoadingDialog();
         RestaurantNearbyBank.getInstance(getActivity(), mGoogleMap).getRestaurantNearbyList(url, restaurantList -> dialog.dismissLoadingDialog());
     }*/
 
-    /*private BitmapDescriptor getBitmapFromVectorAssets(Context context, int id){
+    /*//private BitmapDescriptor getBitmapFromVectorAssets(Context context, int id){
             Drawable vectorDrawable = ContextCompat.getDrawable(context, id);
             assert vectorDrawable != null;
             vectorDrawable.setBounds(0,0,vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
@@ -559,7 +579,7 @@ public class RestaurantMapViewFragment extends Fragment {
             return query;
         }*/
 
-    /* public static LatLng addDistanceToPosition(LatLng originPosition, long distanceOnLat, long distanceOnLng) {
+    /* //public static LatLng addDistanceToPosition(LatLng originPosition, long distanceOnLat, long distanceOnLng) {
         double latOrigin = originPosition.latitude;
         double lngOrigin = originPosition.longitude;
 

@@ -108,7 +108,7 @@ public class RestaurantMapViewFragment extends Fragment {
             if (userList != null && !userList.isEmpty()){
                 for (User user : userList) {
                     Restaurant restaurantChosen = user.getRestaurantChosen();
-                    if (restaurantChosen != null && restaurantChosen.getPosition() != null){
+                    if (restaurantChosen != null && restaurantChosen.getPosition() != null && restaurantChosen.getPosition() != null){
                         LatLng restaurantPosition = new LatLng(restaurantChosen.getPosition().getLatitude(), restaurantChosen.getPosition().getLongitude());
                         addMarkerOnPosition(restaurantPosition, restaurantChosen.getName(), restaurantChosen.getAddress(), BitmapDescriptorFactory.HUE_GREEN);
                     }

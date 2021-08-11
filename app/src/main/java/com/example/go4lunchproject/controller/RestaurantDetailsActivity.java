@@ -50,10 +50,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private TextView restaurantNameTextView;
     private TextView RestaurantFoodCountryAndRestaurantAddress;
 
-    private List<Restaurant> restaurantLikedList = new ArrayList<>();
-
     private Restaurant restaurantActuallyShowed;
-    private User user;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,19 +60,20 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         setReferences();
 
-        user = getUserConnected();
-        restaurantLikedList = getRestaurantLikedList();
+        userId = getUserConnected().getId();
         restaurantActuallyShowed = RestaurantSelectedApi.getInstance().getRestaurantSelected();
 
+        setYellowStarVisibility();
+        setChosenImageVisibility();
+
         showRestaurantImageNameAndAddress();
-        setRecyclerView();
         setCallRestaurantFunction();
         setLikeRestaurantFunction();
         setGoToRestaurantWebsiteFunction();
+
         indicateIfRestaurantIsChosenByWorkmate();
-        setYellowStarVisibility();
-        setChosenImageViewSource();
         setRestaurantChosenByWorkmateMarkerInGreen();
+        setRecyclerView();
 
     }
 
@@ -98,17 +97,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         return UserApi.getInstance().getUser();
     }
 
-    public List<Restaurant> getRestaurantLikedList() {
-        restaurantLikedList = user.getRestaurantLikedList();
-
-        if (restaurantLikedList == null)
-            restaurantLikedList = new ArrayList<>();
-
-        return restaurantLikedList;
-    }
-
     private void setYellowStarVisibility(){
-        MyFirebaseDatabase.getInstance().getUser(user.getId(), singleUser -> {
+        MyFirebaseDatabase.getInstance().getUser(userId, singleUser -> {
             List<Restaurant> list = singleUser.getRestaurantLikedList();
             boolean isFavorite = false;
             if (list != null){
@@ -127,12 +117,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
     }
 
-    private void setChosenImageViewSource(){
-        if (user.getRestaurantChosen() == restaurantActuallyShowed)
-            chosenImageView.setImageResource(R.mipmap.green_check_round);
-        else
-            chosenImageView.setImageResource(R.mipmap.red_unchecked);
-    }
+
 
     private void setRecyclerView(){
         WorkmateRecyclerViewAdapter workmateAdapter;
@@ -164,7 +149,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void saveOrRemoveActualRestaurantLikedToFirebase(List<Restaurant> firebaseList, String action){
+    private void saveOrRemoveActualRestaurantLikedToFirebase(User user, List<Restaurant> firebaseList, String action){
         String status = "";
         if (action.equals(Constants.SAVE_RESTAURANT_ACTION)){
             if (firebaseList != null){
@@ -207,7 +192,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void setLikeRestaurantFunction(){
-        MyFirebaseDatabase.getInstance().getUser(user.getId(), singleUser -> starImageView.setOnClickListener(v -> {
+        MyFirebaseDatabase.getInstance().getUser(userId, singleUser -> starImageView.setOnClickListener(v -> {
 
             int visibility = yellowStar.getVisibility();
             List<Restaurant> list = singleUser.getRestaurantLikedList();
@@ -218,7 +203,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 yellowStar.setVisibility(View.VISIBLE);
 
                 //Add actual restaurant to the liked restaurant list of the workmate connected
-                saveOrRemoveActualRestaurantLikedToFirebase(list, Constants.SAVE_RESTAURANT_ACTION);
+                saveOrRemoveActualRestaurantLikedToFirebase(singleUser, list, Constants.SAVE_RESTAURANT_ACTION);
             }
             else {
                 // If actual restaurant IS IN the liked list of the workmate connected
@@ -226,7 +211,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 yellowStar.setVisibility(View.GONE);
 
                 //Remove actual restaurant to the liked restaurant list of the workmate connected
-                saveOrRemoveActualRestaurantLikedToFirebase(list, Constants.REMOVE_RESTAURANT_ACTION);
+                saveOrRemoveActualRestaurantLikedToFirebase(singleUser, list, Constants.REMOVE_RESTAURANT_ACTION);
             }
         }));
     }
@@ -241,27 +226,43 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         });
     }
 
+    private void setChosenImageVisibility(){
+        MyFirebaseDatabase.getInstance().getUser(userId, singleUser -> {
+            Restaurant restaurantChosenFromFirebase = singleUser.getRestaurantChosen();
+            if (restaurantChosenFromFirebase != null){
+                if (restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress()))
+                    chosenImageView.setImageResource(R.mipmap.green_check_round);
+                else
+                    chosenImageView.setImageResource(R.mipmap.red_unchecked);
+            }
+            else
+                chosenImageView.setImageResource(R.mipmap.red_unchecked);
+        });
+    }
+
     private void indicateIfRestaurantIsChosenByWorkmate(){
         //If workmate connected has chosen actual restaurant, set fab visibility to VISIBLE
-        chosenImageView.setOnClickListener(v -> {
-            String status;
-            Restaurant restaurantTemp;
+        MyFirebaseDatabase.getInstance().getUser(userId, singleUser -> chosenImageView.setOnClickListener(view -> {
+            Restaurant restoChosenFromFirebase = singleUser.getRestaurantChosen();
 
-            if (user.getRestaurantChosen() == restaurantActuallyShowed){
-                chosenImageView.setImageResource(R.mipmap.red_unchecked);
-                restaurantTemp = null;
-                status = " not chosen anymore.";
+            if (restoChosenFromFirebase != null){
+                if (!restoChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
+                    singleUser.setRestaurantChosen(restaurantActuallyShowed);
+                    chosenImageView.setImageResource(R.mipmap.green_check_round);
+                }
+                else{
+                    singleUser.setRestaurantChosen(null);
+                    chosenImageView.setImageResource(R.mipmap.red_unchecked);
+                }
             }
             else{
-                restaurantTemp = restaurantActuallyShowed;
+                singleUser.setRestaurantChosen(restaurantActuallyShowed);
                 chosenImageView.setImageResource(R.mipmap.green_check_round);
-                status = " chosen.";
             }
 
-            user.setRestaurantChosen(restaurantTemp);
-            Toast.makeText(RestaurantDetailsActivity.this, restaurantActuallyShowed.getName() + status, Toast.LENGTH_SHORT).show();
-            //TODO : update user to firebase
-        });
+            UserApi.getInstance().setUser(singleUser);
+            MyFirebaseDatabase.getInstance().updateUser(singleUser);
+        }));
     }
 
 

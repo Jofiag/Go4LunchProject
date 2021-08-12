@@ -68,9 +68,12 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
             holder.workmateNameTextView.setVisibility(View.GONE);
             holder.hasNotDecidedTextView.setText(String.format("%s%s", workmate.getName(), Constants.HAS_NOT_DECIDED_YET));
         }
-        Uri uri = Uri.parse(workmate.getImageUri());
 
-        holder.circleImageView.setImageURI(uri);
+        if (workmate.getImageUri() != null) {
+            Uri uri = Uri.parse(workmate.getImageUri());
+            holder.circleImageView.setImageURI(uri);
+        }
+
 
         holder.itemView.setOnClickListener(v -> mCallback.onWorkmateSelected(workmate));
     }

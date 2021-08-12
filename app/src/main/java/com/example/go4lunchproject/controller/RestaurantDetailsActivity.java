@@ -72,7 +72,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         setGoToRestaurantWebsiteFunction();
 
         indicateIfRestaurantIsChosenByWorkmate();
-        setRestaurantChosenByWorkmateMarkerInGreen();
         setRecyclerView();
 
     }
@@ -81,10 +80,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         this.finish();
-    }
-
-    private void setRestaurantChosenByWorkmateMarkerInGreen() {
-        //TODO : Set marker of restaurant chosen by workmate in green
     }
 
     private void setReferences() {

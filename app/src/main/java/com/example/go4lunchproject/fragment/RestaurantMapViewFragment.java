@@ -34,13 +34,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.controller.RestaurantDetailsActivity;
-import com.example.go4lunchproject.data.viewmodel.DataViewModel;
-import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.api.LocationApi;
-import com.example.go4lunchproject.data.googleplace.RestaurantListManager;
 import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
-import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
+import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
+import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
+import com.example.go4lunchproject.data.viewmodel.DataViewModel;
 import com.example.go4lunchproject.model.MyMarker;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
@@ -64,7 +63,6 @@ import java.util.Objects;
 public class RestaurantMapViewFragment extends Fragment {
 
     private String url;
-    private LatLng devicePosition;
     private CursorAdapter adapter;
     private String[] columnPlaces;
     private SearchView searchView;
@@ -95,12 +93,9 @@ public class RestaurantMapViewFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("ORDER", "onCreate: ");
-//        dataViewModel = new ViewModelProvider.AndroidViewModelFactory(requireActivity().getApplication()).create(DataViewModel.class);
-        dataViewModel = new ViewModelProvider(this).get(DataViewModel.class);
 
-        setDevicePositionAndListUrl();
+        setDataViewModel();
         showRestaurantsAndSetOnMarkerClickListener(savedInstanceState);
-
     }
 
     private void addGreenMarkerOnRestaurantChosenByAllWorkmates(){
@@ -120,13 +115,12 @@ public class RestaurantMapViewFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        dataViewModel.getListManager().registerBroadcastReceiverFromManager(Constants.SEND_LIST_ACTION);
+        dataViewModel.registerBroadcastReceiver();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-//        dataViewModel.getListManager().unregisterBroadcastReceiverFromManager();
     }
 
     @Nullable
@@ -162,7 +156,11 @@ public class RestaurantMapViewFragment extends Fragment {
         Log.d("ORDER", "onResume: ");
     }
 
-
+    private void setDataViewModel(){
+        //dataViewModel = new ViewModelProvider.AndroidViewModelFactory(requireActivity().getApplication()).create(DataViewModel.class);
+        dataViewModel = new ViewModelProvider(this).get(DataViewModel.class);
+        dataViewModel.setContext(requireContext());
+    }
     private void setMapFragment(){
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_fragment);
         if (mapFragment != null)
@@ -173,28 +171,16 @@ public class RestaurantMapViewFragment extends Fragment {
         dataViewModel.setGoogleMap(googleMap);
     }
 
-    private void setDevicePositionAndListUrl(){
-        if (dataViewModel.getUrl() != null)
-            url = dataViewModel.getUrl();
-        else{
-            devicePosition = LocationApi.getInstance(getContext()).getPositionFromLocation();
-            url = RestaurantListUrlApi.getInstance(getContext()).getUrlThroughDeviceLocation();
-            dataViewModel.setUrl(url);
-        }
-    }
 
     private void showRestaurantsAndSetOnMarkerClickListener(Bundle state){
-//        listManager = RestaurantListManager.getInstance(requireContext());
-        dataViewModel.setListManager(RestaurantListManager.getInstance(requireContext()));
-        dataViewModel.getListManager().startGettingListInBackground();
-        dataViewModel.getListManager().receiveRestaurantList(restaurantList -> {
+        dataViewModel.startGettingRestaurantNearbyList(restaurantList -> {
             if (dataViewModel.getGoogleMap() != null){
                 addMarkerOnAllRestaurantsAndDevicePosition(restaurantList, state);
                 addGreenMarkerOnRestaurantChosenByAllWorkmates();
                 startRestaurantDetailsActivityWhenMarkerIsClicked(restaurantList);
             }
         });
-        dataViewModel.getListManager().stopJobWhenWeGetAllTheRestaurantsFromDb();
+        dataViewModel.stopGettingRestaurantNearbyList();
     }
     private void addMarkerOnAllRestaurantsAndDevicePosition(@org.jetbrains.annotations.NotNull ArrayList<Restaurant> restaurantList, Bundle state){
         dataViewModel.getGoogleMap().clear();
@@ -223,11 +209,11 @@ public class RestaurantMapViewFragment extends Fragment {
 
             }
 
-            addMarkerOnPosition(devicePosition, LocationApi.getInstance(requireContext()).getStreetAddressFromPositions(), Constants.DEVICE_POSITION, BitmapDescriptorFactory.HUE_RED);
+            addMarkerOnPosition(dataViewModel.getDevicePosition(), LocationApi.getInstance(requireContext()).getStreetAddressFromPositions(), Constants.DEVICE_POSITION, BitmapDescriptorFactory.HUE_RED);
         }
-        dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(devicePosition, 12));
+        dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(dataViewModel.getDevicePosition(), 12));
         dataViewModel.getGoogleMap().getUiSettings().setMyLocationButtonEnabled(false);
-        locationButton.setOnClickListener(v -> dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(devicePosition, 15)));
+        locationButton.setOnClickListener(v -> dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(dataViewModel.getDevicePosition(), 15)));
     }
     private void startRestaurantDetailsActivityWhenMarkerIsClicked(@org.jetbrains.annotations.NotNull ArrayList<Restaurant> restaurantList){
         //  Making sure the marker icon is still green when user clicks on a marker of a restaurant chosen by any workmate

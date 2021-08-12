@@ -1,65 +1,81 @@
 package com.example.go4lunchproject.data.viewmodel;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.ViewModel;
 
+import com.example.go4lunchproject.data.api.LocationApi;
+import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
 import com.example.go4lunchproject.data.googleplace.RestaurantListManager;
 import com.example.go4lunchproject.model.MyMarker;
+import com.example.go4lunchproject.model.Restaurant;
+import com.example.go4lunchproject.util.Constants;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
+
+@SuppressLint("StaticFieldLeak")
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class DataViewModel extends ViewModel {
+
+    public interface OnGettingRestaurantNearbyList{
+        void gettingRestaurantNearbyList(ArrayList<Restaurant> restaurantList);
+    }
     private String url;
+    private Context context;
     private GoogleMap googleMap;
+    private LatLng devicePosition;
     private RestaurantListManager listManager;
-    private boolean isSet = false;
-    private ArrayList<MyMarker> markerList = new ArrayList<>();
 
 
+
+    public void startGettingRestaurantNearbyList(OnGettingRestaurantNearbyList callback){
+        listManager = RestaurantListManager.getInstance(context);
+        devicePosition = LocationApi.getInstance(context).getPositionFromLocation();
+        url = RestaurantListUrlApi.getInstance(context).getUrlThroughDeviceLocation();
+
+        listManager.startGettingListInBackground();
+        listManager.receiveRestaurantList(restaurantList -> {
+            if (callback != null)
+                callback.gettingRestaurantNearbyList(restaurantList);
+        });
+    }
 
     public String getUrl() {
-        isSet = true;
         return url;
     }
 
-    public void setUrl(String url) {
-        isSet = true;
-        this.url = url;
+    public void registerBroadcastReceiver(){
+        listManager.registerBroadcastReceiverFromManager(Constants.SEND_LIST_ACTION);
+    }
+
+    public void unregisterBroadcastReceiver(){
+        listManager.unregisterBroadcastReceiverFromManager();
+    }
+
+    public void stopGettingRestaurantNearbyList(){
+        if (listManager != null)
+            listManager.stopJobWhenWeGetAllTheRestaurantsFromDb();
     }
 
     public GoogleMap getGoogleMap() {
-        isSet = true;
         return googleMap;
     }
 
+    public LatLng getDevicePosition() {
+        return devicePosition;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
     public void setGoogleMap(GoogleMap googleMap) {
-        isSet = true;
         this.googleMap = googleMap;
-    }
-
-    public RestaurantListManager getListManager() {
-        isSet = true;
-        return listManager;
-    }
-
-    public void setListManager(RestaurantListManager listManager) {
-        isSet = true;
-        this.listManager = listManager;
-    }
-
-    public boolean isSet() {
-        return isSet;
-    }
-
-    public void setSet(boolean set) {
-        isSet = set;
-    }
-
-    public ArrayList<MyMarker> getMarkerList() {
-        return markerList;
-    }
-
-    public void setMarkerList(ArrayList<MyMarker> markerList) {
-        this.markerList = markerList;
     }
 }

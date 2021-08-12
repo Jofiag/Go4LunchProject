@@ -24,6 +24,7 @@ import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.model.MyOpeningHours;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
+import com.example.go4lunchproject.util.UtilMethods;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
@@ -42,7 +43,7 @@ implements Filterable {
 
     public RestaurantRecyclerViewAdapter(Activity activity, List<Restaurant> restaurantList) {
         this.activity = activity;
-        this.restaurantList = restaurantList;
+        this.restaurantList = UtilMethods.removeRedundantRestaurant((ArrayList<Restaurant>) restaurantList);
     }
 
     @NonNull

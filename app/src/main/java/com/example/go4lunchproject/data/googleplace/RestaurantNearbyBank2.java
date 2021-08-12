@@ -20,6 +20,7 @@ import com.example.go4lunchproject.model.MyOpeningHours;
 import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
+import com.example.go4lunchproject.util.UtilMethods;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.LocalTime;
@@ -124,7 +125,7 @@ public class RestaurantNearbyBank2 {
                         mRestaurantList.add(restaurant);
 
                     if (callback != null)
-                        callback.onListReady(mRestaurantList);
+                        callback.onListReady(UtilMethods.removeRedundantRestaurant(mRestaurantList));
                 });
 
     }

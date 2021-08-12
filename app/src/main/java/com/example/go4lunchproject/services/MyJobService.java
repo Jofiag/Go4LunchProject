@@ -11,6 +11,7 @@ import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
+import com.example.go4lunchproject.util.UtilMethods;
 
 import java.util.ArrayList;
 
@@ -60,7 +61,7 @@ public class MyJobService extends android.app.job.JobService {
 
     private void sendListToTheMainThread(ArrayList<Restaurant> restaurantArrayList){
         Intent listIntent = new Intent(Constants.SEND_LIST_ACTION);
-        listIntent.putParcelableArrayListExtra(Constants.LIST, restaurantArrayList);
+        listIntent.putParcelableArrayListExtra(Constants.LIST, UtilMethods.removeRedundantRestaurant(restaurantArrayList));
 
         //Sending using BroadcastReceiver
         sendBroadcast(listIntent);

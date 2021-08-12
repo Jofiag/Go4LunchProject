@@ -5,22 +5,39 @@ import android.util.Log;
 import com.example.go4lunchproject.model.Restaurant;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class UtilMethods {
     public static ArrayList<Restaurant> removeRedundantRestaurant(ArrayList<Restaurant> list){
-        List<Integer> indexList = new ArrayList<>();
+        ArrayList<Restaurant> newList = new ArrayList<>();
 
-        Set<Restaurant> set = new HashSet<>(list);
+        for (Restaurant restaurant : list) {
+            if (!newList.contains(restaurant)) {
+                newList.add(restaurant);
+            }
+        }
+        for (Restaurant restaurant : newList)
+            Log.d("REDUNDANT", "removeRedundantRestaurant: " + restaurant.getName() + "\n");
+
+        Log.d("REDUNDANT", "removeRedundantRestaurant: \n\n\n");
+
+
+        return newList;
+
+        ///////////////////////////////////////////
+        /*Set<Restaurant> set = new HashSet<>(list);
         list.clear();
         list.addAll(set);
 
-        Log.d("REDUNDANT", "removeRedundantRestaurant: " + list);
-        //return list;
+        for (Restaurant restaurant : list) {
+            Log.d("REDUNDANT", "removeRedundantRestaurant: " + restaurant.getName());
+        }
+        return list;
+        */
 
-        /*for (int i = 0; i < list.size(); i++) {
+        /////////////////////////////////////
+        /*
+        List<Integer> indexList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
             Restaurant restaurantC = list.get(i);
 
             for (int y = 0; y < list.size(); y++) {
@@ -39,8 +56,8 @@ public class UtilMethods {
                     list.remove(restaurantR);
                 }
             }
-        }*/
-
-        return list;
+        }
+        return list
+        */
     }
 }

@@ -33,6 +33,7 @@ public class RestaurantListManager{
     private static RestaurantListManager INSTANCE;
     private ArrayList<Restaurant> restaurantArrayList = new ArrayList<>();
     private final JobScheduler jobScheduler;
+    private JobInfo jobInfo;
 
     public RestaurantListManager(Context mContext) {
         this.mContext = mContext;
@@ -58,33 +59,35 @@ public class RestaurantListManager{
                     if (callback != null)
                         callback.onResponse(restaurantArrayList);
 
-                    stopJobWhenWeGetAllTheRestaurantsFromDb();
+//                    stopJobWhenWeGetAllTheRestaurantsFromDb();
                 }
             }
         };
     }
 
-    private void startGettingListInBackground(){
-//        jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        JobInfo jobInfo = new JobInfo.Builder(Constants.JOB_ID, new ComponentName(mContext.getApplicationContext(), MyJobService.class))
+    private void setJobInfo(){
+        //        jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobInfo = new JobInfo.Builder(Constants.JOB_ID, new ComponentName(mContext.getApplicationContext(), MyJobService.class))
 //                .setMinimumLatency(0)
 //                .setRequiresCharging(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED) //The action will stop if there is no more internet
 //                .setPersisted(true) //Set if the action will continue to be executed even when the device is rebooting
 //                .setPeriodic(15 * 60 * 1000)  //Set the interval of time that the action will be executed, here it's every 15 minutes
+                .setMinimumLatency(1)
                 .build();
+    }
 
-
-
+    public void startGettingListInBackground(){
+        setJobInfo();
         jobScheduler.schedule(jobInfo);
     }
 
-    private void stopJobWhenWeGetAllTheRestaurantsFromDb(){
+    public void stopJobWhenWeGetAllTheRestaurantsFromDb(){
         String url = RestaurantListUrlApi.getInstance(mContext).getUrlThroughDeviceLocation();
         RestaurantNearbyBank2.getInstance(mContext).getRestaurantList(url, restaurantList -> {
                     if (restaurantArrayList.size() == restaurantList.size())
                         jobScheduler.cancelAll();
-                });
+        });
     }
 
     public void registerBroadcastReceiverFromManager(String action){
@@ -93,5 +96,9 @@ public class RestaurantListManager{
 
     public void unregisterBroadcastReceiverFromManager(){
         mContext.unregisterReceiver(broadcastReceiver);
+    }
+
+    public JobScheduler getJobScheduler() {
+        return jobScheduler;
     }
 }

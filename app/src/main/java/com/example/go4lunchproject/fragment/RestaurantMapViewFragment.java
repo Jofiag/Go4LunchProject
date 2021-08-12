@@ -186,6 +186,7 @@ public class RestaurantMapViewFragment extends Fragment {
     private void showRestaurantsAndSetOnMarkerClickListener(Bundle state){
 //        listManager = RestaurantListManager.getInstance(requireContext());
         dataViewModel.setListManager(RestaurantListManager.getInstance(requireContext()));
+        dataViewModel.getListManager().startGettingListInBackground();
         dataViewModel.getListManager().receiveRestaurantList(restaurantList -> {
             if (dataViewModel.getGoogleMap() != null){
                 addMarkerOnAllRestaurantsAndDevicePosition(restaurantList, state);
@@ -193,6 +194,7 @@ public class RestaurantMapViewFragment extends Fragment {
                 startRestaurantDetailsActivityWhenMarkerIsClicked(restaurantList);
             }
         });
+        dataViewModel.getListManager().stopJobWhenWeGetAllTheRestaurantsFromDb();
     }
     private void addMarkerOnAllRestaurantsAndDevicePosition(@org.jetbrains.annotations.NotNull ArrayList<Restaurant> restaurantList, Bundle state){
         dataViewModel.getGoogleMap().clear();

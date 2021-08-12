@@ -22,11 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
+import com.example.go4lunchproject.data.api.WorkmateApi;
 import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
+import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
 import com.squareup.picasso.Picasso;
 
@@ -241,29 +243,42 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         });
     }
 
+    private void updateRestaurantWorkmateList(Workmate workmate){
+        List<Workmate> workmateList = restaurantActuallyShowed.getWorkmateList();
+
+        if (workmateList == null)
+            workmateList = new ArrayList<>();
+
+        workmateList.add(workmate);
+
+        restaurantActuallyShowed.setWorkmateList(workmateList);
+    }
     private void indicateIfRestaurantIsChosenByWorkmate(){
         //If workmate connected has chosen actual restaurant, set fab visibility to VISIBLE
-        MyFirebaseDatabase.getInstance().getUser(userId, singleUser -> chosenImageView.setOnClickListener(view -> {
-            Restaurant restoChosenFromFirebase = singleUser.getRestaurantChosen();
+        MyFirebaseDatabase.getInstance().getUser(userId, singleUser ->
+                chosenImageView.setOnClickListener(view -> {
+                    Restaurant restoChosenFromFirebase = singleUser.getRestaurantChosen();
 
-            if (restoChosenFromFirebase != null){
-                if (!restoChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
-                    singleUser.setRestaurantChosen(restaurantActuallyShowed);
-                    chosenImageView.setImageResource(R.mipmap.green_check_round);
-                }
-                else{
-                    singleUser.setRestaurantChosen(null);
-                    chosenImageView.setImageResource(R.mipmap.red_unchecked);
-                }
-            }
-            else{
-                singleUser.setRestaurantChosen(restaurantActuallyShowed);
-                chosenImageView.setImageResource(R.mipmap.green_check_round);
-            }
+                    if (restoChosenFromFirebase != null){
+                        if (!restoChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
+                            updateRestaurantWorkmateList(WorkmateApi.getInstance().getWorkmate());
+                            singleUser.setRestaurantChosen(restaurantActuallyShowed);
+                            chosenImageView.setImageResource(R.mipmap.green_check_round);
+                        }
+                        else{
+                            singleUser.setRestaurantChosen(null);
+                            chosenImageView.setImageResource(R.mipmap.red_unchecked);
+                        }
+                    }
+                    else{
+                        updateRestaurantWorkmateList(WorkmateApi.getInstance().getWorkmate());
+                        singleUser.setRestaurantChosen(restaurantActuallyShowed);
+                        chosenImageView.setImageResource(R.mipmap.green_check_round);
+                    }
 
-            UserApi.getInstance().setUser(singleUser);
-            MyFirebaseDatabase.getInstance().updateUser(singleUser);
-        }));
+                    UserApi.getInstance().setUser(singleUser);
+                    MyFirebaseDatabase.getInstance().updateUser(singleUser);
+                }));
     }
 
 

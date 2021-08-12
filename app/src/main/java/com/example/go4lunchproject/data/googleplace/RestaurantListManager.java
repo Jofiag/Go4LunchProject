@@ -13,6 +13,7 @@ import android.os.Bundle;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.services.MyJobService;
 import com.example.go4lunchproject.util.Constants;
@@ -20,7 +21,7 @@ import com.example.go4lunchproject.util.Constants;
 import java.util.ArrayList;
 
 @SuppressLint("StaticFieldLeak")
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class RestaurantListManager{
 
     public interface OnRestaurantListReceive{
@@ -57,6 +58,7 @@ public class RestaurantListManager{
                     if (callback != null)
                         callback.onResponse(restaurantArrayList);
 
+                    stopJobWhenWeGetAllTheRestaurantsFromDb();
                 }
             }
         };
@@ -75,6 +77,14 @@ public class RestaurantListManager{
 
 
         jobScheduler.schedule(jobInfo);
+    }
+
+    private void stopJobWhenWeGetAllTheRestaurantsFromDb(){
+        String url = RestaurantListUrlApi.getInstance(mContext).getUrlThroughDeviceLocation();
+        RestaurantNearbyBank2.getInstance(mContext).getRestaurantList(url, restaurantList -> {
+                    if (restaurantArrayList.size() == restaurantList.size())
+                        jobScheduler.cancelAll();
+                });
     }
 
     public void registerBroadcastReceiverFromManager(String action){

@@ -77,6 +77,12 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+    }
+
     private void setRestaurantChosenByWorkmateMarkerInGreen() {
         //TODO : Set marker of restaurant chosen by workmate in green
     }

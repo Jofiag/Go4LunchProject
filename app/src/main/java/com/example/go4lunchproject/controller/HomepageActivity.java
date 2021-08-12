@@ -138,10 +138,12 @@ public class HomepageActivity extends AppCompatActivity
         if (checkSelfPermission(FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 100, locationListener);
             deviceLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            MyPositionObject positionObject = new MyPositionObject(deviceLocation.getLatitude(), deviceLocation.getLongitude());
-            LocationApi.getInstance(this).setPosition(positionObject);
-            if (deviceLocation != null)
+
+            if (deviceLocation != null) {
+                MyPositionObject positionObject = new MyPositionObject(deviceLocation.getLatitude(), deviceLocation.getLongitude());
+                LocationApi.getInstance(this).setPosition(positionObject);
                 addFragments();
+            }
             else
                 Toast.makeText(this, "Location unavailable", Toast.LENGTH_SHORT).show();
 

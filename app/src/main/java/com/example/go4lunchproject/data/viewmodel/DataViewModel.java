@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModel;
 import com.example.go4lunchproject.data.api.LocationApi;
 import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
 import com.example.go4lunchproject.data.googleplace.RestaurantListManager;
-import com.example.go4lunchproject.model.MyMarker;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
 import com.google.android.gms.maps.GoogleMap;

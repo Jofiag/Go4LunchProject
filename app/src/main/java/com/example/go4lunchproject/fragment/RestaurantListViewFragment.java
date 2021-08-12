@@ -27,9 +27,12 @@ import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
+import com.example.go4lunchproject.util.UtilMethods;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class RestaurantListViewFragment extends Fragment{
@@ -70,9 +73,9 @@ public class RestaurantListViewFragment extends Fragment{
         RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(url, restaurantList -> {
             if (restaurantList.isEmpty())
                 Toast.makeText(activity, "No restaurant found !!!", Toast.LENGTH_SHORT).show();
-            restaurantAdapter = new RestaurantRecyclerViewAdapter(activity, removeRedundantRestaurant(restaurantList));
+            restaurantAdapter = new RestaurantRecyclerViewAdapter(activity, UtilMethods.removeRedundantRestaurant(restaurantList));
             recyclerView.setAdapter(restaurantAdapter);
-            restaurantAdapter.notifyDataSetChanged();
+            //restaurantAdapter.notifyDataSetChanged();
         });
 
     }
@@ -139,33 +142,7 @@ public class RestaurantListViewFragment extends Fragment{
         });*/
     }
 
-    private ArrayList<Restaurant> removeRedundantRestaurant(ArrayList<Restaurant> list){
-        List<Integer> indexList = new ArrayList<>();
 
-
-        for (int i = 0; i < list.size(); i++) {
-            Restaurant restaurantC = list.get(i);
-
-            for (int y = 0; y < list.size(); y++) {
-                Restaurant restaurantO = list.get(i);
-                if (i != y){
-                    if (restaurantC == restaurantO)
-                        indexList.add(y);
-                }
-            }
-        }
-
-        if (!indexList.isEmpty()) {
-            for (Integer integer : indexList) {
-                if (integer < list.size()){
-                    Restaurant restaurantR = list.get(integer);
-                    list.remove(restaurantR);
-                }
-            }
-        }
-
-        return list;
-    }
 
     /*private void initializePlaces(){
         if (!Places.isInitialized())

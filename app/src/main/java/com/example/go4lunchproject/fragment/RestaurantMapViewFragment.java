@@ -35,7 +35,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.controller.RestaurantDetailsActivity;
 import com.example.go4lunchproject.data.api.LocationApi;
-import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
@@ -62,7 +61,6 @@ import java.util.Objects;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class RestaurantMapViewFragment extends Fragment {
 
-    private String url;
     private CursorAdapter adapter;
     private String[] columnPlaces;
     private SearchView searchView;
@@ -121,6 +119,8 @@ public class RestaurantMapViewFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        dataViewModel.unregisterBroadcastReceiver();
+        dataViewModel.stopGettingRestaurantNearbyList();
     }
 
     @Nullable
@@ -260,8 +260,6 @@ public class RestaurantMapViewFragment extends Fragment {
     }
     private void ZoomOnRestaurantSearched(String query){
         if (dataViewModel.getGoogleMap() != null){
-            url = RestaurantListUrlApi.getInstance(getContext()).getUrlThroughDeviceLocation();
-
             RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(dataViewModel.getUrl(), restaurantList -> {
                 for (Restaurant restaurant : restaurantList) {
                     LatLng restaurantPosition = new LatLng(restaurant.getPosition().getLatitude(), restaurant.getPosition().getLongitude());
@@ -425,7 +423,8 @@ public class RestaurantMapViewFragment extends Fragment {
         return result;
     }
     private void showSuggestions(String query){
-        RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(url, restaurantList -> {
+
+        RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(dataViewModel.getUrl(), restaurantList -> {
             if (columnPlaces != null && adapter != null && query != null) {
                 //When we've got all the restaurant
                 if (!restaurantList.isEmpty()) {

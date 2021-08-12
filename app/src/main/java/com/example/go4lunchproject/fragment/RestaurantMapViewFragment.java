@@ -230,6 +230,7 @@ public class RestaurantMapViewFragment extends Fragment {
                             if (restaurant.getAddress().equals(marker.getTag())){
                                 RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurant);
                                 startActivity(new Intent(requireActivity(), RestaurantDetailsActivity.class));
+                                break;
                             }
                         }
 

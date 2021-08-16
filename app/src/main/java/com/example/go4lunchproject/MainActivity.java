@@ -11,7 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.go4lunchproject.controller.HomepageActivity;
-import com.example.go4lunchproject.data.api.WorkmateApi;
+import com.example.go4lunchproject.data.api.ActualWorkmateApi;
 import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.User;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             user.setName(firebaseUser.getDisplayName());
             user.setImageUri(Objects.requireNonNull(firebaseUser.getPhotoUrl()).toString());
             UserApi.getInstance().setUser(user);
-            WorkmateApi.getInstance().setWorkmate(setWorkmateCorresponding(user));
+            ActualWorkmateApi.getInstance().setWorkmate(setWorkmateCorresponding(user));
             MyFirebaseDatabase.getInstance().saveUser(UserApi.getInstance().getUser());
         }
     }

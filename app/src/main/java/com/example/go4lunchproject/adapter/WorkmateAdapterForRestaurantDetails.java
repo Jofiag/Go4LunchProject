@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.model.Workmate;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -40,7 +41,11 @@ public class WorkmateAdapterForRestaurantDetails extends RecyclerView.Adapter<Wo
 
         if (workmate.getImageUri() != null) {
             Uri uri = Uri.parse(workmate.getImageUri());
-            holder.circleImageView.setImageURI(uri);
+            Picasso.get().load(uri)
+                    .placeholder(android.R.drawable.stat_sys_download)
+                    .error(android.R.drawable.stat_notify_error)
+//                    .resize(154, 154)
+                    .into(holder.circleImageView);
         }
     }
 

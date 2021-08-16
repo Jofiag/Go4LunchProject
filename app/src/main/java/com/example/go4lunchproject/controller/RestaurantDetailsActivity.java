@@ -21,11 +21,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchproject.R;
-import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
-import com.example.go4lunchproject.data.api.WorkmateApi;
-import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
+import com.example.go4lunchproject.adapter.WorkmateAdapterForRestaurantDetails;
+import com.example.go4lunchproject.data.api.ActualWorkmateApi;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.api.UserApi;
+import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
@@ -54,6 +54,9 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
     private Restaurant restaurantActuallyShowed;
     private String userId;
+
+    private WorkmateAdapterForRestaurantDetails adapter;
+    private List<Workmate> workmateList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,15 +126,23 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
     private void setRecyclerView(){
-        WorkmateRecyclerViewAdapter workmateAdapter;
-        if (restaurantActuallyShowed != null)
-            workmateAdapter = new WorkmateRecyclerViewAdapter(restaurantActuallyShowed.getWorkmateList());
-        else
-            workmateAdapter = new WorkmateRecyclerViewAdapter(new ArrayList<>());
+        MyFirebaseDatabase.getInstance().getAllUsers(userList -> {
+            for (User user : userList) {
+                Restaurant restaurantChosenFromFirebase = user.getRestaurantChosen();
+                if (restaurantChosenFromFirebase != null && restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
+                    workmateList = user.getRestaurantChosen().getWorkmateList();
 
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantDetailsActivity.this));
-        recyclerView.setAdapter(workmateAdapter);
+                    if (workmateList != null)
+                        adapter = new WorkmateAdapterForRestaurantDetails(workmateList);
+                    else
+                        adapter = new WorkmateAdapterForRestaurantDetails(new ArrayList<>());
+
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantDetailsActivity.this));
+                    recyclerView.setAdapter(adapter);
+                }
+            }
+        });
     }
 
     private void showRestaurantImageNameAndAddress(){
@@ -243,13 +254,18 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void updateRestaurantWorkmateList(Workmate workmate){
+    private void updateRestaurantWorkmateList(Workmate workmate, boolean removeWorkmate){
         List<Workmate> workmateList = restaurantActuallyShowed.getWorkmateList();
 
         if (workmateList == null)
             workmateList = new ArrayList<>();
 
-        workmateList.add(workmate);
+        if (removeWorkmate)
+            if (workmateList.contains(workmate))
+                workmateList.remove(workmate);
+        else
+            if (!workmateList.contains(workmate))
+                workmateList.add(workmate);
 
         restaurantActuallyShowed.setWorkmateList(workmateList);
     }
@@ -261,17 +277,18 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
                     if (restoChosenFromFirebase != null){
                         if (!restoChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
-                            updateRestaurantWorkmateList(WorkmateApi.getInstance().getWorkmate());
+                            updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), false);
                             singleUser.setRestaurantChosen(restaurantActuallyShowed);
                             chosenImageView.setImageResource(R.mipmap.green_check_round);
                         }
                         else{
+                            updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), true);
                             singleUser.setRestaurantChosen(null);
                             chosenImageView.setImageResource(R.mipmap.red_unchecked);
                         }
                     }
                     else{
-                        updateRestaurantWorkmateList(WorkmateApi.getInstance().getWorkmate());
+                        updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), false);
                         singleUser.setRestaurantChosen(restaurantActuallyShowed);
                         chosenImageView.setImageResource(R.mipmap.green_check_round);
                     }

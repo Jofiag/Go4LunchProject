@@ -2,13 +2,13 @@ package com.example.go4lunchproject.data.api;
 
 import com.example.go4lunchproject.model.Workmate;
 
-public class WorkmateApi {
+public class ActualWorkmateApi {
     private Workmate workmate;
-    private static WorkmateApi INSTANCE;
+    private static ActualWorkmateApi INSTANCE;
 
-    public static WorkmateApi getInstance(){
+    public static ActualWorkmateApi getInstance(){
         if (INSTANCE == null)
-            INSTANCE = new WorkmateApi();
+            INSTANCE = new ActualWorkmateApi();
         
         return INSTANCE;
     }

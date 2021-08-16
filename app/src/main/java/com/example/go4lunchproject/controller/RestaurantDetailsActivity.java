@@ -56,7 +56,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private String userId;
 
     private WorkmateAdapterForRestaurantDetails adapter;
-    private List<Workmate> workmateList;
+    private List<Workmate> workmateList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,18 +130,17 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             for (User user : userList) {
                 Restaurant restaurantChosenFromFirebase = user.getRestaurantChosen();
                 if (restaurantChosenFromFirebase != null && restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
-                    workmateList = user.getRestaurantChosen().getWorkmateList();
-
-                    if (workmateList != null)
-                        adapter = new WorkmateAdapterForRestaurantDetails(workmateList);
-                    else
-                        adapter = new WorkmateAdapterForRestaurantDetails(new ArrayList<>());
-
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantDetailsActivity.this));
-                    recyclerView.setAdapter(adapter);
+                    for (Workmate workmate : restaurantChosenFromFirebase.getWorkmateList()) {
+                        if (!workmateList.contains(workmate))
+                            workmateList.add(workmate);
+                    }
                 }
             }
+
+            adapter = new WorkmateAdapterForRestaurantDetails(workmateList);
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantDetailsActivity.this));
+            recyclerView.setAdapter(adapter);
         });
     }
 
@@ -255,7 +254,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void updateRestaurantWorkmateList(Workmate workmate, boolean removeWorkmate){
-        List<Workmate> workmateList = restaurantActuallyShowed.getWorkmateList();
 
         if (workmateList == null)
             workmateList = new ArrayList<>();

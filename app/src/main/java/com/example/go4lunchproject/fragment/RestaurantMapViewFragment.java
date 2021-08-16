@@ -41,6 +41,7 @@ import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.data.viewmodel.DataViewModel;
 import com.example.go4lunchproject.model.MyMarker;
+import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.util.Constants;
@@ -114,15 +115,25 @@ public class RestaurantMapViewFragment extends Fragment {
                     }
 
                     //If actually there is no restaurant chosen, we check if there were one, and if there were then we remove the green marker and add an orange one.
-                    else if (user.getName().equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getDisplayName()) && restaurantChosen == null){
+                    if (user.getName().equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getDisplayName()) && restaurantChosen == null){
                         for (MyMarker myMarker : markerList) {
                             if (Objects.equals(myMarker.getMarker().getSnippet(), "green")) {
+                                if (myMarker.getMarker().getTag() != null) {
+                                    String tag = myMarker.getMarker().getTag().toString();
+                                    addMarkerOnPosition(myMarker.getMarker().getPosition(),
+                                            myMarker.getMarker().getTitle(),
+                                            tag,
+                                            BitmapDescriptorFactory.HUE_ORANGE,
+                                            "orange");
+                                }
+                                else {
+                                    addMarkerOnPosition(myMarker.getMarker().getPosition(),
+                                            myMarker.getMarker().getTitle(),
+                                            null,
+                                            BitmapDescriptorFactory.HUE_ORANGE,
+                                            "orange");
+                                }
                                 myMarker.getMarker().remove();
-                                addMarkerOnPosition(myMarker.getMarker().getPosition(),
-                                        myMarker.getMarker().getTitle(),
-                                        Objects.requireNonNull(myMarker.getMarker().getTag()).toString(),
-                                        BitmapDescriptorFactory.HUE_ORANGE, "orange");
-
                                 markerList.remove(myMarker);
                                 break;
                             }
@@ -142,7 +153,7 @@ public class RestaurantMapViewFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        dataViewModel.unregisterBroadcastReceiver();
+//        dataViewModel.unregisterBroadcastReceiver();
         dataViewModel.stopGettingRestaurantNearbyList();
     }
 
@@ -241,7 +252,9 @@ public class RestaurantMapViewFragment extends Fragment {
     private void startRestaurantDetailsActivityWhenMarkerIsClicked(@org.jetbrains.annotations.NotNull ArrayList<Restaurant> restaurantList){
         dataViewModel.getGoogleMap().setOnMarkerClickListener(marker -> {
             for (Restaurant restaurant : restaurantList) {
-                if (restaurant.getAddress().equals(marker.getTag())){
+                MyPositionObject myPositionObject = restaurant.getPosition();
+                LatLng restaurantPosition = new LatLng(myPositionObject.getLatitude(), myPositionObject.getLongitude());
+                if (restaurantPosition.equals(marker.getPosition())){
                     RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurant);
                     startActivity(new Intent(requireActivity(), RestaurantDetailsActivity.class));
                     break;

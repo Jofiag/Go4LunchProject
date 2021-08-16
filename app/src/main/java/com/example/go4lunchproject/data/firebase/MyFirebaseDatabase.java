@@ -59,21 +59,23 @@ public class MyFirebaseDatabase {
     }
 
     public void getUser(String path, SingleUserFromFirebase callback){
-        userDataRef.child(path).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    User user = snapshot.getValue(User.class);
-                    if (callback != null)
-                        callback.onSingleUserGotten(user);
+        if (path != null) {
+            userDataRef.child(path).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()){
+                        User user = snapshot.getValue(User.class);
+                        if (callback != null)
+                            callback.onSingleUserGotten(user);
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     public void getAllUsers(UserListFromFirebase callback) {

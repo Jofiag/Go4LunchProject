@@ -25,6 +25,15 @@ public class MyFirebaseDatabase {
     public interface SingleUserFromFirebase{
         void onSingleUserGotten(User singleUser);
     }
+
+    public interface RestaurantFromFirebase{
+        void onRestaurantGotten(Restaurant restaurant);
+    }
+
+    public interface RestaurantListFromFirebase{
+        void onListGotten(List<Restaurant> restaurantList);
+    }
+
     private final FirebaseDatabase database = FirebaseDatabase.getInstance("https://go4lunchproject-6c727-default-rtdb.europe-west1.firebasedatabase.app");
     private final DatabaseReference userDataRef = database.getReference(Constants.USER_DATA_REF);
     private final DatabaseReference restaurantChosenRef = database.getReference(Constants.RESTAURANT_CHOSEN_REFERENCE);
@@ -109,8 +118,72 @@ public class MyFirebaseDatabase {
         userDataRef.child(newUser.getId()).setValue(newUser);
     }
 
-    public void saveRestaurant(Restaurant restaurant){
 
+
+    public void saveRestaurant(Restaurant restaurant){
+        restaurantChosenRef.child(restaurant.getRestaurantId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists())
+                    restaurantChosenRef.child(restaurant.getRestaurantId()).setValue(restaurant)
+                            .addOnSuccessListener(unused -> Log.d("SAVING", "onSuccess: Restaurant saved with success!!!"))
+                            .addOnFailureListener(e -> Log.d("SAVING", "onFailure: " + e.getMessage()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void getRestaurant(String path, RestaurantFromFirebase callback){
+        if (path != null){
+            restaurantChosenRef.child(path).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()){
+                        Restaurant restaurant = snapshot.getValue(Restaurant.class);
+                        if (callback != null)
+                            callback.onRestaurantGotten(restaurant);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+    }
+
+    public void getAllRestaurant(RestaurantListFromFirebase callback){
+        List<Restaurant> restaurantList = new ArrayList<>();
+
+        restaurantChosenRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Restaurant restaurant = child.getValue(Restaurant.class);
+                        if (!restaurantList.contains(restaurant))
+                            restaurantList.add(restaurant);
+                    }
+
+                    if (callback != null)
+                        callback.onListGotten(restaurantList);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void updateRestaurant(Restaurant newRestaurant){
+        restaurantChosenRef.child(newRestaurant.getRestaurantId()).setValue(newRestaurant);
     }
 
 }

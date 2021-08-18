@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.go4lunchproject.data.api.UserApi;
+import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.util.Constants;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +27,7 @@ public class MyFirebaseDatabase {
     }
     private final FirebaseDatabase database = FirebaseDatabase.getInstance("https://go4lunchproject-6c727-default-rtdb.europe-west1.firebasedatabase.app");
     private final DatabaseReference userDataRef = database.getReference(Constants.USER_DATA_REF);
+    private final DatabaseReference restaurantChosenRef = database.getReference(Constants.RESTAURANT_CHOSEN_REFERENCE);
     private static MyFirebaseDatabase INSTANCE;
 
     public MyFirebaseDatabase() {
@@ -105,6 +107,10 @@ public class MyFirebaseDatabase {
 
     public void updateUser(User newUser){
         userDataRef.child(newUser.getId()).setValue(newUser);
+    }
+
+    public void saveRestaurant(Restaurant restaurant){
+
     }
 
 }

@@ -125,23 +125,27 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
     private void setRecyclerView(){
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantDetailsActivity.this));
+
         MyFirebaseDatabase.getInstance().getAllUsers(userList -> {
-            for (User user : userList) {
-                Restaurant restaurantChosenFromFirebase = user.getRestaurantChosen();
-                if (restaurantChosenFromFirebase != null && restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
-                    List<Workmate> workmateListFromFirebase = restaurantChosenFromFirebase.getWorkmateList();
-                    if (workmateListFromFirebase != null){
-                        for (Workmate workmate : restaurantChosenFromFirebase.getWorkmateList()) {
-                            if (workmateList != null && !workmateList.contains(workmate))
-                                workmateList.add(workmate);
+            if (userList != null) {
+                for (User user : userList) {
+                    Restaurant restaurantChosenFromFirebase = user.getRestaurantChosen();
+
+                    if (restaurantChosenFromFirebase != null && restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
+                        List<Workmate> workmateListFromFirebase = restaurantChosenFromFirebase.getWorkmateList();
+                        if (workmateListFromFirebase != null){
+                            for (Workmate workmate : workmateListFromFirebase) {
+                                if (workmateList != null && !workmateList.contains(workmate))
+                                    workmateList.add(workmate);
+                            }
                         }
                     }
                 }
             }
 
             adapter = new WorkmateAdapterForRestaurantDetails(workmateList);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantDetailsActivity.this));
             recyclerView.setAdapter(adapter);
         });
     }
@@ -270,33 +274,60 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         restaurantActuallyShowed.setWorkmateList(workmateList);
     }
     private void indicateIfRestaurantIsChosenByWorkmate(){
+        /*
+        *   Show the list of users that choose the actual restaurant
+        *       get the list of restaurant that chosen by all users from firebase
+        *           check if that list contains the one actually showed.
+        *               if it's the case then set the list of that restaurant to the recycler view.
+        *               if it's not the case that means the restaurant actually showed has never be chosen by any user, so we do nothing.
+        *
+        *   When the user clicks on the restaurant :
+        *       if the actual restaurant is the one he has chosen.
+        *           we remove the actual user from the actual restaurant's workmate list.
+        *           then we make the actual restaurant to be not chosen anymore.
+        *           (we update the restaurant in firebase.)
+        *           we update the user in  firebase.
+        *
+        *       if the actual restaurant is not the one the user has chosen
+        *           we add the user to the workmate list of the actual restaurant.
+        *           then we make the actual restaurant the one the user chose.
+        *           (we save that restaurant in firebase, or update it if it was already saved.)
+        *           we update the user in firebase.
+        *
+        *
+        *
+        * */
         //If workmate connected has chosen actual restaurant, set fab visibility to VISIBLE
-        MyFirebaseDatabase.getInstance().getUser(userId, singleUser ->
+        /*MyFirebaseDatabase.getInstance().getUser(userId, singleUser ->
                 chosenImageView.setOnClickListener(view -> {
                     Restaurant restoChosenFromFirebase = singleUser.getRestaurantChosen();
+                    boolean deleteWorkmateFromList = false;
 
                     if (restoChosenFromFirebase != null){
                         if (!restoChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
-//                            updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), false);
-//                            updateRestaurantWorkmateList(UtilMethods.setWorkmateCorresponding(singleUser), false);
+                            List<Workmate> list = restaurantActuallyShowed.getWorkmateList();
+                            Workmate actualWorkmate = UtilMethods.setWorkmateCorresponding(singleUser);
+                            if (list != null && !list.contains(actualWorkmate))
+                                list.add(actualWorkmate);
                             singleUser.setRestaurantChosen(restaurantActuallyShowed);
                             chosenImageView.setImageResource(R.mipmap.green_check_round);
                         }
                         else{
-//                            updateRestaurantWorkmateList(UtilMethods.setWorkmateCorresponding(singleUser), true);
+                            deleteWorkmateFromList = true;
                             singleUser.setRestaurantChosen(null);
                             chosenImageView.setImageResource(R.mipmap.red_unchecked);
                         }
                     }
                     else{
-//                        updateRestaurantWorkmateList(UtilMethods.setWorkmateCorresponding(singleUser), false);
                         singleUser.setRestaurantChosen(restaurantActuallyShowed);
                         chosenImageView.setImageResource(R.mipmap.green_check_round);
                     }
 
+                    //updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), false);
                     UserApi.getInstance().setUser(singleUser);
                     MyFirebaseDatabase.getInstance().updateUser(singleUser);
-                }));
+                    updateRestaurantWorkmateList(UtilMethods.setWorkmateCorresponding(singleUser), deleteWorkmateFromList);
+                }));*/
     }
 
 

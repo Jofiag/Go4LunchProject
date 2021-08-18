@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import java.util.List;
 
 public class Restaurant implements Parcelable {
+    private String restaurantId;
     private String name;
     private String address;
     private String websiteUrl;
@@ -26,6 +27,7 @@ public class Restaurant implements Parcelable {
 
 
     protected Restaurant(Parcel in) {
+        restaurantId = in.readString();
         name = in.readString();
         address = in.readString();
         websiteUrl = in.readString();
@@ -156,6 +158,13 @@ public class Restaurant implements Parcelable {
         this.websiteUrl = websiteUrl;
     }
 
+    public String getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(String restaurantId) {
+        this.restaurantId = restaurantId;
+    }
 
     @Override
     public int describeContents() {
@@ -164,7 +173,7 @@ public class Restaurant implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-
+        parcel.writeString(restaurantId);
         parcel.writeString(name);
         parcel.writeString(address);
         parcel.writeString(websiteUrl);

@@ -75,6 +75,7 @@ public class Constants {
     public static final String USER_DATA_REF = "Users_data_ref";
     public static final String SAVE_RESTAURANT_ACTION = "Save restaurant";
     public static final String REMOVE_RESTAURANT_ACTION = "Remove restaurant";
+    public static final String RESTAURANT_CHOSEN_REFERENCE = "Restaurant_chosen_ref";
 
     public static List<Restaurant> getRestaurantList(){
         List<Restaurant> restaurantList = new ArrayList<>();

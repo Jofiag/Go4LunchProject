@@ -283,6 +283,7 @@ public class RestaurantNearbyBank2 {
     private void setRestaurantPhoneWebsiteAndMyOpeningHours(Restaurant restaurant, Place place, String phoneNumber, Uri website, OpeningHours openingHours){
         getAndSetRestaurantMyOpeningHours(restaurant, openingHours);
 
+        restaurant.setRestaurantId(restaurant.getName() + "_" + restaurant.getPlaceId());
         restaurant.setPhoneNumber(phoneNumber);
         if (website != null)
             restaurant.setWebsiteUrl(website.toString());

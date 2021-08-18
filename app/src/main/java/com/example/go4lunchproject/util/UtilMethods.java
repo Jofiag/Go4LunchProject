@@ -3,6 +3,8 @@ package com.example.go4lunchproject.util;
 import android.util.Log;
 
 import com.example.go4lunchproject.model.Restaurant;
+import com.example.go4lunchproject.model.User;
+import com.example.go4lunchproject.model.Workmate;
 
 import java.util.ArrayList;
 
@@ -59,5 +61,13 @@ public class UtilMethods {
         }
         return list
         */
+    }
+    public static Workmate setWorkmateCorresponding(User user){
+        Workmate workmate = new Workmate();
+        workmate.setName(user.getName());
+        workmate.setImageUri(user.getImageUri());
+        workmate.setRestaurantChosen(user.getRestaurantChosen());
+
+        return workmate;
     }
 }

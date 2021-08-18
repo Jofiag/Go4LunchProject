@@ -16,6 +16,7 @@ import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
+import com.example.go4lunchproject.util.UtilMethods;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -74,19 +75,12 @@ public class MainActivity extends AppCompatActivity {
             user.setName(firebaseUser.getDisplayName());
             user.setImageUri(Objects.requireNonNull(firebaseUser.getPhotoUrl()).toString());
             UserApi.getInstance().setUser(user);
-            ActualWorkmateApi.getInstance().setWorkmate(setWorkmateCorresponding(user));
+            ActualWorkmateApi.getInstance().setWorkmate(UtilMethods.setWorkmateCorresponding(user));
             MyFirebaseDatabase.getInstance().saveUser(UserApi.getInstance().getUser());
         }
     }
 
-    private Workmate setWorkmateCorresponding(User user){
-        Workmate workmate = new Workmate();
-        workmate.setName(user.getName());
-        workmate.setImageUri(user.getImageUri());
-        workmate.setRestaurantChosen(user.getRestaurantChosen());
 
-        return workmate;
-    }
 
     private void startHomePageActivityIfUserConnected(FirebaseUser user){
         if (user != null) {

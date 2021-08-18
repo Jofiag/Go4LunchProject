@@ -115,30 +115,30 @@ public class RestaurantMapViewFragment extends Fragment {
                     }
 
                     //If actually there is no restaurant chosen, we check if there were one, and if there were then we remove the green marker and add an orange one.
-                    if (user.getName().equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getDisplayName()) && restaurantChosen == null){
-                        for (MyMarker myMarker : markerList) {
-                            if (Objects.equals(myMarker.getMarker().getSnippet(), "green")) {
-                                if (myMarker.getMarker().getTag() != null) {
-                                    String tag = myMarker.getMarker().getTag().toString();
-                                    addMarkerOnPosition(myMarker.getMarker().getPosition(),
-                                            myMarker.getMarker().getTitle(),
-                                            tag,
-                                            BitmapDescriptorFactory.HUE_ORANGE,
-                                            "orange");
-                                }
-                                else {
-                                    addMarkerOnPosition(myMarker.getMarker().getPosition(),
-                                            myMarker.getMarker().getTitle(),
-                                            null,
-                                            BitmapDescriptorFactory.HUE_ORANGE,
-                                            "orange");
-                                }
-                                myMarker.getMarker().remove();
-                                markerList.remove(myMarker);
-                                break;
-                            }
-                        }
-                    }
+//                    if (user.getName().equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getDisplayName()) && restaurantChosen == null){
+//                        for (MyMarker myMarker : markerList) {
+//                            if (Objects.equals(myMarker.getMarker().getSnippet(), "green")) {
+//                                if (myMarker.getMarker().getTag() != null) {
+//                                    String tag = myMarker.getMarker().getTag().toString();
+//                                    addMarkerOnPosition(myMarker.getMarker().getPosition(),
+//                                            myMarker.getMarker().getTitle(),
+//                                            tag,
+//                                            BitmapDescriptorFactory.HUE_ORANGE,
+//                                            "orange");
+//                                }
+//                                else {
+//                                    addMarkerOnPosition(myMarker.getMarker().getPosition(),
+//                                            myMarker.getMarker().getTitle(),
+//                                            null,
+//                                            BitmapDescriptorFactory.HUE_ORANGE,
+//                                            "orange");
+//                                }
+//                                myMarker.getMarker().remove();
+//                                markerList.remove(myMarker);
+//                                break;
+//                            }
+//                        }
+//                    }
                 }
             }
         });

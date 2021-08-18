@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateAdapterForRestaurantDetails;
-import com.example.go4lunchproject.data.api.ActualWorkmateApi;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
@@ -130,9 +129,12 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             for (User user : userList) {
                 Restaurant restaurantChosenFromFirebase = user.getRestaurantChosen();
                 if (restaurantChosenFromFirebase != null && restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
-                    for (Workmate workmate : restaurantChosenFromFirebase.getWorkmateList()) {
-                        if (!workmateList.contains(workmate))
-                            workmateList.add(workmate);
+                    List<Workmate> workmateListFromFirebase = restaurantChosenFromFirebase.getWorkmateList();
+                    if (workmateListFromFirebase != null){
+                        for (Workmate workmate : restaurantChosenFromFirebase.getWorkmateList()) {
+                            if (workmateList != null && !workmateList.contains(workmate))
+                                workmateList.add(workmate);
+                        }
                     }
                 }
             }
@@ -275,18 +277,19 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
                     if (restoChosenFromFirebase != null){
                         if (!restoChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
-                            updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), false);
+//                            updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), false);
+//                            updateRestaurantWorkmateList(UtilMethods.setWorkmateCorresponding(singleUser), false);
                             singleUser.setRestaurantChosen(restaurantActuallyShowed);
                             chosenImageView.setImageResource(R.mipmap.green_check_round);
                         }
                         else{
-                            updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), true);
+//                            updateRestaurantWorkmateList(UtilMethods.setWorkmateCorresponding(singleUser), true);
                             singleUser.setRestaurantChosen(null);
                             chosenImageView.setImageResource(R.mipmap.red_unchecked);
                         }
                     }
                     else{
-                        updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), false);
+//                        updateRestaurantWorkmateList(UtilMethods.setWorkmateCorresponding(singleUser), false);
                         singleUser.setRestaurantChosen(restaurantActuallyShowed);
                         chosenImageView.setImageResource(R.mipmap.green_check_round);
                     }

@@ -173,6 +173,7 @@
         android:id="@+id/chosenImageView"
         android:layout_width="31dp"
         android:layout_height="31dp"
+        android:src="@mipmap/red_unchecked"
         app:layout_constraintBottom_toBottomOf="@+id/circleImageView"
         app:layout_constraintEnd_toEndOf="@+id/circleImageView"
         app:layout_constraintStart_toStartOf="@+id/circleImageView"

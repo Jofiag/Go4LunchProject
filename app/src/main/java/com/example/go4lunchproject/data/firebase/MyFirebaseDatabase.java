@@ -8,6 +8,8 @@ import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.util.Constants;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,6 +40,8 @@ public class MyFirebaseDatabase {
     private final DatabaseReference userDataRef = database.getReference(Constants.USER_DATA_REF);
     private final DatabaseReference restaurantChosenRef = database.getReference(Constants.RESTAURANT_CHOSEN_REFERENCE);
     private static MyFirebaseDatabase INSTANCE;
+    private final FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private String currentUserName;
 
     public MyFirebaseDatabase() {
     }
@@ -83,10 +87,11 @@ public class MyFirebaseDatabase {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
+                    Log.d("UserE", "onCancelled: " + error.getMessage());
                 }
             });
         }
+        else throw new RuntimeException("User path is null");
     }
 
     public void getAllUsers(UserListFromFirebase callback) {
@@ -151,10 +156,11 @@ public class MyFirebaseDatabase {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
+                    Log.d("RestoE", "onCancelled: " + error.getMessage());
                 }
             });
         }
+        else throw new RuntimeException("restaurant path is null");
     }
 
     public void getAllRestaurant(RestaurantListFromFirebase callback){
@@ -170,9 +176,9 @@ public class MyFirebaseDatabase {
                             restaurantList.add(restaurant);
                     }
 
-                    if (callback != null)
-                        callback.onListGotten(restaurantList);
                 }
+                if (callback != null)
+                    callback.onListGotten(restaurantList);
             }
 
             @Override
@@ -184,6 +190,18 @@ public class MyFirebaseDatabase {
 
     public void updateRestaurant(Restaurant newRestaurant){
         restaurantChosenRef.child(newRestaurant.getRestaurantId()).setValue(newRestaurant);
+    }
+
+    public FirebaseUser getCurrentFirebaseUser() {
+        return currentFirebaseUser;
+    }
+
+    public String getCurrentUserName(){
+        String name = "";
+        if (currentFirebaseUser != null)
+            name = currentFirebaseUser.getDisplayName();
+
+        return name;
     }
 
 }

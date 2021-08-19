@@ -3,6 +3,7 @@ package com.example.go4lunchproject.controller;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +31,7 @@ import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
+import com.example.go4lunchproject.util.UtilMethods;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -56,6 +59,9 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
     private WorkmateAdapterForRestaurantDetails adapter;
     private List<Workmate> workmateList = new ArrayList<>();
+
+    private Drawable greenCheck;
+    private Drawable redUncheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,28 +131,31 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
     private void setRecyclerView(){
+        /*
+        *   Show the list of users that choose the actual restaurant
+        *       get the list of restaurant that chosen by all users from firebase
+        *         if that list is not null and not empty
+        *           check if that list contains the one actually showed.
+        *               if it's the case then set the list of that restaurant to the recycler view.
+        *               if it's not the case that means the restaurant actually showed has never be chosen by any user, so we do nothing.
+        * */
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantDetailsActivity.this));
 
-        MyFirebaseDatabase.getInstance().getAllUsers(userList -> {
-            if (userList != null) {
-                for (User user : userList) {
-                    Restaurant restaurantChosenFromFirebase = user.getRestaurantChosen();
-
-                    if (restaurantChosenFromFirebase != null && restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
-                        List<Workmate> workmateListFromFirebase = restaurantChosenFromFirebase.getWorkmateList();
-                        if (workmateListFromFirebase != null){
-                            for (Workmate workmate : workmateListFromFirebase) {
-                                if (workmateList != null && !workmateList.contains(workmate))
-                                    workmateList.add(workmate);
-                            }
-                        }
+        // get the list of restaurant that chosen by all users from firebase
+        MyFirebaseDatabase.getInstance().getAllRestaurant(restaurantList -> {
+            //if that list is not null and not empty
+            if (restaurantList != null && !restaurantList.isEmpty()){
+                //then we check if that list contains the one actually showed.
+                for (Restaurant restaurant : restaurantList) {
+                    //if it's the case then set the list of that restaurant to the recycler view.
+                    if (restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())) {
+                        adapter = new WorkmateAdapterForRestaurantDetails(restaurant.getWorkmateList());
+                        recyclerView.setAdapter(adapter);
+                        break;
                     }
                 }
             }
-
-            adapter = new WorkmateAdapterForRestaurantDetails(workmateList);
-            recyclerView.setAdapter(adapter);
         });
     }
 
@@ -246,88 +255,186 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void setChosenImageVisibility(){
+        greenCheck = AppCompatResources.getDrawable(RestaurantDetailsActivity.this, R.mipmap.green_check);
+        redUncheck = AppCompatResources.getDrawable(RestaurantDetailsActivity.this, R.mipmap.red_unchecked);
+
         MyFirebaseDatabase.getInstance().getUser(userId, singleUser -> {
             Restaurant restaurantChosenFromFirebase = singleUser.getRestaurantChosen();
             if (restaurantChosenFromFirebase != null){
                 if (restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress()))
-                    chosenImageView.setImageResource(R.mipmap.green_check_round);
+                    chosenImageView.setImageDrawable(greenCheck);
                 else
-                    chosenImageView.setImageResource(R.mipmap.red_unchecked);
+                    chosenImageView.setImageDrawable(redUncheck);
             }
             else
-                chosenImageView.setImageResource(R.mipmap.red_unchecked);
+                chosenImageView.setImageDrawable(redUncheck);
         });
     }
 
-    private void updateRestaurantWorkmateList(Workmate workmate, boolean removeWorkmate){
-
-        if (workmateList == null)
-            workmateList = new ArrayList<>();
-
-        if (removeWorkmate)
-            if (workmateList.contains(workmate))
-                workmateList.remove(workmate);
-        else
-            if (!workmateList.contains(workmate))
-                workmateList.add(workmate);
-
-        restaurantActuallyShowed.setWorkmateList(workmateList);
-    }
     private void indicateIfRestaurantIsChosenByWorkmate(){
-        /*
-        *   Show the list of users that choose the actual restaurant
-        *       get the list of restaurant that chosen by all users from firebase
-        *           check if that list contains the one actually showed.
-        *               if it's the case then set the list of that restaurant to the recycler view.
-        *               if it's not the case that means the restaurant actually showed has never be chosen by any user, so we do nothing.
-        *
-        *   When the user clicks on the restaurant :
-        *       if the actual restaurant is the one he has chosen.
-        *           we remove the actual user from the actual restaurant's workmate list.
-        *           then we make the actual restaurant to be not chosen anymore.
-        *           (we update the restaurant in firebase.)
-        *           we update the user in  firebase.
-        *
-        *       if the actual restaurant is not the one the user has chosen
-        *           we add the user to the workmate list of the actual restaurant.
-        *           then we make the actual restaurant the one the user chose.
-        *           (we save that restaurant in firebase, or update it if it was already saved.)
-        *           we update the user in firebase.
-        *
-        *
-        *
-        * */
-        //If workmate connected has chosen actual restaurant, set fab visibility to VISIBLE
-        /*MyFirebaseDatabase.getInstance().getUser(userId, singleUser ->
-                chosenImageView.setOnClickListener(view -> {
-                    Restaurant restoChosenFromFirebase = singleUser.getRestaurantChosen();
-                    boolean deleteWorkmateFromList = false;
+        MyFirebaseDatabase firebaseDatabase = MyFirebaseDatabase.getInstance();
+        firebaseDatabase.getUser(userId, singleUser -> chosenImageView.setOnClickListener(view -> {
 
-                    if (restoChosenFromFirebase != null){
-                        if (!restoChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress())){
-                            List<Workmate> list = restaurantActuallyShowed.getWorkmateList();
-                            Workmate actualWorkmate = UtilMethods.setWorkmateCorresponding(singleUser);
-                            if (list != null && !list.contains(actualWorkmate))
-                                list.add(actualWorkmate);
+            Restaurant restaurant = singleUser.getRestaurantChosen();
+            Workmate workmateCorresponding = UtilMethods.setWorkmateCorresponding(singleUser);
+            if (restaurant != null){
+                if (restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())){
+
+                    firebaseDatabase.getRestaurant(restaurant.getRestaurantId(), restaurant1 -> {
+                        workmateList = restaurant1.getWorkmateList();
+                        if(workmateList == null)
+                            workmateList = new ArrayList<>();
+                        if (!workmateList.isEmpty()) {
+                            for (Workmate workmate : workmateList) {
+                                if (workmate.getName().equals(workmateCorresponding.getName())){
+                                    workmateList.remove(workmate);
+
+                                    restaurant1.setWorkmateList(workmateList);
+                                    firebaseDatabase.updateRestaurant(restaurant1);
+
+                                    singleUser.setRestaurantChosen(null);
+                                    firebaseDatabase.updateUser(singleUser);
+                                    break;
+                                }
+
+                            }
+
+                        }
+
+                    });
+
+                }
+                else if (!restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())){
+                    //In case the restaurant was already chosen by the current user or any other user
+                    firebaseDatabase.getRestaurant(restaurantActuallyShowed.getRestaurantId(), restaurant1 -> {
+                        Restaurant restaurant2 = restaurantActuallyShowed;
+                        if (restaurant1 != null)
+                            restaurant2 = restaurant1;
+
+                        workmateList = restaurant2.getWorkmateList();
+                        if (workmateList == null)
+                            workmateList = new ArrayList<>();
+                        boolean contains = false;
+                        for (Workmate workmate : workmateList) {
+                            if (workmate.getName().equals(workmateCorresponding.getName())){
+                                contains = true;
+                                break;
+                            }
+                        }
+                        if (!contains) {
+                            workmateList.add(workmateCorresponding);
+
+                            restaurant2.setWorkmateList(workmateList);
+                            firebaseDatabase.updateRestaurant(restaurant2);
+
+                            singleUser.setRestaurantChosen(restaurant2);
+                            firebaseDatabase.updateUser(singleUser);
+                        }
+
+
+                    });
+
+                    //In case the restaurant was never chosen before
+                    firebaseDatabase.getAllRestaurant(restaurantList -> {
+                        List<Workmate> listOfLastRestaurantChosen = restaurant.getWorkmateList();
+                        for (Workmate workmate : listOfLastRestaurantChosen) {
+                            if (workmate.getName().equals(workmateCorresponding.getName())) {
+                                listOfLastRestaurantChosen.remove(workmate);
+                                restaurant.setWorkmateList(listOfLastRestaurantChosen);
+                                firebaseDatabase.updateRestaurant(restaurant);
+                                break;
+                            }
+                        }
+
+                        boolean containsActualRestaurant = false;
+                        for (Restaurant restaurant1 : restaurantList) {
+                            if (restaurant1.getAddress().equals(restaurantActuallyShowed.getAddress())){
+                                containsActualRestaurant = true;
+                                break;
+                            }
+                        }
+                        if (!containsActualRestaurant) {
+                            if (!workmateList.contains(workmateCorresponding)) {
+                                workmateList.add(workmateCorresponding);
+                                restaurantActuallyShowed.setWorkmateList(workmateList);
+                                singleUser.setRestaurantChosen(restaurantActuallyShowed);
+                                firebaseDatabase.updateRestaurant(restaurantActuallyShowed);
+                                firebaseDatabase.updateUser(singleUser);
+                            }
+                        }
+                    });
+                }
+
+            }
+            else {
+                firebaseDatabase.getAllRestaurant(restaurantList -> {
+                    if (restaurantList.isEmpty()){
+                        if (!workmateList.contains(workmateCorresponding)) {
+                            workmateList.add(workmateCorresponding);
+                            restaurantActuallyShowed.setWorkmateList(workmateList);
                             singleUser.setRestaurantChosen(restaurantActuallyShowed);
-                            chosenImageView.setImageResource(R.mipmap.green_check_round);
-                        }
-                        else{
-                            deleteWorkmateFromList = true;
-                            singleUser.setRestaurantChosen(null);
-                            chosenImageView.setImageResource(R.mipmap.red_unchecked);
+                            firebaseDatabase.updateRestaurant(restaurantActuallyShowed);
+                            firebaseDatabase.updateUser(singleUser);
                         }
                     }
-                    else{
-                        singleUser.setRestaurantChosen(restaurantActuallyShowed);
-                        chosenImageView.setImageResource(R.mipmap.green_check_round);
+                    else {
+                        boolean containsActualRestaurant = false;
+                        for (Restaurant restaurant1 : restaurantList) {
+                            if (restaurant1.getAddress().equals(restaurantActuallyShowed.getAddress())){
+                                containsActualRestaurant = true;
+                                break;
+                            }
+                        }
+                        if (!containsActualRestaurant){
+                            if (!workmateList.contains(workmateCorresponding)) {
+                                workmateList.add(workmateCorresponding);
+                                restaurantActuallyShowed.setWorkmateList(workmateList);
+                                singleUser.setRestaurantChosen(restaurantActuallyShowed);
+                                firebaseDatabase.updateRestaurant(restaurantActuallyShowed);
+                                firebaseDatabase.updateUser(singleUser);
+                            }
+                        }
+                        firebaseDatabase.getRestaurant(restaurantActuallyShowed.getRestaurantId(), restaurant1 -> {
+                            if (restaurant1 != null){
+                                workmateList = restaurant1.getWorkmateList();
+                                if (workmateList == null)
+                                    workmateList = new ArrayList<>();
+
+                                boolean contains = false;
+                                for (Workmate workmate : workmateList) {
+                                    if (workmate.getName().equals(workmateCorresponding.getName())){
+                                        contains = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!contains) {
+                                    workmateList.add(workmateCorresponding);
+
+                                    restaurant1.setWorkmateList(workmateList);
+                                    firebaseDatabase.updateRestaurant(restaurant1);
+
+                                    singleUser.setRestaurantChosen(restaurant1);
+                                    firebaseDatabase.updateUser(singleUser);
+                                }
+                            }
+                            else {
+                                if (!workmateList.contains(workmateCorresponding)) {
+                                    workmateList.add(workmateCorresponding);
+                                    restaurantActuallyShowed.setWorkmateList(workmateList);
+                                    singleUser.setRestaurantChosen(restaurantActuallyShowed);
+                                    firebaseDatabase.updateRestaurant(restaurantActuallyShowed);
+                                    firebaseDatabase.updateUser(singleUser);
+                                }
+                            }
+                        });
                     }
 
-                    //updateRestaurantWorkmateList(ActualWorkmateApi.getInstance().getWorkmate(), false);
-                    UserApi.getInstance().setUser(singleUser);
-                    MyFirebaseDatabase.getInstance().updateUser(singleUser);
-                    updateRestaurantWorkmateList(UtilMethods.setWorkmateCorresponding(singleUser), deleteWorkmateFromList);
-                }));*/
+                });
+            }
+
+        }));
+
     }
 
 

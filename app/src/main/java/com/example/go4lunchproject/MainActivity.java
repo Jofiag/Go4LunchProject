@@ -64,22 +64,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUserAndFirebaseAuth(){
-        User user = new User();
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        User user = UtilMethods.getMyUserFromFirebaseUser();
 
-        if (firebaseUser != null){
-            user.setId(firebaseUser.getDisplayName() + "_" +  firebaseUser.getUid());
-            user.setFirebaseId(firebaseUser.getUid());
-            user.setUserEmail(firebaseUser.getEmail());
-            user.setName(firebaseUser.getDisplayName());
-            user.setImageUri(Objects.requireNonNull(firebaseUser.getPhotoUrl()).toString());
+        if (user != null){
             UserApi.getInstance().setUser(user);
             ActualWorkmateApi.getInstance().setWorkmate(UtilMethods.setWorkmateCorresponding(user));
             MyFirebaseDatabase.getInstance().saveUser(UserApi.getInstance().getUser());
         }
     }
-
 
 
     private void startHomePageActivityIfUserConnected(FirebaseUser user){

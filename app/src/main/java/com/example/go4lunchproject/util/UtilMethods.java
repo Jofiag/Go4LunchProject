@@ -2,11 +2,14 @@ package com.example.go4lunchproject.util;
 
 import android.util.Log;
 
+import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class UtilMethods {
     public static ArrayList<Restaurant> removeRedundantRestaurant(ArrayList<Restaurant> list){
@@ -62,11 +65,29 @@ public class UtilMethods {
         return list
         */
     }
+
+    public static User getMyUserFromFirebaseUser(){
+        User user = new User();
+        FirebaseUser firebaseUser = MyFirebaseDatabase.getInstance().getCurrentFirebaseUser();
+
+        if (firebaseUser != null){
+            user.setId(firebaseUser.getDisplayName() + "_" +  firebaseUser.getUid());
+            user.setFirebaseId(firebaseUser.getUid());
+            user.setUserEmail(firebaseUser.getEmail());
+            user.setName(firebaseUser.getDisplayName());
+            user.setImageUri(Objects.requireNonNull(firebaseUser.getPhotoUrl()).toString());
+
+            return user;
+        }
+        else
+            return null;
+    }
+
     public static Workmate setWorkmateCorresponding(User user){
         Workmate workmate = new Workmate();
         workmate.setName(user.getName());
         workmate.setImageUri(user.getImageUri());
-        workmate.setRestaurantChosen(user.getRestaurantChosen());
+//        workmate.setRestaurantChosen(user.getRestaurantChosen());
 
         return workmate;
     }

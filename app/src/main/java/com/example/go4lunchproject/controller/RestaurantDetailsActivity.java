@@ -272,28 +272,59 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void indicateIfRestaurantIsChosenByWorkmate(){
+
+        //TODO : comment each step and optimize the code of that function.
+
         MyFirebaseDatabase firebaseDatabase = MyFirebaseDatabase.getInstance();
         firebaseDatabase.getUser(userId, singleUser -> chosenImageView.setOnClickListener(view -> {
 
-            Restaurant restaurant = singleUser.getRestaurantChosen();
+            Restaurant eventualRestaurantChosenByActualWorkmate = singleUser.getRestaurantChosen();
             Workmate workmateCorresponding = UtilMethods.setWorkmateCorresponding(singleUser);
-            if (restaurant != null){
-                if (restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())){
 
-                    firebaseDatabase.getRestaurant(restaurant.getRestaurantId(), restaurant1 -> {
+            // If the workmate has already chosen a restaurant to go.
+            if (eventualRestaurantChosenByActualWorkmate != null){
+
+                //If the restaurant chosen by the workmate is the same as the one actually showed in the RestaurantDetailActivity,
+                if (eventualRestaurantChosenByActualWorkmate.getAddress().equals(restaurantActuallyShowed.getAddress())){
+
+                    /*
+                    * Notice that every time a workmate chooses a restaurant, we save or update that restaurant to firebase.
+                    * We have a reference in our firebase db for every restaurant that was chosen at least once.
+                    * We do so to have access to over workmate that chose the same restaurant because we want to show them in the recycler view in this activity.
+                    * The code of the saving or updating restaurant in firebase is in the "If the workmate connected hasn't chosen any restaurant yet." case.
+                    * */
+
+                    //the restaurant actually showed is the one the user has chosen, so that restaurant was saved in the firebase.
+                    //We get that restaurant from firebase in order to have access to it's workmate list and modify it.
+                    firebaseDatabase.getRestaurant(eventualRestaurantChosenByActualWorkmate.getRestaurantId(), restaurant1 -> {
+
+                        //we get the restaurant workmate list and insure us not to have an null object in case the restaurant hasn't any workmate list
+                        //because if the list is empty firebase do not save it as an empty list, it just doesn't save anything so we going to get a null object if the list is empty.
                         workmateList = restaurant1.getWorkmateList();
                         if(workmateList == null)
                             workmateList = new ArrayList<>();
+
+                        //check if the list is not empty before getting each element of that list
                         if (!workmateList.isEmpty()) {
+                            //Although the list contains the actual workmate connected showed because here it's the restaurant chosen by the workmate, we check if it's the case for safety.
                             for (Workmate workmate : workmateList) {
+                                //To check if the list contains the we compare each workmates name of the list with the name of the workmate connected.
+                                //We don't use the contain function the list because even though the list contains the same element it's going to return false;
+                                //and that is because of firebase in our case here.
                                 if (workmate.getName().equals(workmateCorresponding.getName())){
+                                    //when we reach the right workmate, we remove him from the list because here we're in the case where the workmate click on the chosen button of the restaurant he has chosen
+                                    //and then we assume that he doesn't want to go to that restaurant anymore.
                                     workmateList.remove(workmate);
 
+                                    //We set the new workmate to the restaurant and update the restaurant to firebase.
                                     restaurant1.setWorkmateList(workmateList);
                                     firebaseDatabase.updateRestaurant(restaurant1);
 
+                                    //Because we assume here he doesn't want to choose his last restaurant chosen, we set his restaurant chosen to null and update the him to firebase.
                                     singleUser.setRestaurantChosen(null);
                                     firebaseDatabase.updateUser(singleUser);
+
+                                    //When all that is done, we don't need to other element of  the list so we quit the loop to save memory.
                                     break;
                                 }
 
@@ -304,16 +335,23 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                     });
 
                 }
-                else if (!restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())){
-                    //In case the restaurant was already chosen by the current user or any other user
+
+                //If it's not the case,
+                else if (!eventualRestaurantChosenByActualWorkmate.getAddress().equals(restaurantActuallyShowed.getAddress())){
+                    //In case the restaurant was already chosen by the current user or any other user, that restaurant is in our firebase restaurant reference.
+                    //So in that case we get it from firebase to have access to all workmate that has chosen the same restaurant
                     firebaseDatabase.getRestaurant(restaurantActuallyShowed.getRestaurantId(), restaurant1 -> {
                         Restaurant restaurant2 = restaurantActuallyShowed;
                         if (restaurant1 != null)
                             restaurant2 = restaurant1;
 
+                        //We get the list of workmate that has chosen the same restaurant and make sure we don't have a null object.
                         workmateList = restaurant2.getWorkmateList();
                         if (workmateList == null)
                             workmateList = new ArrayList<>();
+
+                        //We check if the actual workmate is not already in the list before adding him in that list.
+                        //Remember we do it by getting all the list element and compare there name with the name of the actual workmate because in our case the contain function of the list is not working.
                         boolean contains = false;
                         for (Workmate workmate : workmateList) {
                             if (workmate.getName().equals(workmateCorresponding.getName())){
@@ -321,12 +359,17 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                                 break;
                             }
                         }
+                        //If the actual workmate is not in the list
                         if (!contains) {
+                            //only then we add him in the list
                             workmateList.add(workmateCorresponding);
 
+                            //set the new list to the restaurant and update the restaurant
                             restaurant2.setWorkmateList(workmateList);
                             firebaseDatabase.updateRestaurant(restaurant2);
 
+                            //In the case here the user clicks on the chosen button the actual restaurant witch is not the last one he has chosen,
+                            //so we set the user restaurant chosen to the actual restaurant and update him to firebase
                             singleUser.setRestaurantChosen(restaurant2);
                             firebaseDatabase.updateUser(singleUser);
                         }
@@ -334,18 +377,28 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
                     });
 
-                    //In case the restaurant was never chosen before
+                    //In case the restaurant was never chosen before by any workmate.
+                    //In that case the actual restaurant is not in our firebase restaurant reference.
                     firebaseDatabase.getAllRestaurant(restaurantList -> {
-                        List<Workmate> listOfLastRestaurantChosen = restaurant.getWorkmateList();
+
+                        //Because the actual restaurant showed in the activity is not the one the workmate has chosen and that one is not null and he want to choose the actual restaurant showed,
+                        //we need to remove the actual workmate from the workmate list of his last restaurant chosen. We do so because we a workmate cannot choose more than one restaurant.
+                        List<Workmate> listOfLastRestaurantChosen = eventualRestaurantChosenByActualWorkmate.getWorkmateList();
                         for (Workmate workmate : listOfLastRestaurantChosen) {
                             if (workmate.getName().equals(workmateCorresponding.getName())) {
+                                //removing the actual workmate from the list of his last restaurant chosen
                                 listOfLastRestaurantChosen.remove(workmate);
-                                restaurant.setWorkmateList(listOfLastRestaurantChosen);
-                                firebaseDatabase.updateRestaurant(restaurant);
+
+                                //set the new workmate list to the last restaurant chosen and update that restaurant to firebase.
+                                eventualRestaurantChosenByActualWorkmate.setWorkmateList(listOfLastRestaurantChosen);
+                                firebaseDatabase.updateRestaurant(eventualRestaurantChosenByActualWorkmate);
+
+                                //then quit the loop to save memory.
                                 break;
                             }
                         }
 
+                        //We check if the actual restaurant showed is in saved in our firebase restaurant database.
                         boolean containsActualRestaurant = false;
                         for (Restaurant restaurant1 : restaurantList) {
                             if (restaurant1.getAddress().equals(restaurantActuallyShowed.getAddress())){
@@ -353,6 +406,10 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                                 break;
                             }
                         }
+
+                        // If it's not the case, then we are sure that the actual restaurant was never chosen by any workmate before.
+                        // So we add the actual workmate to the restaurant actually showed workmate list, set that new list to the restaurant,
+                        // update the restaurant, set the restaurant to the user and update the user.
                         if (!containsActualRestaurant) {
                             if (!workmateList.contains(workmateCorresponding)) {
                                 workmateList.add(workmateCorresponding);
@@ -366,8 +423,15 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 }
 
             }
-            else {
+
+            // If the workmate connected hasn't chosen any restaurant yet.
+            else{
+                // we get all the restaurant that was at least chosen one time.
                 firebaseDatabase.getAllRestaurant(restaurantList -> {
+
+                    // If the list of those restaurants is not empty,
+                    // we add the actual workmate to the restaurant actually showed workmate list, set that new list to the restaurant,
+                    // update the restaurant, set the restaurant to the user and update the user.
                     if (restaurantList.isEmpty()){
                         if (!workmateList.contains(workmateCorresponding)) {
                             workmateList.add(workmateCorresponding);
@@ -377,6 +441,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                             firebaseDatabase.updateUser(singleUser);
                         }
                     }
+
+                    // If that list is empty,
                     else {
                         boolean containsActualRestaurant = false;
                         for (Restaurant restaurant1 : restaurantList) {
@@ -394,6 +460,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                                 firebaseDatabase.updateUser(singleUser);
                             }
                         }
+
                         firebaseDatabase.getRestaurant(restaurantActuallyShowed.getRestaurantId(), restaurant1 -> {
                             if (restaurant1 != null){
                                 workmateList = restaurant1.getWorkmateList();

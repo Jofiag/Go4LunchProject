@@ -93,7 +93,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         indicateIfRestaurantIsChosenByWorkmate();
         setRecyclerView();
         retrieveActualWorkmateFromHisLastRestaurantChosen();
-
+        deleteRestaurantThatAreNotChosenAnymore();
 
     }
 
@@ -491,6 +491,19 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 }
             }
         });*/
+    }
+
+    private void deleteRestaurantThatAreNotChosenAnymore(){
+        firebaseCloudDatabase.listenToAllRestaurant(restaurantList -> {
+            if (restaurantList != null && !restaurantList.isEmpty()){
+                for (Restaurant restaurant : restaurantList) {
+                    List<Workmate> workmateList = restaurant.getWorkmateList();
+
+                    if (workmateList == null || workmateList.isEmpty())
+                        firebaseCloudDatabase.deleteRestaurant(restaurant.getRestaurantId());
+                }
+            }
+        });
     }
 
 

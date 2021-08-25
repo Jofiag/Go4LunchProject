@@ -92,6 +92,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         indicateIfRestaurantIsChosenByWorkmate();
         setRecyclerView();
+        retrieveActualWorkmateFromHisLastRestaurantChosen();
+
 
     }
 
@@ -315,7 +317,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                         });
                     }
 
-                    retrieveActualWorkmateFromHisLastRestaurantChosen();
                 }));
     }
 
@@ -435,7 +436,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void retrieveActualWorkmateFromHisLastRestaurantChosen(){
-        firebaseCloudDatabase.getAllRestaurant(restaurantList -> {
+        firebaseCloudDatabase.listenToAllRestaurant(restaurantList -> {
             if (restaurantList != null && !restaurantList.isEmpty()){
 
                 for (Restaurant restaurant : restaurantList) {
@@ -462,6 +463,34 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 }
             }
         });
+
+        /*firebaseCloudDatabase.getAllRestaurant(restaurantList -> {
+            if (restaurantList != null && !restaurantList.isEmpty()){
+
+                for (Restaurant restaurant : restaurantList) {
+                    //We check if the actual restaurant of the list contains in it's workmate list the actual workmate
+                    boolean containsActualWorkmate = containsWorkmate(restaurant.getWorkmateList(), actualWorkmate);
+
+                    //We get the actual restaurant chosen by the actual workmate
+                    firebaseCloudDatabase.getUser(userId, singleUser -> {
+                        Restaurant userRestaurant = singleUser.getRestaurantChosen();
+
+                        if (userRestaurant != null){
+                            // We check if the restaurant chosen by the actual workmate is the same with the actual restaurant of the list
+                            boolean isTheSame = userRestaurant.getAddress().equals(restaurant.getAddress());
+
+                            //if the actual restaurant of the list contains in it's workmate list the actual workmate AND
+                            //the that restaurant is not the same with the one chosen by the workmate
+                            //then we remove the actual workmate from the list of the restaurant and update it in firebase.
+                            if (containsActualWorkmate && !isTheSame) {
+                                List<Workmate> list = removeWorkmate(restaurant.getWorkmateList(), actualWorkmate);
+                                firebaseCloudDatabase.updateRestaurantWorkmateList(restaurant.getRestaurantId(), list);
+                            }
+                        }
+                    });
+                }
+            }
+        });*/
     }
 
 

@@ -150,8 +150,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantDetailsActivity.this));
 
-        // get the list of restaurant that chosen by all users from firebase
-        firebaseCloudDatabase.getAllRestaurant(restaurantList -> {
+        // Get the list of restaurant that chosen by all users from firebase each time it changes.
+        firebaseCloudDatabase.listenToAllRestaurant(restaurantList -> {
             //if that list is not null and not empty
             if (restaurantList != null && !restaurantList.isEmpty()){
                 //then we check if that list contains the one actually showed.
@@ -281,6 +281,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
 
+
+
     private void indicateIfRestaurantIsChosenByWorkmate(){
         firebaseCloudDatabase.getUser(userId, singleUser ->
                 chosenImageView.setOnClickListener(view -> {
@@ -314,9 +316,9 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                     }
 
                     retrieveActualWorkmateFromHisLastRestaurantChosen();
-                    setRecyclerView();
                 }));
     }
+
     private User getUserWithNameAndPhotoUrlOnly(){
         User userWithNameAndImageUriOnly = new User();
         userWithNameAndImageUriOnly.setName(firebaseCloudDatabase.getCurrentUserName());
@@ -326,6 +328,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         return userWithNameAndImageUriOnly;
     }
+
     private List<Workmate> getWorkmateListFromARestaurant(Restaurant restaurant){
         List<Workmate> workmates = restaurant.getWorkmateList();
 
@@ -334,6 +337,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         return workmates;
     }
+
     private Restaurant updateRestaurantListAndRestaurant(List<Workmate> workmates, Restaurant restaurant){
         restaurant.setWorkmateList(workmates);
 //        firebaseCloudDatabase.updateRestaurant(restaurant);
@@ -341,6 +345,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         return restaurant;
     }
+
     private boolean containsWorkmate(List<Workmate> workmates, Workmate workmate){
         boolean contains = false;
 
@@ -353,10 +358,12 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         return contains;
     }
+
     private void addWorkmate(List<Workmate> workmates, Workmate workmate){
         if (!containsWorkmate(workmates, workmate))
             workmates.add(workmate);
     }
+
     private List<Workmate> removeWorkmate(List<Workmate> workmates, Workmate workmate){
         if (workmates != null && !workmates.isEmpty()) {
             for (Workmate workmate1 : workmates) {
@@ -369,6 +376,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         return workmates;
     }
+
     private void updateActualRestaurantAfterAddWorkmate(AccessToRestaurantUpdated callback){
         User user = getUserWithNameAndPhotoUrlOnly();
         Workmate actualWorkmate = UtilMethods.setWorkmateCorresponding(user);
@@ -397,6 +405,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         });
 
     }
+
     private void updateActualRestaurantAfterDeleteWorkmate(AccessToRestaurantUpdated callback){
 
 
@@ -424,6 +433,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         });
 
     }
+
     private void retrieveActualWorkmateFromHisLastRestaurantChosen(){
         firebaseCloudDatabase.getAllRestaurant(restaurantList -> {
             if (restaurantList != null && !restaurantList.isEmpty()){
@@ -453,6 +463,9 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
 
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(

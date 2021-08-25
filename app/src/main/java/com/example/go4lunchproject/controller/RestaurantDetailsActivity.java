@@ -68,6 +68,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private Drawable greenCheck;
     private Drawable redUncheck;
 
+    private Workmate actualWorkmate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +78,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         setReferences();
 
         userId = getUserConnected().getId();
+        User user = getUserWithNameAndPhotoUrlOnly();
+        actualWorkmate = UtilMethods.setWorkmateCorresponding(user);
         restaurantActuallyShowed = RestaurantSelectedApi.getInstance().getRestaurantSelected();
 
         setYellowStarVisibility();
@@ -295,6 +299,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
                             chosenImageView.setImageDrawable(redUncheck);
 
+
                         });
                     }
                     else if (restaurantChosen == null || !restaurantChosen.getAddress().equals(restaurantActuallyShowed.getAddress())){
@@ -308,6 +313,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                         });
                     }
 
+                    retrieveActualWorkmateFromHisLastRestaurantChosen();
                     setRecyclerView();
                 }));
     }
@@ -351,7 +357,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         if (!containsWorkmate(workmates, workmate))
             workmates.add(workmate);
     }
-    private void removeWorkmate(List<Workmate> workmates, Workmate workmate){
+    private List<Workmate> removeWorkmate(List<Workmate> workmates, Workmate workmate){
         if (workmates != null && !workmates.isEmpty()) {
             for (Workmate workmate1 : workmates) {
                 if (workmate1.getName().equals(workmate.getName())) {
@@ -360,6 +366,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 }
             }
         }
+
+        return workmates;
     }
     private void updateActualRestaurantAfterAddWorkmate(AccessToRestaurantUpdated callback){
         User user = getUserWithNameAndPhotoUrlOnly();
@@ -390,10 +398,9 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
     }
     private void updateActualRestaurantAfterDeleteWorkmate(AccessToRestaurantUpdated callback){
-        User user = getUserWithNameAndPhotoUrlOnly();
-        Workmate actualWorkmate = UtilMethods.setWorkmateCorresponding(user);
 
-        //Add or remove the actual workmate to the actual restaurant showed workmate list.
+
+        //Remove the actual workmate to the actual restaurant showed workmate list.
         firebaseCloudDatabase.getRestaurant(restaurantActuallyShowed.getRestaurantId(), restaurant -> {
             Restaurant restaurantTemp;
 
@@ -412,17 +419,39 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             //update the restaurant in firebase
             firebaseCloudDatabase.updateRestaurant(restaurantTemp);
 
-            //delete restaurant if it's workmate list is empty, because we just keeping in the database only the restaurants that are chosen
-            /*firebaseCloudDatabase.getRestaurant(restaurantTemp.getRestaurantId(), restaurant1 -> {
-                List<Workmate> workmateList = restaurant1.getWorkmateList();
-                if (workmateList == null || workmateList.isEmpty())
-                    firebaseCloudDatabase.deleteRestaurant(restaurantTemp.getRestaurantId());
-            });*/
-
             if (callback != null)
                 callback.onResponse(restaurantTemp);
         });
 
+    }
+    private void retrieveActualWorkmateFromHisLastRestaurantChosen(){
+        firebaseCloudDatabase.getAllRestaurant(restaurantList -> {
+            if (restaurantList != null && !restaurantList.isEmpty()){
+
+                for (Restaurant restaurant : restaurantList) {
+                    //We check if the actual restaurant of the list contains in it's workmate list the actual workmate
+                    boolean containsActualWorkmate = containsWorkmate(restaurant.getWorkmateList(), actualWorkmate);
+
+                    //We get the actual restaurant chosen by the actual workmate
+                    firebaseCloudDatabase.getUser(userId, singleUser -> {
+                        Restaurant userRestaurant = singleUser.getRestaurantChosen();
+
+                        if (userRestaurant != null){
+                            // We check if the restaurant chosen by the actual workmate is the same with the actual restaurant of the list
+                            boolean isTheSame = userRestaurant.getAddress().equals(restaurant.getAddress());
+
+                            //if the actual restaurant of the list contains in it's workmate list the actual workmate AND
+                            //the that restaurant is not the same with the one chosen by the workmate
+                            //then we remove the actual workmate from the list of the restaurant and update it in firebase.
+                            if (containsActualWorkmate && !isTheSame) {
+                                List<Workmate> list = removeWorkmate(restaurant.getWorkmateList(), actualWorkmate);
+                                firebaseCloudDatabase.updateRestaurantWorkmateList(restaurant.getRestaurantId(), list);
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 
 

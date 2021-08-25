@@ -42,7 +42,7 @@ import com.example.go4lunchproject.data.viewmodel.DataViewModel;
 import com.example.go4lunchproject.model.MyMarker;
 import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;
-import com.example.go4lunchproject.model.User;
+import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
 import com.example.go4lunchproject.util.LoadingDialog;
 import com.google.android.gms.common.ConnectionResult;
@@ -57,6 +57,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -98,18 +99,25 @@ public class RestaurantMapViewFragment extends Fragment {
     }
 
     private void addGreenMarkerOnRestaurantChosenByAllWorkmates(){
-        FirebaseCloudDatabase.getInstance().listenToAllUsers(userList -> {
-            if (userList != null && !userList.isEmpty()){
-                for (User user : userList) {
-                    Restaurant restaurantChosen = user.getRestaurantChosen();
-                    //If the user has already chosen a restaurant we remove the orange marker on that restaurant and add a green one
-                    if (restaurantChosen != null && restaurantChosen.getPosition() != null){
-                        LatLng restaurantPosition = new LatLng(restaurantChosen.getPosition().getLatitude(), restaurantChosen.getPosition().getLongitude());
+        FirebaseCloudDatabase.getInstance().listenToAllRestaurant(restaurantList -> {
+            if (restaurantList != null  && !restaurantList.isEmpty()){
+                for (Restaurant restaurant : restaurantList) {
+                    List<Workmate> workmateList = restaurant.getWorkmateList();
+
+                    LatLng restaurantPosition = new LatLng(restaurant.getPosition().getLatitude(), restaurant.getPosition().getLongitude());
+                    if (workmateList != null && !workmateList.isEmpty()){
                         for (MyMarker myMarker : markerList) {
-                            if (Objects.equals(myMarker.getMarker().getTag(), restaurantChosen.getAddress()))
+                            if (Objects.equals(myMarker.getMarker().getTag(), restaurant.getAddress()))
                                 myMarker.getMarker().remove();
                         }
-                        addMarkerOnPosition(restaurantPosition, restaurantChosen.getName(), restaurantChosen.getAddress(), BitmapDescriptorFactory.HUE_GREEN, "green");
+                        addMarkerOnPosition(restaurantPosition, restaurant.getName(), restaurant.getAddress(), BitmapDescriptorFactory.HUE_GREEN, "green");
+                    }
+                    else {
+                        for (MyMarker myMarker : markerList) {
+                            if (Objects.equals(myMarker.getMarker().getTag(), restaurant.getAddress()))
+                                myMarker.getMarker().remove();
+                        }
+                        addMarkerOnPosition(restaurantPosition, restaurant.getName(), restaurant.getAddress(), BitmapDescriptorFactory.HUE_ORANGE, "orange");
                     }
 
                 }

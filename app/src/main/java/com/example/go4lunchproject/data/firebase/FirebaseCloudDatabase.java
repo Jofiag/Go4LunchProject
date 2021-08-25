@@ -2,8 +2,6 @@ package com.example.go4lunchproject.data.firebase;
 
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
@@ -11,11 +9,8 @@ import com.example.go4lunchproject.util.Constants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +98,23 @@ public class FirebaseCloudDatabase {
                         callback.onListGotten(userList);
                 })
                 .addOnFailureListener(e -> Log.d(TAG, "getAllUsers: " + e));
+    }
+
+    public void listenToAllUsers(UserListFromFirebase callback){
+        userCollectionRef.addSnapshotListener((value, error) -> {
+            if (value != null && !value.isEmpty()) {
+                List<User> userList = new ArrayList<>();
+
+                for (QueryDocumentSnapshot queryDocumentSnapshot : value) {
+                    User user = queryDocumentSnapshot.toObject(User.class);
+                    userList.add(user);
+                }
+
+                if (callback != null)
+                    callback.onListGotten(userList);
+            }
+
+        });
     }
 
     public void updateUser(User newUser){

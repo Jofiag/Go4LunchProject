@@ -52,21 +52,35 @@ public class FirebaseCloudDatabase {
     }
 
     public void saveUser(User user){
-        userCollectionRef.document(user.getId())
-                .set(user)
-                .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: Saving user succeed"))
-                .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e));
+        if (user.getId() != null) {
+            userCollectionRef.document(user.getId()).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        User userTemp = documentSnapshot.toObject(User.class);
+
+                        if (userTemp == null){
+                            userCollectionRef.document(user.getId())
+                                    .set(user)
+                                    .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: Saving user succeed"))
+                                    .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e));
+                        }
+
+                    });
+
+        }
+        else throw new RuntimeException("The user id must not be null");
     }
 
     public void getUser(String userId, SingleUserFromFirebase callback){
-        userCollectionRef.document(userId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    User user = documentSnapshot.toObject(User.class);
-                    if (callback != null)
-                        callback.onSingleUserGotten(user);
-                })
-                .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e));
-
+        if (userId != null) {
+            userCollectionRef.document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        User user = documentSnapshot.toObject(User.class);
+                        if (callback != null)
+                            callback.onSingleUserGotten(user);
+                    })
+                    .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e));
+        }
+        else throw new RuntimeException("The user id must not be null");
     }
 
     public void getAllUsers(UserListFromFirebase callback) {
@@ -87,42 +101,57 @@ public class FirebaseCloudDatabase {
     }
 
     public void updateUser(User newUser){
-        userCollectionRef.document(newUser.getId()).set(newUser)
-                .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: Updating user SUCCEED"))
-                .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
+        if (newUser.getId() != null) {
+            userCollectionRef.document(newUser.getId()).set(newUser)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: Updating user SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
+        }
+        else throw new RuntimeException("User path is null");
     }
 
     public void updateUserRestaurantChosen(String userId, Restaurant newRestaurant){
-        userCollectionRef.document(userId).update("restaurantChosen", newRestaurant)
-                .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: Updating user restaurant chosen SUCCEED"))
-                .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
+        if (userId != null) {
+            userCollectionRef.document(userId).update("restaurantChosen", newRestaurant)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: Updating user restaurant chosen SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
+        }
+        else throw new RuntimeException("user path is null");
     }
 
     public void deleteUser(String userId){
-        userCollectionRef.document(userId)
-                .delete()
-                .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: deleting user " + userId + " succeed"))
-                .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
+        if (userId != null) {
+            userCollectionRef.document(userId)
+                    .delete()
+                    .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: deleting user " + userId + " succeed"))
+                    .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
+        }
+        else throw new RuntimeException("User path is null");
 
     }
 
 
 
     public void saveRestaurant(Restaurant restaurant){
-        restaurantCollectionRef.document(restaurant.getRestaurantId())
-                .set(restaurant)
-                .addOnSuccessListener(unused -> Log.d(TAG, "saveRestaurant: Saving restaurant SUCCEED"))
-                .addOnFailureListener(e -> Log.d(TAG, "saveRestaurant: " + e.getMessage()));
+        if (restaurant != null && restaurant.getRestaurantId() != null) {
+            restaurantCollectionRef.document(restaurant.getRestaurantId())
+                    .set(restaurant)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "saveRestaurant: Saving restaurant SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "saveRestaurant: " + e.getMessage()));
+        }
+        else throw new RuntimeException("The restaurant and it's id must not be null");
     }
 
     public void getRestaurant(String restaurantId, RestaurantFromFirebase callback){
-        restaurantCollectionRef.document(restaurantId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
-                    if (callback != null)
-                        callback.onRestaurantGotten(restaurant);
-                })
-                .addOnFailureListener(e -> Log.d(TAG, "getRestaurant: " + e));
+        if (restaurantId != null) {
+            restaurantCollectionRef.document(restaurantId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
+                        if (callback != null)
+                            callback.onRestaurantGotten(restaurant);
+                    })
+                    .addOnFailureListener(e -> Log.d(TAG, "getRestaurant: " + e));
+        }
+        else throw new RuntimeException("The restaurant id must not be null");
     }
 
     public void getAllRestaurant(RestaurantListFromFirebase callback){
@@ -143,22 +172,31 @@ public class FirebaseCloudDatabase {
     }
 
     public void updateRestaurant(Restaurant newRestaurant){
-        restaurantCollectionRef.document(newRestaurant.getRestaurantId()).set(newRestaurant)
-                .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurant: Updating restaurant SUCCEED"))
-                .addOnFailureListener(e -> Log.d(TAG, "updateRestaurant: " + e.getMessage()));
+        if (newRestaurant != null && newRestaurant.getRestaurantId() != null) {
+            restaurantCollectionRef.document(newRestaurant.getRestaurantId()).set(newRestaurant)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurant: Updating restaurant SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "updateRestaurant: " + e.getMessage()));
+        }
+        else throw new RuntimeException("The new restaurant and it's id must not be null");
     }
 
     public void updateRestaurantWorkmateList(String restaurantId, List<Workmate> workmateList){
-        restaurantCollectionRef.document(restaurantId).update("workmateList", workmateList)
-                .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurantWorkmateList: Updating restaurant workmate list SUCCEED"))
-                .addOnFailureListener(e -> Log.d(TAG, "updateRestaurantWorkmateList: " + e.getMessage()));
+        if (restaurantId != null) {
+            restaurantCollectionRef.document(restaurantId).update("workmateList", workmateList)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurantWorkmateList: Updating restaurant workmate list SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "updateRestaurantWorkmateList: " + e.getMessage()));
+        }
+        else throw new RuntimeException("The restaurant id must not be null");
     }
 
     public void deleteRestaurant(String restaurantId){
-        restaurantCollectionRef.document(restaurantId)
-                .delete()
-                .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: deleting user " + restaurantId + " succeed"))
-                .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
+        if (restaurantId != null) {
+            restaurantCollectionRef.document(restaurantId)
+                    .delete()
+                    .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: deleting user " + restaurantId + " succeed"))
+                    .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
+        }
+        else throw new RuntimeException("The restaurant id must not be null");
 
     }
 

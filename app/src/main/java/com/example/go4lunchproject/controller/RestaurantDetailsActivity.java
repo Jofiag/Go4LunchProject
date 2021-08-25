@@ -352,10 +352,12 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             workmates.add(workmate);
     }
     private void removeWorkmate(List<Workmate> workmates, Workmate workmate){
-        for (Workmate workmate1 : workmates) {
-            if (containsWorkmate(workmates, workmate)) {
-                workmates.remove(workmate1);
-//                break;
+        if (workmates != null && !workmates.isEmpty()) {
+            for (Workmate workmate1 : workmates) {
+                if (workmate1.getName().equals(workmate.getName())) {
+                    workmates.remove(workmate1);
+                    break;
+                }
             }
         }
     }
@@ -411,11 +413,11 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             firebaseCloudDatabase.updateRestaurant(restaurantTemp);
 
             //delete restaurant if it's workmate list is empty, because we just keeping in the database only the restaurants that are chosen
-            firebaseCloudDatabase.getRestaurant(restaurantTemp.getRestaurantId(), restaurant1 -> {
+            /*firebaseCloudDatabase.getRestaurant(restaurantTemp.getRestaurantId(), restaurant1 -> {
                 List<Workmate> workmateList = restaurant1.getWorkmateList();
                 if (workmateList == null || workmateList.isEmpty())
                     firebaseCloudDatabase.deleteRestaurant(restaurantTemp.getRestaurantId());
-            });
+            });*/
 
             if (callback != null)
                 callback.onResponse(restaurantTemp);

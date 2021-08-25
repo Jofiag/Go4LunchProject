@@ -116,23 +116,6 @@ public class RestaurantMapViewFragment extends Fragment {
             }
         });
 
-        /*FirebaseRealtimeDatabase.getInstance().getAllUsers(userList -> {
-            if (userList != null && !userList.isEmpty()){
-                for (User user : userList) {
-                    Restaurant restaurantChosen = user.getRestaurantChosen();
-                    //If the user has already chosen a restaurant we remove the orange marker on that restaurant and add a green one
-                    if (restaurantChosen != null && restaurantChosen.getPosition() != null){
-                        LatLng restaurantPosition = new LatLng(restaurantChosen.getPosition().getLatitude(), restaurantChosen.getPosition().getLongitude());
-                        for (MyMarker myMarker : markerList) {
-                            if (Objects.equals(myMarker.getMarker().getTag(), restaurantChosen.getAddress()))
-                                myMarker.getMarker().remove();
-                        }
-                        addMarkerOnPosition(restaurantPosition, restaurantChosen.getName(), restaurantChosen.getAddress(), BitmapDescriptorFactory.HUE_GREEN, "green");
-                    }
-
-                }
-            }
-        });*/
     }
 
     @Override

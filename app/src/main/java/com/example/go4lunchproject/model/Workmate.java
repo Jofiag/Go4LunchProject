@@ -45,7 +45,7 @@ public class Workmate implements Parcelable {
         return imageUri;
     }
 
-    public void setImageUri(String imageUri) {
+    public void setImageUrl(String imageUri) {
         this.imageUri = imageUri;
     }
 

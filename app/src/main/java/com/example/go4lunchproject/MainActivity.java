@@ -12,10 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.go4lunchproject.controller.HomepageActivity;
 import com.example.go4lunchproject.data.api.ActualWorkmateApi;
-import com.example.go4lunchproject.data.firebase.MyFirebaseDatabase;
 import com.example.go4lunchproject.data.api.UserApi;
+import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.model.User;
-import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.UtilMethods;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -70,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
         if (user != null){
             UserApi.getInstance().setUser(user);
             ActualWorkmateApi.getInstance().setWorkmate(UtilMethods.setWorkmateCorresponding(user));
-            MyFirebaseDatabase.getInstance().saveUser(UserApi.getInstance().getUser());
+//            FirebaseRealtimeDatabase.getInstance().saveUser(UserApi.getInstance().getUser());
+            FirebaseCloudDatabase.getInstance().saveUser(UserApi.getInstance().getUser());
         }
     }
 
@@ -133,10 +133,12 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Toast.makeText(MainActivity.this, "signInWithCredential:success", Toast.LENGTH_SHORT).show();
+                        setUserAndFirebaseAuth();
                         startHomePageActivityIfUserConnected(mAuth.getCurrentUser());
                     } else {
                         // If sign in fails, display a message to the user.
                         Toast.makeText(MainActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d("GOOGLEERROR", "firebaseAuthWithGoogle: " + task.getException());
                     }
                 });
     }

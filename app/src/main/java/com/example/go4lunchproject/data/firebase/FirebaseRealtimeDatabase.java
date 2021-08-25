@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
+import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -19,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyFirebaseDatabase {
+public class FirebaseRealtimeDatabase {
     public interface UserListFromFirebase{
         void onListGotten(List<User> userList);
     }
@@ -39,16 +40,16 @@ public class MyFirebaseDatabase {
     private final FirebaseDatabase database = FirebaseDatabase.getInstance("https://go4lunchproject-6c727-default-rtdb.europe-west1.firebasedatabase.app");
     private final DatabaseReference userDataRef = database.getReference(Constants.USER_DATA_REF);
     private final DatabaseReference restaurantChosenRef = database.getReference(Constants.RESTAURANT_CHOSEN_REFERENCE);
-    private static MyFirebaseDatabase INSTANCE;
+    private static FirebaseRealtimeDatabase INSTANCE;
     private final FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private String currentUserName;
 
-    public MyFirebaseDatabase() {
+    public FirebaseRealtimeDatabase() {
     }
 
-    public static MyFirebaseDatabase getInstance() {
+    public static FirebaseRealtimeDatabase getInstance() {
         if (INSTANCE == null)
-            INSTANCE = new MyFirebaseDatabase();
+            INSTANCE = new FirebaseRealtimeDatabase();
         return INSTANCE;
     }
 
@@ -123,6 +124,10 @@ public class MyFirebaseDatabase {
         userDataRef.child(newUser.getId()).setValue(newUser);
     }
 
+    public void updateUserRestaurantChosen(String userId, Restaurant newRestaurant){
+        userDataRef.child(userId).child("restaurantChosen").setValue(newRestaurant);
+    }
+
 
 
     public void saveRestaurant(Restaurant restaurant){
@@ -152,6 +157,9 @@ public class MyFirebaseDatabase {
                         if (callback != null)
                             callback.onRestaurantGotten(restaurant);
                     }
+                    else if (!snapshot.exists())
+                        if (callback != null)
+                            callback.onRestaurantGotten(null);
                 }
 
                 @Override
@@ -190,6 +198,10 @@ public class MyFirebaseDatabase {
 
     public void updateRestaurant(Restaurant newRestaurant){
         restaurantChosenRef.child(newRestaurant.getRestaurantId()).setValue(newRestaurant);
+    }
+
+    public void updateRestaurantList(String restaurantId, List<Workmate> newWorkmateList){
+        restaurantChosenRef.child(restaurantId).child("workmateList").setValue(newWorkmateList);
     }
 
     public FirebaseUser getCurrentFirebaseUser() {

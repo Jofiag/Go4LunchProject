@@ -14,9 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchproject.R;
+import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
+import com.squareup.picasso.Picasso;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -60,6 +62,10 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
             holder.foodCountryTextView.setText(restaurant.getFoodCountry());
             holder.restaurantNameTextView.setText(MessageFormat.format("({0})", restaurant.getName()));
             holder.workmateNameTextView.setText(workmate.getName());
+            holder.itemView.setOnClickListener(v -> {
+                RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurant);
+                mCallback.onWorkmateSelected(workmate);
+            });
         }
         else {
             holder.isEatingTextView.setVisibility(View.GONE);
@@ -71,11 +77,14 @@ public class WorkmateRecyclerViewAdapter extends RecyclerView.Adapter<WorkmateRe
 
         if (workmate.getImageUri() != null) {
             Uri uri = Uri.parse(workmate.getImageUri());
-            holder.circleImageView.setImageURI(uri);
+            Picasso.get().load(uri)
+                    .placeholder(android.R.drawable.stat_sys_download)
+                    .error(android.R.drawable.stat_notify_error)
+                    .into(holder.circleImageView);
         }
 
 
-        holder.itemView.setOnClickListener(v -> mCallback.onWorkmateSelected(workmate));
+
     }
 
     @Override

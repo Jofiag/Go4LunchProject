@@ -17,31 +17,34 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
+import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.model.Restaurant;
+import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
+import com.example.go4lunchproject.util.UtilMethods;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WorkmateListViewFragment extends Fragment {
+    private interface AccessToAllWorkmate{
+        void onResponse(List<Workmate> workmateList);
+    }
 
     private RecyclerView recyclerView;
 
     private WorkmateRecyclerViewAdapter workmateAdapter;
-    private final List<Workmate> workmateList = Constants.getWorkmateList();
+    private final FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
+//    private final List<Workmate> workmateList = Constants.getWorkmateList();
 
     public WorkmateListViewFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//
-//        }
     }
 
     @Override
@@ -49,15 +52,13 @@ public class WorkmateListViewFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_workmate_list_view, container, false);
 
         recyclerView = view.findViewById(R.id.workmate_list_recycler_view);
-
-//        List<Workmate> workmateList = new ArrayList<>();
-//        Activity context = view.getContext();
-
-        workmateAdapter = new WorkmateRecyclerViewAdapter(getActivity(), workmateList);
-
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(workmateAdapter);
+
+        accessToAllWorkmate(workmateList -> {
+            workmateAdapter = new WorkmateRecyclerViewAdapter(getActivity(), workmateList);
+            recyclerView.setAdapter(workmateAdapter);
+        });
 
         return view;
     }
@@ -89,20 +90,66 @@ public class WorkmateListViewFragment extends Fragment {
 
     }
 
+    private void accessToAllWorkmate(AccessToAllWorkmate callback){
+        firebaseCloudDatabase.listenToAllUsers(userList -> {
+            if (userList != null && !userList.isEmpty()){
+                List<Workmate> workmateList = new ArrayList<>();
+
+                for (User user : userList)
+                    workmateList.add(UtilMethods.setWorkmateCorresponding(user));
+
+                if (callback != null)
+                    callback.onResponse(workmateList);
+            }
+            else
+                if (callback != null)
+                    callback.onResponse(null);
+        });
+    }
+
     private void filterList(String query){
         List<Workmate> listFiltered = new ArrayList<>();
 
-        for (Workmate workmate : workmateList) {
-            Restaurant restaurantChosen = workmate.getRestaurantChosen();
-            if (restaurantChosen != null){
-                String restaurantChosenName = restaurantChosen.getName();
-                if (restaurantChosenName.toLowerCase().contains(query.toLowerCase()))
-                    listFiltered.add(workmate);
-            }
-        }
+        firebaseCloudDatabase.listenToAllUsers(userList -> {
+            if (userList != null && !userList.isEmpty()){
+                List<Workmate> workmateList = new ArrayList<>();
 
-        workmateAdapter = new WorkmateRecyclerViewAdapter(getContext(), listFiltered);
-        recyclerView.setAdapter(workmateAdapter);
-        workmateAdapter.notifyDataSetChanged();
+                for (User user : userList)
+                    workmateList.add(UtilMethods.setWorkmateCorresponding(user));
+
+                if (!workmateList.isEmpty()){
+                    for (Workmate workmate : workmateList) {
+                        Restaurant restaurantChosen = workmate.getRestaurantChosen();
+                        if (restaurantChosen != null){
+                            String restaurantChosenName = restaurantChosen.getName();
+                            if (restaurantChosenName.toLowerCase().contains(query.toLowerCase()))
+                                listFiltered.add(workmate);
+                        }
+                    }
+
+                    workmateAdapter = new WorkmateRecyclerViewAdapter(getContext(), listFiltered);
+                    recyclerView.setAdapter(workmateAdapter);
+                }
+
+            }
+        });
+
+//        accessToAllWorkmate(workmateList -> {
+//            if (workmateList != null){
+//                for (Workmate workmate : workmateList) {
+//                    Restaurant restaurantChosen = workmate.getRestaurantChosen();
+//                    if (restaurantChosen != null){
+//                        String restaurantChosenName = restaurantChosen.getName();
+//                        if (restaurantChosenName.toLowerCase().contains(query.toLowerCase()))
+//                            listFiltered.add(workmate);
+//                    }
+//                }
+//
+//                workmateAdapter = new WorkmateRecyclerViewAdapter(getContext(), listFiltered);
+//                recyclerView.setAdapter(workmateAdapter);
+//            }
+//        });
+
+
     }
 }

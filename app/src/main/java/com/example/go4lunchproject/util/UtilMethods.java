@@ -68,7 +68,6 @@ public class UtilMethods {
 
     public static User getMyUserFromFirebaseUser(){
         User user = new User();
-//        FirebaseUser firebaseUser = FirebaseRealtimeDatabase.getInstance().getCurrentFirebaseUser();
         FirebaseUser firebaseUser = FirebaseCloudDatabase.getInstance().getCurrentFirebaseUser();
 
         if (firebaseUser != null){
@@ -88,7 +87,7 @@ public class UtilMethods {
         Workmate workmate = new Workmate();
         workmate.setName(user.getName());
         workmate.setImageUrl(user.getImageUri());
-//        workmate.setRestaurantChosen(user.getRestaurantChosen());
+        workmate.setRestaurantChosen(user.getRestaurantChosen());
 
         return workmate;
     }

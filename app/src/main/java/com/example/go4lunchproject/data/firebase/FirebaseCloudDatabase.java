@@ -100,6 +100,20 @@ public class FirebaseCloudDatabase {
                 .addOnFailureListener(e -> Log.d(TAG, "getAllUsers: " + e));
     }
 
+    public void listenToUser(String userId, SingleUserFromFirebase callback){
+        userCollectionRef.document(userId)
+                .addSnapshotListener((value, error) -> {
+                    if (value != null){
+                        User user = value.toObject(User.class);
+                        if (callback != null)
+                            callback.onSingleUserGotten(user);
+                    }
+                    else
+                    if (callback != null)
+                        callback.onSingleUserGotten(null);
+                });
+    }
+
     public void listenToAllUsers(UserListFromFirebase callback){
         userCollectionRef.addSnapshotListener((value, error) -> {
             if (value != null && !value.isEmpty()) {
@@ -186,6 +200,20 @@ public class FirebaseCloudDatabase {
                         callback.onListGotten(restaurantList);
                 })
                 .addOnFailureListener(e -> Log.d(TAG, "getAllUsers: " + e));
+    }
+
+    public void listenToRestaurant(String restaurantId, RestaurantFromFirebase callback){
+        restaurantCollectionRef.document(restaurantId)
+                .addSnapshotListener((value, error) -> {
+                    if (value != null){
+                        Restaurant restaurant = value.toObject(Restaurant.class);
+                        if (callback != null)
+                            callback.onRestaurantGotten(restaurant);
+                    }
+                    else
+                        if (callback != null)
+                            callback.onRestaurantGotten(null);
+                });
     }
 
     public void listenToAllRestaurant(RestaurantListFromFirebase callback){

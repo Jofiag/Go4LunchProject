@@ -11,20 +11,19 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 public class Notification {
-    private int smallIconResourceId;
-    private String title;
-    private String contentText;
     private int priority;
-    private boolean isMoreThanOneLine;
+    private String title;
     private Context context;
+    private String contentText;
+    private int smallIconResourceId;
+    private boolean isMoreThanOneLine;
 
     private NotificationCompat.Builder builder;
 
-    //Attribute for notification channel
     private String channelId;
     private String channelName;
-    private String channelDescription;
     private int channelImportance;
+    private String channelDescription;
 
     private Intent tapActionIntent;
 
@@ -47,13 +46,16 @@ public class Notification {
     }
 
     public void initializeNotification(){
-        setBuilder();
-        setTapAction();
-        createNotificationChannel();
+        if (context != null) {
+            setBuilder();
+            setTapAction();
+            createNotificationChannel();
+        }
+
     }
 
     public void showNotification(int notificationId){
-        if (context != null) {
+        if (context != null && builder != null) {
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
             notificationManagerCompat.notify(notificationId, builder.build());
         }
@@ -61,15 +63,18 @@ public class Notification {
 
     @SuppressLint("UnspecifiedImmutableFlag")
     private void setTapAction(){
-        tapActionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
-            pendingIntent = PendingIntent.getActivity(context, 0, tapActionIntent, PendingIntent.FLAG_IMMUTABLE);
-        else
-            pendingIntent = PendingIntent.getActivity(context, 0, tapActionIntent, 0);
+        if (tapActionIntent != null) {
+            tapActionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+                pendingIntent = PendingIntent.getActivity(context, 0, tapActionIntent, PendingIntent.FLAG_IMMUTABLE);
+            else
+                pendingIntent = PendingIntent.getActivity(context, 0, tapActionIntent, 0);
 
-        builder.setContentIntent(pendingIntent);
-        builder.setAutoCancel(true);    //The notification will go when the user clicks on it
+            builder.setContentIntent(pendingIntent);
+            builder.setAutoCancel(true);    //The notification will go when the user clicks on it
+        }
+
     }
 
 
@@ -145,6 +150,12 @@ public class Notification {
         this.context = context;
     }
 
+    public Intent getTapActionIntent() {
+        return tapActionIntent;
+    }
+    public void setTapActionIntent(Intent tapActionIntent) {
+        this.tapActionIntent = tapActionIntent;
+    }
 
     //// NOTIFICATION CHANNEL GETTER AND SETTER
     public String getChannelId() {

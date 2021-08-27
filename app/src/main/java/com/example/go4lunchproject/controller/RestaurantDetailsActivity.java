@@ -1,6 +1,7 @@
 package com.example.go4lunchproject.controller;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -19,6 +20,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,16 +33,19 @@ import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
+import com.example.go4lunchproject.util.Notification;
 import com.example.go4lunchproject.util.UtilMethods;
 import com.squareup.picasso.Picasso;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-@RequiresApi(api = Build.VERSION_CODES.M)
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class RestaurantDetailsActivity extends AppCompatActivity {
+
     public interface AccessToRestaurantUpdated {
         void onResponse(Restaurant restaurantUpdated);
     }
@@ -52,14 +57,14 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private ImageView callImageView;
     private ImageView starImageView;
     private ImageView globeImageView;
-    private CircleImageView chosenImageView;
     private RecyclerView recyclerView;
     private ImageView restaurantImageView;
     private TextView restaurantNameTextView;
+    private CircleImageView chosenImageView;
     private TextView RestaurantFoodCountryAndRestaurantAddress;
 
-    private Restaurant restaurantActuallyShowed;
     private String userId;
+    private Restaurant restaurantActuallyShowed;
 
     private WorkmateAdapterForRestaurantDetails adapter;
     private final FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
@@ -77,10 +82,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
         setReferences();
 
-        userId = getUserConnected().getId();
-        User user = getUserWithNameAndPhotoUrlOnly();
-        actualWorkmate = UtilMethods.setWorkmateCorresponding(user);
-        restaurantActuallyShowed = RestaurantSelectedApi.getInstance().getRestaurantSelected();
+        initializeUserAndRestaurantShowed();
 
         setYellowStarVisibility();
         setChosenImageVisibility();
@@ -94,6 +96,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         setRecyclerView();
         retrieveActualWorkmateFromHisLastRestaurantChosen();
         deleteRestaurantThatAreNotChosenAnymore();
+
+        setNotification();
 
     }
 
@@ -113,6 +117,13 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         restaurantImageView = findViewById(R.id.restaurant_image_view_details);
         restaurantNameTextView = findViewById(R.id.restaurant_name_text_view_details);
         RestaurantFoodCountryAndRestaurantAddress = findViewById(R.id.food_country_and_restaurant_address_details);
+    }
+
+    private void initializeUserAndRestaurantShowed(){
+        userId = getUserConnected().getId();
+        User user = getUserWithNameAndPhotoUrlOnly();
+        actualWorkmate = UtilMethods.setWorkmateCorresponding(user);
+        restaurantActuallyShowed = RestaurantSelectedApi.getInstance().getRestaurantSelected();
     }
 
     private User getUserConnected(){
@@ -509,7 +520,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
 
-
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), result -> {
                 if (result)
@@ -552,5 +562,68 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 .setNegativeButton("NO", null)
                 .create()
                 .show();
+    }
+
+
+    //Notification
+    private void setNotification(){
+        Notification notification = new Notification(this);
+
+        notification.setMoreThanOneLine(true);
+        notification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        notification.setTitle(Constants.RESTAURANT_NOTIFICATION_TITLE);
+        notification.setSmallIconResourceId(R.mipmap.ic_launcher_round);
+        notification.setTapActionIntent(new Intent(getApplicationContext(), RestaurantDetailsActivity.class));
+
+        //Notification channel is needed for API 26 and above.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notification.setChannelId(Constants.CHANNEL_ID);
+            notification.setChannelName(Constants.CHANNEL_NAME);
+            notification.setChannelDescription(Constants.CHANNEL_DESCRIPTION);
+            notification.setChannelImportance(NotificationManager.IMPORTANCE_DEFAULT);
+        }
+
+        firebaseCloudDatabase.listenToUser(userId, singleUser -> {
+            if (singleUser != null){
+                Restaurant restaurant = singleUser.getRestaurantChosen();
+                if (restaurant != null && itIs12()){
+                    notification.setContentText(getNotificationContent(restaurant));
+                    notification.initializeNotification();
+                    notification.showNotification(Constants.RESTAURANT_NOTIFICATION_ID);
+                }
+            }
+        });
+
+    }
+
+    private String getNotificationContent(Restaurant restaurant){
+        StringBuilder notificationContent = new StringBuilder();
+
+        if (restaurant != null){
+            notificationContent.append(restaurant.getName()).append("\n")
+                    .append(restaurant.getAddress()).append("\n");
+
+            List<Workmate> list = restaurant.getWorkmateList();
+
+            if (list != null && !list.isEmpty()) {
+                StringBuilder workmatesName = new StringBuilder();
+
+                for (Workmate workmate : list)
+                    workmatesName.append(workmate.getName()).append(" is joining").append("\n");
+
+                notificationContent.append(workmatesName);
+            }
+        }
+
+        return notificationContent.toString();
+    }
+
+    private boolean itIs12(){
+        boolean itIs12 = false;
+
+        if (LocalTime.now().getHour() == 12)
+            itIs12 = true;
+
+        return itIs12;
     }
 }

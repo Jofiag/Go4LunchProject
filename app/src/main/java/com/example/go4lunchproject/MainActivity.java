@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "No user founded", Toast.LENGTH_SHORT).show();
     }
 
+    //FACEBOOK CONNECTION
     private void initializeFacebook() {
 //        FacebookSdk.sdkInitialize(getApplicationContext());
 //        AppEventsLogger.activateApp(this);
@@ -119,23 +120,37 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
     private void signInWithFacebook(){
         signInFacebookButton.setOnClickListener(v ->
                 loginManager.logInWithReadPermissions(MainActivity.this, Collections.singletonList("public_profile"))
         );
     }
+    private void firebaseAuthWithFacebook(AccessToken token) {
 
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        setUserAndFirebaseAuth();
+                        startHomePageActivityIfUserConnected(mAuth.getCurrentUser());
+                        finish();
+                    } else {
+                        Toast.makeText(MainActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d("FACEBOOK", "firebaseAuthWithFacebook: " + task.getException());
+                    }
+                });
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+    //GOOGLE CONNECTION
     private void signInWithGoogle(){
         signInGoogleButton.setOnClickListener(v -> lunchGoogleIntentClient());
     }
-
     private void sendGoogleSignInRequest(){
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -145,27 +160,11 @@ public class MainActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
-
     private void lunchGoogleIntentClient() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         mGetContent.launch(signInIntent);
 
     }
-
-    ActivityResultLauncher<Intent> mGetContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
-                try {
-                    // Google Sign In was successful, authenticate with Firebase
-                    GoogleSignInAccount account = task.getResult(ApiException.class);
-                    Log.d("USERID", "firebaseAuthWithGoogle:" + account.getId());
-                    firebaseAuthWithGoogle(account.getIdToken());
-                } catch (ApiException e) {
-                    // Google Sign In failed, update UI appropriately
-                    Log.d("USERID", "Google Auth Error :" + e);
-                }
-            });
-
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
@@ -183,21 +182,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+    ActivityResultLauncher<Intent> mGetContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                try {
+                    // Google Sign In was successful, authenticate with Firebase
+                    GoogleSignInAccount account = task.getResult(ApiException.class);
+                    Log.d("USERID", "firebaseAuthWithGoogle:" + account.getId());
+                    firebaseAuthWithGoogle(account.getIdToken());
+                } catch (ApiException e) {
+                    // Google Sign In failed, update UI appropriately
+                    Log.d("USERID", "Google Auth Error :" + e);
+                }
+            });
 
-    private void firebaseAuthWithFacebook(AccessToken token) {
-
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        setUserAndFirebaseAuth();
-                        startHomePageActivityIfUserConnected(mAuth.getCurrentUser());
-                        finish();
-                    } else {
-                        Toast.makeText(MainActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.d("FACEBOOK", "firebaseAuthWithFacebook: " + task.getException());
-                    }
-                });
-    }
 }

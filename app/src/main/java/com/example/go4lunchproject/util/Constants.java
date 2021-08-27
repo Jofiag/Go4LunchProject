@@ -78,6 +78,7 @@ public class Constants {
     public static final String RESTAURANT_CHOSEN_REFERENCE = "Restaurant_chosen_ref";
     public static final String REMOVE_ACTUAL_WORKMATE = "Remove actual workmate";
     public static final String ADD_ACTUAL_WORKMATE = "Add actual workmate";
+    public static final String CHANNEL_ID = "channel for restaurant chosen notification";
 
     public static List<Restaurant> getRestaurantList(){
         List<Restaurant> restaurantList = new ArrayList<>();

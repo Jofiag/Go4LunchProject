@@ -38,45 +38,68 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <!--<ImageView
             android:id="@+id/facebook_image"
             android:layout_width="37dp"
             android:layout_height="37dp"
             android:layout_alignParentTop="true"
             android:layout_marginTop="0dp"
             android:contentDescription="@string/facebook_image_text"
-            android:src="@mipmap/facebook_created_round" />
+            android:src="@mipmap/facebook_created_round" />-->
 
-        <ImageView
+        <!--<ImageView
             android:id="@+id/google_image"
             android:layout_width="37dp"
-            android:layout_height="37dp"
+            android:layout_height="47dp"
             android:layout_below="@+id/facebook_image"
-            android:layout_marginTop="27dp"
+            android:layout_marginTop="22dp"
             android:contentDescription="@string/google_image_text"
-            android:src="@mipmap/google_plus_created_round" />
+            android:src="@mipmap/google_plus_created_round" />-->
 
         <Button
             android:id="@+id/sign_in_facebook_button"
             android:layout_width="wrap_content"
-            android:layout_height="37dp"
+            android:layout_height="47dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="51dp"
+            android:layout_marginEnd="51dp"
+            android:backgroundTint="@color/com_facebook_blue"
+            android:drawableLeft="@drawable/facebook"
             android:text="@string/sign_in_facebook_text"
-            android:textStyle="bold"
             android:textColor="@color/white"
-            android:background="@android:color/transparent"
-            android:layout_toEndOf="@+id/facebook_image"/>
+            android:textStyle="bold"
+            tools:targetApi="lollipop"
+            tools:ignore="RtlHardcoded" />
+
+<!--        android:background="@android:color/transparent"-->
+
+        <!--<com.facebook.login.widget.LoginButton
+            android:id="@+id/sign_in_facebook_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="7dp" />-->
+
 
         <Button
             android:id="@+id/sign_in_google_button"
             android:layout_width="wrap_content"
-            android:layout_height="37dp"
-            android:layout_marginTop="27dp"
+            android:layout_height="47dp"
             android:layout_below="@+id/sign_in_facebook_button"
-            android:layout_toEndOf="@+id/google_image"
-            android:background="@android:color/transparent"
-            android:textStyle="bold"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="51dp"
+            android:layout_marginTop="21dp"
+            android:layout_marginEnd="51dp"
+            android:backgroundTint="@color/my_google_red"
+            android:drawableLeft="@drawable/common_google_signin_btn_icon_light"
+            android:text="@string/sign_in_google_text"
             android:textColor="@color/white"
-            android:text="@string/sign_in_google_text" />
+            android:textStyle="bold"
+            tools:ignore="RtlHardcoded"
+            tools:targetApi="lollipop" />
 
     </RelativeLayout>
 

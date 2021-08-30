@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                     // Google Sign In failed, update UI appropriately
                     Log.d("USERID", "Google Auth Error :" + e);
                 }
-            });
+            }
+    );
 
 }

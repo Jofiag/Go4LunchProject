@@ -35,6 +35,7 @@ import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
 import com.example.go4lunchproject.util.Notification;
 import com.example.go4lunchproject.util.UtilMethods;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
 import java.time.LocalTime;
@@ -98,7 +99,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         deleteRestaurantThatAreNotChosenAnymore();
 
         setNotification();
-
     }
 
     @Override
@@ -570,7 +570,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         Notification notification = new Notification(this);
 
         notification.setMoreThanOneLine(true);
-        notification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        notification.setPriority(NotificationCompat.PRIORITY_MAX);
         notification.setTitle(Constants.RESTAURANT_NOTIFICATION_TITLE);
         notification.setSmallIconResourceId(R.mipmap.ic_launcher_round);
         notification.setTapActionIntent(new Intent(getApplicationContext(), RestaurantDetailsActivity.class));
@@ -580,7 +580,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             notification.setChannelId(Constants.CHANNEL_ID);
             notification.setChannelName(Constants.CHANNEL_NAME);
             notification.setChannelDescription(Constants.CHANNEL_DESCRIPTION);
-            notification.setChannelImportance(NotificationManager.IMPORTANCE_DEFAULT);
+            notification.setChannelImportance(NotificationManager.IMPORTANCE_MAX);
         }
 
         firebaseCloudDatabase.listenToUser(userId, singleUser -> {

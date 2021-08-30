@@ -527,7 +527,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 else
                     askPermissionWithinDialog();
             }
-);
+    );
     private void setCallRestaurantFunction(){
         callImageView.setOnClickListener(v -> {
             //Call restaurant if phone number is available

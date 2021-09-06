@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +39,6 @@ import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.data.viewmodel.FragmentViewModel;
 import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;
-import com.example.go4lunchproject.model.UserSettings;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.notification.AlarmReceiver;
 import com.example.go4lunchproject.util.Constants;
@@ -69,7 +69,6 @@ public class HomepageActivity extends AppCompatActivity
 
     private Fragment fragmentToShow;
     private Fragment activeFragment;
-    private Restaurant restaurantChosen;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -104,7 +103,7 @@ public class HomepageActivity extends AppCompatActivity
     }
 
     private void getRestaurantChosenByUser() {
-        restaurantChosen = UserApi.getInstance().getUser().getRestaurantChosen();
+        Restaurant restaurantChosen = UserApi.getInstance().getUser().getRestaurantChosen();
     }
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
@@ -297,12 +296,20 @@ public class HomepageActivity extends AppCompatActivity
         }
     }
     private void startRestaurantDetailsActivity(){
-        if (restaurantChosen != null){
-            RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurantChosen);
-            startActivity(new Intent(HomepageActivity.this, RestaurantDetailsActivity.class));
-        }
-        else
-            Toast.makeText(this, "You don't chose any restaurant yet!", Toast.LENGTH_SHORT).show();
+        FirebaseCloudDatabase.getInstance().getUser(UserApi.getInstance().getUserId(), singleUser -> {
+            if (singleUser != null){
+                Restaurant restaurant = singleUser.getRestaurantChosen();
+                if (restaurant != null){
+                    RestaurantSelectedApi.getInstance().setRestaurantSelected(restaurant);
+                    startActivity(new Intent(HomepageActivity.this, RestaurantDetailsActivity.class));
+                }
+                else
+                    Toast.makeText(this, "You don't chose any restaurant yet!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Log.d("SELECTED", "startRestaurantDetailsActivity: " + RestaurantSelectedApi.getInstance().getRestaurantSelected());
+
     }
 
     private void alarmNotification(){

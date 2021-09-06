@@ -4,6 +4,7 @@ import com.example.go4lunchproject.model.User;
 
 public class UserApi {
     private User user;
+    private String userId;
     private static UserApi INSTANCE;
 
     public UserApi() {
@@ -20,8 +21,8 @@ public class UserApi {
     public User getUser() {
         return user;
     }
-
     public void setUser(User user) {
         this.user = user;
     }
+
 }

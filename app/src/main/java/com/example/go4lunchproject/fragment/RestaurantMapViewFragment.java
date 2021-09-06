@@ -69,6 +69,9 @@ public class RestaurantMapViewFragment extends Fragment {
     private ImageButton locationButton;
     private final OnMapReadyCallback callback;
 
+    private final FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
+    private final String userId = firebaseCloudDatabase.getCurrentUserName() + "_" + firebaseCloudDatabase.getCurrentFirebaseUser().getUid();
+
     private DataViewModel dataViewModel;
 
     private final ArrayList<MyMarker> markerList = new ArrayList<>();
@@ -99,7 +102,7 @@ public class RestaurantMapViewFragment extends Fragment {
     }
 
     private void addGreenMarkerOnRestaurantChosenByAllWorkmates(){
-        FirebaseCloudDatabase.getInstance().listenToAllRestaurant(restaurantList -> {
+        firebaseCloudDatabase.listenToAllRestaurant(restaurantList -> {
             if (restaurantList != null  && !restaurantList.isEmpty()){
                 for (Restaurant restaurant : restaurantList) {
                     List<Workmate> workmateList = restaurant.getWorkmateList();
@@ -119,6 +122,9 @@ public class RestaurantMapViewFragment extends Fragment {
                         }
                         addMarkerOnPosition(restaurantPosition, restaurant.getName(), restaurant.getAddress(), BitmapDescriptorFactory.HUE_ORANGE, "orange");
                     }
+
+                    if (isStartedFromNotification())
+                        showInfoWindowOnRestaurantChosenMarker(restaurantPosition);
 
                 }
             }
@@ -225,11 +231,15 @@ public class RestaurantMapViewFragment extends Fragment {
 
             }
 
-            addMarkerOnPosition(dataViewModel.getDevicePosition(), LocationApi.getInstance(requireContext()).getStreetAddressFromPositions(), Constants.DEVICE_POSITION, BitmapDescriptorFactory.HUE_RED, "orange");
+            addMarkerOnPosition(dataViewModel.getDevicePosition(), LocationApi.getInstance(getContext()).getStreetAddressFromPositions(), Constants.DEVICE_POSITION, BitmapDescriptorFactory.HUE_RED, "orange");
         }
+
+
+
         dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(dataViewModel.getDevicePosition(), 12));
         dataViewModel.getGoogleMap().getUiSettings().setMyLocationButtonEnabled(false);
         locationButton.setOnClickListener(v -> dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(dataViewModel.getDevicePosition(), 15)));
+        zoomOnRestaurantChosenWhenNotificationIsClicked();
     }
     private void startRestaurantDetailsActivityWhenMarkerIsClicked(@org.jetbrains.annotations.NotNull ArrayList<Restaurant> restaurantList){
         dataViewModel.getGoogleMap().setOnMarkerClickListener(marker -> {
@@ -279,6 +289,45 @@ public class RestaurantMapViewFragment extends Fragment {
                 }
             });
 
+        }
+    }
+    private boolean isStartedFromNotification(){
+        boolean result = false;
+        if (getActivity() != null) {
+            Bundle bundle = getActivity().getIntent().getExtras();
+
+            if (bundle != null){
+                result = bundle.getBoolean("from notification");
+            }
+        }
+
+        return result;
+    }
+    private void zoomOnRestaurantChosenWhenNotificationIsClicked(){
+        if (isStartedFromNotification()) {
+            firebaseCloudDatabase.getUser(userId, singleUser -> {
+                if (singleUser != null) {
+                    Restaurant restaurant = singleUser.getRestaurantChosen();
+                    if (restaurant != null && restaurant.getAddress() != null){
+                        LatLng restaurantPosition = new LatLng(restaurant.getPosition().getLatitude(), restaurant.getPosition().getLongitude());
+                        dataViewModel.getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(restaurantPosition, 16));
+                    }
+                    else
+                        Toast.makeText(getContext(), "Restaurant position is null", Toast.LENGTH_SHORT).show();
+                }
+
+            });
+
+        }
+
+    }
+    private void showInfoWindowOnRestaurantChosenMarker(LatLng restaurantPosition){
+        for (MyMarker myMarker : markerList) {
+            LatLng markerPosition = myMarker.getMarker().getPosition();
+            if (markerPosition.equals(restaurantPosition)) {
+                myMarker.getMarker().showInfoWindow();
+                Log.d("WINDOW", "zoomOnRestaurantChosenWhenNotificationIsClicked: showInfoWindow called!!!");
+            }
         }
     }
 

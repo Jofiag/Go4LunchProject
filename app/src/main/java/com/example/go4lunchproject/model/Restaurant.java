@@ -3,6 +3,8 @@ package com.example.go4lunchproject.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 public class Restaurant implements Parcelable {
@@ -188,5 +190,14 @@ public class Restaurant implements Parcelable {
         parcel.writeInt(distanceFromDeviceLocation);
     }
 
-
+    @NonNull
+    @Override
+    public String toString() {
+        return "Restaurant{" +
+                "restaurantId='" + restaurantId + '\'' +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", position=" + position +
+                '}';
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.go4lunchproject.util;
+package com.example.go4lunchproject.notification;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;

@@ -1,7 +1,8 @@
 package com.example.go4lunchproject.controller;
 
 import android.Manifest;
-import android.app.NotificationManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -20,7 +21,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,14 +32,13 @@ import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.Workmate;
+import com.example.go4lunchproject.notification.AlarmReceiver;
 import com.example.go4lunchproject.util.Constants;
-import com.example.go4lunchproject.util.Notification;
 import com.example.go4lunchproject.util.UtilMethods;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -98,7 +97,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         retrieveActualWorkmateFromHisLastRestaurantChosen();
         deleteRestaurantThatAreNotChosenAnymore();
 
-        setNotification();
+//        setNotification();
+//        alarmNotification();
     }
 
     @Override
@@ -120,7 +120,8 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void initializeUserAndRestaurantShowed(){
-        userId = getUserConnected().getId();
+        userId = firebaseCloudDatabase.getCurrentUserName() + "_" + firebaseCloudDatabase.getCurrentFirebaseUser().getUid();
+
         User user = getUserWithNameAndPhotoUrlOnly();
         actualWorkmate = UtilMethods.setWorkmateCorresponding(user);
         restaurantActuallyShowed = RestaurantSelectedApi.getInstance().getRestaurantSelected();
@@ -170,10 +171,12 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 //then we check if that list contains the one actually showed.
                 for (Restaurant restaurant : restaurantList) {
                     //if it's the case then set the list of that restaurant to the recycler view.
-                    if (restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())) {
-                        adapter = new WorkmateAdapterForRestaurantDetails(restaurant.getWorkmateList());
-                        recyclerView.setAdapter(adapter);
-                        break;
+                    if (restaurant != null && restaurant.getAddress() != null) {
+                        if (restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())) {
+                            adapter = new WorkmateAdapterForRestaurantDetails(restaurant.getWorkmateList());
+                            recyclerView.setAdapter(adapter);
+                            break;
+                        }
                     }
                 }
             }
@@ -566,7 +569,32 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
     //Notification
-    private void setNotification(){
+    private void alarmNotification(){
+        Intent intent = new Intent(RestaurantDetailsActivity.this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(RestaurantDetailsActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 20);
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()+ 10000, pendingIntent);
+
+
+        /*firebaseCloudDatabase.listenToUser(userId, singleUser -> {
+            if (singleUser != null){
+                Restaurant restaurant = singleUser.getRestaurantChosen();
+                if (restaurant != null){
+                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, AlarmManager.INTERVAL_DAY, pendingIntent);
+//                    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+                }
+            }
+        });*/
+
+    }
+
+    /*private void setNotification(){
         Notification notification = new Notification(this);
 
         notification.setMoreThanOneLine(true);
@@ -625,5 +653,5 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             itIs12 = true;
 
         return itIs12;
-    }
+    }*/
 }

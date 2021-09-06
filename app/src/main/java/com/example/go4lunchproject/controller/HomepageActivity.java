@@ -2,6 +2,8 @@ package com.example.go4lunchproject.controller;
 
 import static com.example.go4lunchproject.util.Constants.FINE_LOCATION;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -29,19 +31,22 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.go4lunchproject.MainActivity;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
-import com.example.go4lunchproject.data.viewmodel.FragmentViewModel;
 import com.example.go4lunchproject.data.api.LocationApi;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.api.UserApi;
+import com.example.go4lunchproject.data.viewmodel.FragmentViewModel;
 import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.Workmate;
+import com.example.go4lunchproject.notification.AlarmReceiver;
 import com.example.go4lunchproject.util.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
+
+import java.util.Calendar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -86,6 +91,8 @@ public class HomepageActivity extends AppCompatActivity
         setMyToolbarAsAppBar();
         setMyDrawerLayout();
         setMyNavigationView();
+
+//        alarmNotification();
     }
 
     @Override
@@ -143,6 +150,7 @@ public class HomepageActivity extends AppCompatActivity
                 MyPositionObject positionObject = new MyPositionObject(deviceLocation.getLatitude(), deviceLocation.getLongitude());
                 LocationApi.getInstance(this).setPosition(positionObject);
                 addFragments();
+                alarmNotification();
             }
             else
                 Toast.makeText(this, "Location unavailable", Toast.LENGTH_SHORT).show();
@@ -295,6 +303,19 @@ public class HomepageActivity extends AppCompatActivity
             Toast.makeText(this, "You don't chose any restaurant yet!", Toast.LENGTH_SHORT).show();
     }
 
+    private void alarmNotification(){
+        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
+    }
 
     @Override
     public void onBackPressed() {

@@ -32,12 +32,13 @@ import com.example.go4lunchproject.MainActivity;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
 import com.example.go4lunchproject.data.api.LocationApi;
-import com.example.go4lunchproject.data.api.NotificationSettingApi;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.api.UserApi;
+import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.data.viewmodel.FragmentViewModel;
 import com.example.go4lunchproject.model.MyPositionObject;
 import com.example.go4lunchproject.model.Restaurant;
+import com.example.go4lunchproject.model.UserSettings;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.notification.AlarmReceiver;
 import com.example.go4lunchproject.util.Constants;
@@ -312,12 +313,10 @@ public class HomepageActivity extends AppCompatActivity
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 17);
+        calendar.set(Calendar.MINUTE, 31);
 
-
-        if (NotificationSettingApi.getInstance().isOn())
-            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
     }
 

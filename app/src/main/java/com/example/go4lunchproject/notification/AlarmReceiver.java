@@ -18,6 +18,7 @@ import com.example.go4lunchproject.controller.HomepageActivity;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.model.Restaurant;
+import com.example.go4lunchproject.model.UserSettings;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
 
@@ -47,7 +48,13 @@ public class AlarmReceiver extends BroadcastReceiver {
                     setTapActionIntent(context, builder, restaurant);
 
                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-                    notificationManagerCompat.notify(Constants.RESTAURANT_NOTIFICATION_ID, builder.build());
+
+                    UserSettings userSettings = singleUser.getUserSettings();
+                    if (userSettings != null){
+                        if (userSettings.isNotificationOn())
+                            notificationManagerCompat.notify(Constants.RESTAURANT_NOTIFICATION_ID, builder.build());
+
+                    }
                 }
             }
 

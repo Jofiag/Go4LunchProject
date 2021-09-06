@@ -120,7 +120,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void initializeUserAndRestaurantShowed(){
-        userId = firebaseCloudDatabase.getCurrentUserName() + "_" + firebaseCloudDatabase.getCurrentFirebaseUser().getUid();
+        userId = UserApi.getInstance().getUserId();
 
         User user = getUserWithNameAndPhotoUrlOnly();
         actualWorkmate = UtilMethods.setWorkmateCorresponding(user);

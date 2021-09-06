@@ -36,6 +36,7 @@ import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.controller.RestaurantDetailsActivity;
 import com.example.go4lunchproject.data.api.LocationApi;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
+import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.data.viewmodel.DataViewModel;
@@ -70,7 +71,7 @@ public class RestaurantMapViewFragment extends Fragment {
     private final OnMapReadyCallback callback;
 
     private final FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
-    private final String userId = firebaseCloudDatabase.getCurrentUserName() + "_" + firebaseCloudDatabase.getCurrentFirebaseUser().getUid();
+    private final String userId = UserApi.getInstance().getUserId();
 
     private DataViewModel dataViewModel;
 

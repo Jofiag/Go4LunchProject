@@ -2,8 +2,15 @@ package com.example.go4lunchproject.model;
 
 public class UserSettings {
     private boolean isNotificationOn;
-    private String sortListBy;
+    private String sortListOption;
 
+    public UserSettings() {
+    }
+
+    public UserSettings(boolean isNotificationOn, String sortListOption) {
+        this.isNotificationOn = isNotificationOn;
+        this.sortListOption = sortListOption;
+    }
 
     public boolean isNotificationOn() {
         return isNotificationOn;
@@ -12,10 +19,10 @@ public class UserSettings {
         this.isNotificationOn = notificationSate;
     }
 
-    public String getSortListBy() {
-        return sortListBy;
+    public String getSortListOption() {
+        return sortListOption;
     }
     public void setSortListOption(String sortListBy) {
-        this.sortListBy = sortListBy;
+        this.sortListOption = sortListBy;
     }
 }

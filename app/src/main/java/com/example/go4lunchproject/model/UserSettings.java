@@ -7,6 +7,10 @@ public class UserSettings {
     public UserSettings() {
     }
 
+    public UserSettings(boolean isNotificationOn) {
+        this.isNotificationOn = isNotificationOn;
+    }
+
     public UserSettings(boolean isNotificationOn, String sortListOption) {
         this.isNotificationOn = isNotificationOn;
         this.sortListOption = sortListOption;

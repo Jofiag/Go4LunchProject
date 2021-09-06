@@ -96,7 +96,7 @@ implements Filterable {
         }
     }
     private void showHowFarFrom(){
-        int howFarFromInMeters = currentRestaurant.getDistanceFromDeviceLocation();
+        int howFarFromInMeters = currentRestaurant.getProximity();
         String distanceFromDeviceLocation;
 
         if (howFarFromInMeters >= 1000) {

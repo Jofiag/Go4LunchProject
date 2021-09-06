@@ -83,6 +83,10 @@ public class Constants {
     public static final String CHANNEL_NAME = "Restaurant chosen notification";
     public static final String CHANNEL_DESCRIPTION = "Show in a notification the name of the restaurant chosen by the user, it's address and workmate that chose the same restaurant";
     public static final int RESTAURANT_NOTIFICATION_ID = 7;
+    public static final String SORT_BY_NAME = "Name";
+    public static final String SORT_BY_RATING = "Rating";
+    public static final String SORT_BY_PROXIMITY = "Proximity";
+    public static final String SORT_BY_WORKMATES_INTERESTED = "Number of workmates interested";
 
     public static List<Restaurant> getRestaurantList(){
         List<Restaurant> restaurantList = new ArrayList<>();

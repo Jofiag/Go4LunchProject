@@ -24,8 +24,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.RestaurantRecyclerViewAdapter;
 import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
+import com.example.go4lunchproject.data.api.UserApi;
+import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.Restaurant;
+import com.example.go4lunchproject.model.UserSettings;
 import com.example.go4lunchproject.util.Constants;
 import com.example.go4lunchproject.util.UtilMethods;
 
@@ -40,6 +43,7 @@ public class RestaurantListViewFragment extends Fragment{
     private Activity activity;
     private RecyclerView recyclerView;
     private RestaurantRecyclerViewAdapter restaurantAdapter;
+    private final FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
 
     public RestaurantListViewFragment() {
         // Required empty public constructor
@@ -74,11 +78,8 @@ public class RestaurantListViewFragment extends Fragment{
             if (restaurantList.isEmpty())
                 Toast.makeText(activity, "No restaurant found !!!", Toast.LENGTH_SHORT).show();
 
-            Collections.sort(restaurantList, Comparator.comparingInt(Restaurant::getFavorableOpinion));
+            sortListDependingOnUserOptionSelected(restaurantList);
 
-            restaurantAdapter = new RestaurantRecyclerViewAdapter(activity, UtilMethods.removeRedundantRestaurant(restaurantList));
-            recyclerView.setAdapter(restaurantAdapter);
-            //restaurantAdapter.notifyDataSetChanged();
         });
 
     }
@@ -145,7 +146,41 @@ public class RestaurantListViewFragment extends Fragment{
         });*/
     }
 
+    private void sortListDependingOnUserOptionSelected(ArrayList<Restaurant> restaurantList){
+        firebaseCloudDatabase.listenToUser(UserApi.getInstance().getUserId(), singleUser -> {
+            if (singleUser != null){
+                UserSettings userSettings = singleUser.getUserSettings();
+//                if (userSettings == null)
+//                    userSettings = new UserSettings(true);
 
+                if (userSettings != null){
+                    String optionSelected = userSettings.getSortListOption();
+                    if (optionSelected == null){
+                        optionSelected = Constants.SORT_BY_NAME;
+                    }
+
+                    switch (optionSelected){
+                        case Constants.SORT_BY_NAME:
+                            Collections.sort(restaurantList, Comparator.comparing(Restaurant::getName));
+                            break;
+                        case Constants.SORT_BY_RATING:
+                            Collections.sort(restaurantList, Comparator.comparingInt(Restaurant::getFavorableOpinion));
+                            break;
+                        case Constants.SORT_BY_PROXIMITY:
+                            Collections.sort(restaurantList, Comparator.comparingInt(Restaurant::getProximity));
+                            break;
+                        case Constants.SORT_BY_WORKMATES_INTERESTED:
+                            Collections.sort(restaurantList, Comparator.comparingInt(Restaurant::getNumberOfInterestedWorkmate));
+                            break;
+                    }
+                }
+
+                restaurantAdapter = new RestaurantRecyclerViewAdapter(activity, UtilMethods.removeRedundantRestaurant(restaurantList));
+                recyclerView.setAdapter(restaurantAdapter);
+
+            }
+        });
+    }
 
     /*private void initializePlaces(){
         if (!Places.isInitialized())

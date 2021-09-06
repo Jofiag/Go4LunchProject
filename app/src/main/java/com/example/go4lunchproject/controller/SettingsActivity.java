@@ -1,6 +1,8 @@
 package com.example.go4lunchproject.controller;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -30,6 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
         manageNotifications();
 
         setSortingSpinner();
+        responseToUserSpinnerSelection();
     }
 
     private void setReferences() {
@@ -65,5 +68,36 @@ public class SettingsActivity extends AppCompatActivity {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         sortingSpinner.setAdapter(arrayAdapter);
+    }
+    private void responseToUserSpinnerSelection(){
+        sortingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                String sortOptionSelected = (String) adapterView.getItemAtPosition(position);
+                saveSortOptionSelectedInFirebase(sortOptionSelected);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                //set the first option (Name) by default
+                saveSortOptionSelectedInFirebase((String) adapterView.getItemAtPosition(0));
+            }
+        });
+    }
+    private void saveSortOptionSelectedInFirebase(String option){
+        firebaseCloudDatabase.getUser(userId, singleUser -> {
+            if (singleUser != null){
+                UserSettings userSettings = singleUser.getUserSettings();
+                if (userSettings == null) {
+                    userSettings = new UserSettings();
+                    userSettings.setNotificationOn(true);
+                }
+
+                userSettings.setSortListOption(option);
+
+                singleUser.setUserSettings(userSettings);
+                firebaseCloudDatabase.updateUser(singleUser);
+            }
+        });
     }
 }

@@ -15,16 +15,16 @@ public class RestaurantWebsiteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_website);
 
-        /*WebView myWebview = findViewById(R.id.my_webview);
-        WebSettings webSettings = myWebview.getSettings();
+        /*WebView myWebView = findViewById(R.id.my_web_view);
+        WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         String restaurantWebsiteUrl = String.valueOf(RestaurantSelectedApi.getInstance().getRestaurantSelected().getWebsiteUrl());
-        myWebview.loadUrl(restaurantWebsiteUrl);*/
+        myWebView.loadUrl(restaurantWebsiteUrl);*/
 
-        WebView myWebview = new WebView(this);
-        setContentView(myWebview);
+        WebView myWebView = new WebView(this);
+        setContentView(myWebView);
 
         String restaurantWebsiteUrl = RestaurantSelectedApi.getInstance().getRestaurantSelected().getWebsiteUrl();
-        myWebview.loadUrl(restaurantWebsiteUrl);
+        myWebView.loadUrl(restaurantWebsiteUrl);
     }
 }

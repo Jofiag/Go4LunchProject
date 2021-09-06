@@ -30,9 +30,9 @@ import com.example.go4lunchproject.util.Constants;
 import com.example.go4lunchproject.util.UtilMethods;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class RestaurantListViewFragment extends Fragment{
@@ -73,6 +73,9 @@ public class RestaurantListViewFragment extends Fragment{
         RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(url, restaurantList -> {
             if (restaurantList.isEmpty())
                 Toast.makeText(activity, "No restaurant found !!!", Toast.LENGTH_SHORT).show();
+
+            Collections.sort(restaurantList, Comparator.comparingInt(Restaurant::getFavorableOpinion));
+
             restaurantAdapter = new RestaurantRecyclerViewAdapter(activity, UtilMethods.removeRedundantRestaurant(restaurantList));
             recyclerView.setAdapter(restaurantAdapter);
             //restaurantAdapter.notifyDataSetChanged();

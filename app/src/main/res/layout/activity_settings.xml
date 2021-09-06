@@ -26,4 +26,24 @@
         android:layout_marginTop="-11dp"
         android:layout_toEndOf="@+id/notification_textview" />
 
+    <TextView
+        android:id="@+id/sort_list_by_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/notification_switch_button"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="7dp"
+        android:text="@string/sort_restaurant_list_by_text"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/sorting_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:layout_below="@+id/notification_switch_button"
+        android:layout_toEndOf="@+id/sort_list_by_text_view" />
+
 </RelativeLayout>

@@ -32,6 +32,7 @@ import com.example.go4lunchproject.MainActivity;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.WorkmateRecyclerViewAdapter;
 import com.example.go4lunchproject.data.api.LocationApi;
+import com.example.go4lunchproject.data.api.NotificationSettingApi;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
 import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.data.viewmodel.FragmentViewModel;
@@ -313,7 +314,10 @@ public class HomepageActivity extends AppCompatActivity
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 12);
         calendar.set(Calendar.MINUTE, 0);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
+
+        if (NotificationSettingApi.getInstance().isOn())
+            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
     }
 

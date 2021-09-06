@@ -1,17 +1,15 @@
 package com.example.go4lunchproject.controller;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.example.go4lunchproject.R;
+import com.example.go4lunchproject.data.api.NotificationSettingApi;
 
 public class SettingsActivity extends AppCompatActivity {
-    private TextView notificationsOnTextView;
-    private TextView notificationsOffTextView;
+    private SwitchCompat switchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,19 +22,10 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setReferences() {
-        notificationsOnTextView = findViewById(R.id.ntf_on_text_view);
-        notificationsOffTextView = findViewById(R.id.ntf_off_text_view);
+        switchButton = findViewById(R.id.notification_switch_button);
     }
 
     private void manageNotifications(){
-        notificationsOnTextView.setOnClickListener(v -> {
-            //TODO: turn off notifications
-            Toast.makeText(this, "Notification ON", Toast.LENGTH_SHORT).show();
-        });
-
-        notificationsOffTextView.setOnClickListener(v -> {
-            //TODO: turn off notifications
-            Toast.makeText(this, "Notification OFF", Toast.LENGTH_SHORT).show();
-        });
+        NotificationSettingApi.getInstance().setOn(switchButton.isChecked());
     }
 }

@@ -2,8 +2,10 @@ package com.example.go4lunchproject.data.firebase;
 
 import android.util.Log;
 
+import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
+import com.example.go4lunchproject.model.UserSettings;
 import com.example.go4lunchproject.model.Workmate;
 import com.example.go4lunchproject.util.Constants;
 import com.google.firebase.auth.FirebaseAuth;
@@ -146,6 +148,15 @@ public class FirebaseCloudDatabase {
                     .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: Updating user restaurant chosen SUCCEED"))
                     .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
         }
+        else throw new RuntimeException("user path is null");
+    }
+
+    public void updateUserSettings(UserSettings newSettings){
+        String userId = UserApi.getInstance().getUserId();
+        if (userId != null)
+            userCollectionRef.document(userId).update("userSettings", newSettings)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "updateUserSettings: Updating user settings SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "updateUserSettings: " + e.getMessage()));
         else throw new RuntimeException("user path is null");
     }
 

@@ -61,8 +61,7 @@ public class SettingsActivity extends AppCompatActivity {
                     userSettings = new UserSettings(true, Constants.SORT_BY_NAME);
 
                 userSettings.setNotificationOn(switchButton.isChecked());
-                singleUser.setUserSettings(userSettings);
-                firebaseCloudDatabase.updateUser(singleUser);
+                firebaseCloudDatabase.updateUserSettings(userSettings);
             }
 
         }));
@@ -122,15 +121,12 @@ public class SettingsActivity extends AppCompatActivity {
         firebaseCloudDatabase.getUser(userId, singleUser -> {
             if (singleUser != null){
                 UserSettings userSettings = singleUser.getUserSettings();
-                if (userSettings == null) {
-                    userSettings = new UserSettings();
-                    userSettings.setNotificationOn(true);
-                }
+                if (userSettings == null)
+                    userSettings = new UserSettings(true, Constants.SORT_BY_NAME);
 
                 userSettings.setSortListOption(option);
 
-                singleUser.setUserSettings(userSettings);
-                firebaseCloudDatabase.updateUser(singleUser);
+                firebaseCloudDatabase.updateUserSettings(userSettings);
             }
         });
     }

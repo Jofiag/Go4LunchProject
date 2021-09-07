@@ -478,8 +478,8 @@ public class RestaurantMapViewFragment extends Fragment {
         return result;
     }
     private void showSuggestions(String query){
-
-        RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(dataViewModel.getUrl(), restaurantList -> {
+        RestaurantNearbyBank2 restaurantNearbyBank = new RestaurantNearbyBank2(getContext());
+        restaurantNearbyBank.getRestaurantList(dataViewModel.getUrl(), restaurantList -> {
             if (columnPlaces != null && adapter != null && query != null) {
                 //When we've got all the restaurant
                 if (!restaurantList.isEmpty()) {

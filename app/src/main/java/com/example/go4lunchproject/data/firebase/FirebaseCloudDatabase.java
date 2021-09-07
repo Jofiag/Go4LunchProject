@@ -1,13 +1,10 @@
 package com.example.go4lunchproject.data.firebase;
 
-import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
-import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.UserSettings;
@@ -163,6 +160,13 @@ public class FirebaseCloudDatabase {
                 .addOnFailureListener(e -> Log.d(TAG, "updateUserSettings: " + e.getMessage()));
     }
 
+    public void updateUserRestaurantLikedList(List<Restaurant> newRestaurantLikedList){
+        userCollectionRef.document(userId)
+                .update("restaurantLikedList", newRestaurantLikedList)
+                .addOnSuccessListener(unused -> Log.d(TAG, "updateUserRestaurantLikedList: updating restaurant liked list SUCCEED"))
+                .addOnFailureListener(e -> Log.d(TAG, "updateUserRestaurantLikedList: " + e.getMessage()));
+    }
+
     public void deleteUser(){
         userCollectionRef.document(userId)
                 .delete()
@@ -172,22 +176,6 @@ public class FirebaseCloudDatabase {
     }
 
 
-
-//    public void saveRestaurantNearbyList(Context context){
-//        String url = RestaurantListUrlApi.getInstance(context).getUrlThroughDeviceLocation();
-//        RestaurantNearbyBank2.getInstance(context).getRestaurantList(url,restaurantList -> {
-//            if (restaurantList != null && !restaurantList.isEmpty()){
-//                //We save each restaurant from the list instead of saving the list directly to prevent having redundant restaurant.
-//                for (Restaurant restaurant : restaurantList) {
-//                    restaurantNearbyCollectionRef.document(restaurant.getRestaurantId())
-//                            .set(restaurant)
-//                            .addOnSuccessListener(unused -> Log.d(TAG, "saveRestaurantNearbyList: Saving restaurant nearby SUCCEED"))
-//                            .addOnFailureListener(e -> Log.d(TAG, "saveRestaurantNearbyList: " + e.getMessage()));
-//                }
-//            }
-//        });
-//
-//    }
 
     public void saveRestaurantNearbyList(ArrayList<Restaurant> restaurantList){
             if (restaurantList != null && !restaurantList.isEmpty()){

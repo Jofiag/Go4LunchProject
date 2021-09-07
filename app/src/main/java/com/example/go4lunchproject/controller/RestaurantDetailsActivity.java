@@ -211,13 +211,11 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 }
                 if (!contains) {
                     firebaseList.add(restaurantActuallyShowed);
-                    user.setRestaurantLikedList(firebaseList);
                 }
             }
             else{
                 firebaseList = new ArrayList<>();
                 firebaseList.add(restaurantActuallyShowed);
-                user.setRestaurantLikedList(firebaseList);
             }
             status = " added to liked list.";
         }
@@ -226,7 +224,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                 for (Restaurant restaurant : firebaseList) {
                     if (restaurant.getAddress().equals(restaurantActuallyShowed.getAddress())) {
                         firebaseList.remove(restaurant);
-                        user.setRestaurantLikedList(firebaseList);
                         break;
                     }
                 }
@@ -236,7 +233,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         }
 
         UserApi.getInstance().setUser(user);
-        firebaseCloudDatabase.updateUser(user);
+        firebaseCloudDatabase.updateUserRestaurantLikedList(firebaseList);
         Toast.makeText(this, restaurantActuallyShowed.getName() + status, Toast.LENGTH_SHORT).show();
     }
 

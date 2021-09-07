@@ -1,6 +1,7 @@
 package com.example.go4lunchproject;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -8,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.go4lunchproject.controller.HomepageActivity;
@@ -38,6 +40,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class MainActivity extends AppCompatActivity {
     private Button signInGoogleButton;
     private Button signInFacebookButton;

@@ -14,14 +14,12 @@ import java.util.List;
 
 public class LocationApi {
     private MyPositionObject position;
-    private final Context context;
     private final Geocoder geocoder;
     @SuppressLint("StaticFieldLeak")
     private static LocationApi INSTANCE;
 
 
     public LocationApi(Context context) {
-        this.context = context;
         geocoder = new Geocoder(context);
     }
 

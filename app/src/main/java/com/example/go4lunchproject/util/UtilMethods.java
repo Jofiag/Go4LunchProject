@@ -1,6 +1,9 @@
 package com.example.go4lunchproject.util;
 
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.model.Restaurant;
@@ -11,6 +14,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.Objects;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class UtilMethods {
     public static ArrayList<Restaurant> removeRedundantRestaurant(ArrayList<Restaurant> list){
         ArrayList<Restaurant> newList = new ArrayList<>();

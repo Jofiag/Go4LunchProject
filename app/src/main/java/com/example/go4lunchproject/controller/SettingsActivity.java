@@ -1,11 +1,13 @@
 package com.example.go4lunchproject.controller;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -14,6 +16,7 @@ import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.model.UserSettings;
 import com.example.go4lunchproject.util.Constants;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class SettingsActivity extends AppCompatActivity {
     private Spinner sortingSpinner;
     private SwitchCompat switchButton;

@@ -240,4 +240,10 @@ implements Filterable {
             return restaurantListFiltered;
     }
 
+    public void clearList(){
+        if (restaurantList != null ) {
+            restaurantList.clear();
+        }
+    }
+
 }

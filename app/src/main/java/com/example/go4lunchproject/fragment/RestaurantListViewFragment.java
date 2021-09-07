@@ -34,7 +34,6 @@ import com.example.go4lunchproject.util.UtilMethods;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class RestaurantListViewFragment extends Fragment{
@@ -42,6 +41,7 @@ public class RestaurantListViewFragment extends Fragment{
     private Activity activity;
     private RecyclerView recyclerView;
     private RestaurantRecyclerViewAdapter restaurantAdapter;
+    private RestaurantNearbyBank2 restaurantNearbyBank;
     private final FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
 
     public RestaurantListViewFragment() {
@@ -73,7 +73,8 @@ public class RestaurantListViewFragment extends Fragment{
 
         url = RestaurantListUrlApi.getInstance(getActivity()).getUrlThroughDeviceLocation();
 
-        RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(url, restaurantList -> {
+        restaurantNearbyBank  = new RestaurantNearbyBank2(getContext());
+        restaurantNearbyBank.getRestaurantList(url, restaurantList -> {
             if (restaurantList.isEmpty())
                 Toast.makeText(activity, "No restaurant found !!!", Toast.LENGTH_SHORT).show();
 
@@ -118,16 +119,16 @@ public class RestaurantListViewFragment extends Fragment{
     @SuppressLint("NotifyDataSetChanged")
     private void filterList(String query){
 
-        RestaurantNearbyBank2.getInstance(requireActivity().getApplication()).getRestaurantList(url, restaurantList -> {
-            List<Restaurant> listFiltered = new ArrayList<>();
+        restaurantNearbyBank = new RestaurantNearbyBank2(getContext());
+        restaurantNearbyBank.getRestaurantList(url, restaurantList -> {
+            ArrayList<Restaurant> listFiltered = new ArrayList<>();
 
-            for (Restaurant restaurant : restaurantList)
+            for (Restaurant restaurant : restaurantList) {
                 if (restaurant.getName().toLowerCase().contains(query.toLowerCase()))
                     listFiltered.add(restaurant);
+            }
 
-            restaurantAdapter = new RestaurantRecyclerViewAdapter(activity, listFiltered);
-            recyclerView.setAdapter(restaurantAdapter);
-            restaurantAdapter.notifyDataSetChanged();
+            sortListDependingOnUserOptionSelected(listFiltered);
 
         });
 
@@ -172,8 +173,10 @@ public class RestaurantListViewFragment extends Fragment{
                     }
                 }
 
+
+
                 restaurantAdapter = new RestaurantRecyclerViewAdapter(activity, UtilMethods.removeRedundantRestaurant(restaurantList));
-                recyclerView.setAdapter(restaurantAdapter);
+                recyclerView.swapAdapter(restaurantAdapter, false);
 
             }
         });

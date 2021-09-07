@@ -12,6 +12,7 @@ import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
 import com.example.go4lunchproject.data.googleplace.RestaurantListManager;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
+import com.example.go4lunchproject.util.UtilMethods;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -41,7 +42,7 @@ public class DataViewModel extends ViewModel {
         listManager.startGettingListInBackground();
         listManager.receiveRestaurantList(restaurantList -> {
             if (callback != null)
-                callback.gettingRestaurantNearbyList(restaurantList);
+                callback.gettingRestaurantNearbyList(UtilMethods.removeRedundantRestaurant(restaurantList));
         });
     }
 

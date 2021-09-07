@@ -2,7 +2,6 @@ package com.example.go4lunchproject.data.firebase;
 
 import android.util.Log;
 
-import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.UserSettings;
@@ -43,6 +42,7 @@ public class FirebaseCloudDatabase {
     private String currentUserName;
     private static FirebaseCloudDatabase INSTANCE;
     private final FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private final String userId = this.getCurrentUserName() + "_" + this.getCurrentFirebaseUser().getUid();
 
     public FirebaseCloudDatabase() {
     }
@@ -72,17 +72,14 @@ public class FirebaseCloudDatabase {
         else throw new RuntimeException("The user id must not be null");
     }
 
-    public void getUser(String userId, SingleUserFromFirebase callback){
-        if (userId != null) {
-            userCollectionRef.document(userId).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        User user = documentSnapshot.toObject(User.class);
-                        if (callback != null)
-                            callback.onSingleUserGotten(user);
-                    })
-                    .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e));
-        }
-        else throw new RuntimeException("The user id must not be null");
+    public void getUser(SingleUserFromFirebase callback){
+        userCollectionRef.document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    User user = documentSnapshot.toObject(User.class);
+                    if (callback != null)
+                        callback.onSingleUserGotten(user);
+                })
+                .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e));
     }
 
     public void getAllUsers(UserListFromFirebase callback) {
@@ -102,7 +99,7 @@ public class FirebaseCloudDatabase {
                 .addOnFailureListener(e -> Log.d(TAG, "getAllUsers: " + e));
     }
 
-    public void listenToUser(String userId, SingleUserFromFirebase callback){
+    public void listenToUser(SingleUserFromFirebase callback){
         userCollectionRef.document(userId)
                 .addSnapshotListener((value, error) -> {
                     if (value != null){
@@ -142,32 +139,23 @@ public class FirebaseCloudDatabase {
         else throw new RuntimeException("User path is null");
     }
 
-    public void updateUserRestaurantChosen(String userId, Restaurant newRestaurant){
-        if (userId != null) {
-            userCollectionRef.document(userId).update("restaurantChosen", newRestaurant)
-                    .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: Updating user restaurant chosen SUCCEED"))
-                    .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
-        }
-        else throw new RuntimeException("user path is null");
+    public void updateUserRestaurantChosen(Restaurant newRestaurant){
+        userCollectionRef.document(userId).update("restaurantChosen", newRestaurant)
+                .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: Updating user restaurant chosen SUCCEED"))
+                .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
     }
 
     public void updateUserSettings(UserSettings newSettings){
-        String userId = UserApi.getInstance().getUserId();
-        if (userId != null)
-            userCollectionRef.document(userId).update("userSettings", newSettings)
-                    .addOnSuccessListener(unused -> Log.d(TAG, "updateUserSettings: Updating user settings SUCCEED"))
-                    .addOnFailureListener(e -> Log.d(TAG, "updateUserSettings: " + e.getMessage()));
-        else throw new RuntimeException("user path is null");
+        userCollectionRef.document(userId).update("userSettings", newSettings)
+                .addOnSuccessListener(unused -> Log.d(TAG, "updateUserSettings: Updating user settings SUCCEED"))
+                .addOnFailureListener(e -> Log.d(TAG, "updateUserSettings: " + e.getMessage()));
     }
 
-    public void deleteUser(String userId){
-        if (userId != null) {
-            userCollectionRef.document(userId)
-                    .delete()
-                    .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: deleting user " + userId + " succeed"))
-                    .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
-        }
-        else throw new RuntimeException("User path is null");
+    public void deleteUser(){
+        userCollectionRef.document(userId)
+                .delete()
+                .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: deleting user " + userId + " succeed"))
+                .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
 
     }
 
@@ -273,6 +261,8 @@ public class FirebaseCloudDatabase {
 
     }
 
+
+
     public FirebaseUser getCurrentFirebaseUser() {
         return currentFirebaseUser;
     }
@@ -285,4 +275,7 @@ public class FirebaseCloudDatabase {
         return name;
     }
 
+    public String getUserId() {
+        return userId;
+    }
 }

@@ -63,7 +63,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private CircleImageView chosenImageView;
     private TextView RestaurantFoodCountryAndRestaurantAddress;
 
-    private String userId;
     private Restaurant restaurantActuallyShowed;
 
     private WorkmateAdapterForRestaurantDetails adapter;
@@ -120,8 +119,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void initializeUserAndRestaurantShowed(){
-        userId = UserApi.getInstance().getUserId();
-
         User user = getUserWithNameAndPhotoUrlOnly();
         actualWorkmate = UtilMethods.setWorkmateCorresponding(user);
         restaurantActuallyShowed = RestaurantSelectedApi.getInstance().getRestaurantSelected();
@@ -132,7 +129,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void setYellowStarVisibility(){
-        firebaseCloudDatabase.getUser(userId, singleUser -> {
+        firebaseCloudDatabase.getUser(singleUser -> {
             List<Restaurant> list = singleUser.getRestaurantLikedList();
             boolean isFavorite = false;
             if (list != null){
@@ -245,7 +242,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void setLikeRestaurantFunction(){
-        firebaseCloudDatabase.getUser(userId, singleUser -> starImageView.setOnClickListener(v -> {
+        firebaseCloudDatabase.getUser(singleUser -> starImageView.setOnClickListener(v -> {
 
             int visibility = yellowStar.getVisibility();
             List<Restaurant> list = singleUser.getRestaurantLikedList();
@@ -283,7 +280,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         greenCheck = AppCompatResources.getDrawable(RestaurantDetailsActivity.this, R.mipmap.green_check);
         redUncheck = AppCompatResources.getDrawable(RestaurantDetailsActivity.this, R.mipmap.red_unchecked);
 
-        firebaseCloudDatabase.getUser(userId, singleUser -> {
+        firebaseCloudDatabase.getUser(singleUser -> {
             Restaurant restaurantChosenFromFirebase = singleUser.getRestaurantChosen();
             if (restaurantChosenFromFirebase != null){
                 if (restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress()))
@@ -300,7 +297,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
     private void indicateIfRestaurantIsChosenByWorkmate(){
-        firebaseCloudDatabase.getUser(userId, singleUser ->
+        firebaseCloudDatabase.getUser(singleUser ->
                 chosenImageView.setOnClickListener(view -> {
                     Restaurant restaurantChosen = singleUser.getRestaurantChosen();
                     if (restaurantChosen != null && restaurantChosen.getAddress().equals(restaurantActuallyShowed.getAddress())){
@@ -458,7 +455,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                     boolean containsActualWorkmate = containsWorkmate(restaurant.getWorkmateList(), actualWorkmate);
 
                     //We get the actual restaurant chosen by the actual workmate
-                    firebaseCloudDatabase.getUser(userId, singleUser -> {
+                    firebaseCloudDatabase.getUser(singleUser -> {
                         Restaurant userRestaurant = singleUser.getRestaurantChosen();
 
                         if (userRestaurant != null){

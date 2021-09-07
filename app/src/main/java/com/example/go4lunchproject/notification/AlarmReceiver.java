@@ -33,7 +33,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         createNotificationChannelIfNeeded(context);
 
-        firebaseCloudDatabase.listenToUser(userId, singleUser -> {
+        firebaseCloudDatabase.listenToUser(singleUser -> {
             if (singleUser != null){
                 Restaurant restaurant = singleUser.getRestaurantChosen();
                 if (restaurant != null){

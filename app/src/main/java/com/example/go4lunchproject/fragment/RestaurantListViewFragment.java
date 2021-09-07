@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.adapter.RestaurantRecyclerViewAdapter;
 import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
-import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.Restaurant;
@@ -147,11 +146,9 @@ public class RestaurantListViewFragment extends Fragment{
     }
 
     private void sortListDependingOnUserOptionSelected(ArrayList<Restaurant> restaurantList){
-        firebaseCloudDatabase.listenToUser(UserApi.getInstance().getUserId(), singleUser -> {
+        firebaseCloudDatabase.listenToUser(singleUser -> {
             if (singleUser != null){
                 UserSettings userSettings = singleUser.getUserSettings();
-//                if (userSettings == null)
-//                    userSettings = new UserSettings(true);
 
                 if (userSettings != null){
                     String optionSelected = userSettings.getSortListOption();

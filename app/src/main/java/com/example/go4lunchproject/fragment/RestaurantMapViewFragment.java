@@ -36,7 +36,6 @@ import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.controller.RestaurantDetailsActivity;
 import com.example.go4lunchproject.data.api.LocationApi;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
-import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.data.viewmodel.DataViewModel;
@@ -71,7 +70,7 @@ public class RestaurantMapViewFragment extends Fragment {
     private final OnMapReadyCallback callback;
 
     private final FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
-    private final String userId = UserApi.getInstance().getUserId();
+    private final String userId = firebaseCloudDatabase.getUserId();
 
     private DataViewModel dataViewModel;
 
@@ -306,7 +305,7 @@ public class RestaurantMapViewFragment extends Fragment {
     }
     private void zoomOnRestaurantChosenWhenNotificationIsClicked(){
         if (isStartedFromNotification()) {
-            firebaseCloudDatabase.getUser(userId, singleUser -> {
+            firebaseCloudDatabase.getUser(singleUser -> {
                 if (singleUser != null) {
                     Restaurant restaurant = singleUser.getRestaurantChosen();
                     if (restaurant != null && restaurant.getAddress() != null){

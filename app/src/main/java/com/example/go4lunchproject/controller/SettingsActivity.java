@@ -10,17 +10,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.example.go4lunchproject.R;
-import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.model.UserSettings;
 import com.example.go4lunchproject.util.Constants;
 
 public class SettingsActivity extends AppCompatActivity {
-    private SwitchCompat switchButton;
     private Spinner sortingSpinner;
+    private SwitchCompat switchButton;
 
     private final FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
-    private final String userId = UserApi.getInstance().getUserId();
+    private final String userId = firebaseCloudDatabase.getUserId();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setSwitchButtonState(){
-        firebaseCloudDatabase.getUser(userId, singleUser -> {
+        firebaseCloudDatabase.getUser(singleUser -> {
             if (singleUser != null){
                 UserSettings userSettings = singleUser.getUserSettings();
                 if (userSettings != null)
@@ -54,7 +53,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void manageNotifications(){
         Bundle bundle = new Bundle();
 
-        firebaseCloudDatabase.listenToUser(userId, singleUser -> switchButton.setOnClickListener(view -> {
+        firebaseCloudDatabase.listenToUser(singleUser -> switchButton.setOnClickListener(view -> {
             if (singleUser != null) {
                 UserSettings userSettings = singleUser.getUserSettings();
                 if (userSettings == null)
@@ -76,7 +75,7 @@ public class SettingsActivity extends AppCompatActivity {
         sortingSpinner.setAdapter(arrayAdapter);
 
         //Set the spinner selection on the last user option selected.
-        firebaseCloudDatabase.getUser(userId, singleUser -> {
+        firebaseCloudDatabase.getUser(singleUser -> {
             if (singleUser != null){
                 UserSettings userSettings = singleUser.getUserSettings();
                 if (userSettings != null){
@@ -118,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
     private void saveSortOptionSelectedInFirebase(String option){
-        firebaseCloudDatabase.getUser(userId, singleUser -> {
+        firebaseCloudDatabase.getUser(singleUser -> {
             if (singleUser != null){
                 UserSettings userSettings = singleUser.getUserSettings();
                 if (userSettings == null)

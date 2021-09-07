@@ -296,7 +296,7 @@ public class HomepageActivity extends AppCompatActivity
         }
     }
     private void startRestaurantDetailsActivity(){
-        FirebaseCloudDatabase.getInstance().getUser(UserApi.getInstance().getUserId(), singleUser -> {
+        FirebaseCloudDatabase.getInstance().getUser(singleUser -> {
             if (singleUser != null){
                 Restaurant restaurant = singleUser.getRestaurantChosen();
                 if (restaurant != null){

@@ -68,7 +68,6 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private WorkmateAdapterForRestaurantDetails adapter;
     private final FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
 
-
     private Drawable greenCheck;
     private Drawable redUncheck;
 
@@ -402,12 +401,16 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             else
                 restaurantTemp = restaurantActuallyShowed;
 
+            //Update the restaurant workmate list
             List<Workmate> workmates = getWorkmateListFromARestaurant(restaurantTemp);
-
             addWorkmate(workmates, actualWorkmate);
             chosenImageView.setImageDrawable(greenCheck);
-
             restaurantTemp.setWorkmateList(workmates);
+
+            //Update the restaurant number of workmate interested
+            int interested = restaurantTemp.getNumberOfInterestedWorkmate();
+            interested += 1;
+            restaurantTemp.setNumberOfInterestedWorkmate(interested);
 
             //update the restaurant in firebase
             firebaseCloudDatabase.updateRestaurant(restaurantTemp);
@@ -430,12 +433,17 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             else
                 restaurantTemp = restaurantActuallyShowed;
 
+            //Update the restaurant workmate list
             List<Workmate> workmates = getWorkmateListFromARestaurant(restaurantTemp);
-
             removeWorkmate(workmates, actualWorkmate);
             chosenImageView.setImageDrawable(redUncheck);
-
             restaurantTemp.setWorkmateList(workmates);
+
+            //Update the restaurant number of workmate interested
+            int interested = restaurantTemp.getNumberOfInterestedWorkmate();
+            if (interested > 0)
+                interested -= 1;
+            restaurantTemp.setNumberOfInterestedWorkmate(interested);
 
             //update the restaurant in firebase
             firebaseCloudDatabase.updateRestaurant(restaurantTemp);

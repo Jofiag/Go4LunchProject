@@ -54,11 +54,17 @@ public class SettingsActivity extends AppCompatActivity {
     private void manageNotifications(){
         Bundle bundle = new Bundle();
 
-        firebaseCloudDatabase.getUser(userId, singleUser -> switchButton.setOnClickListener(view -> {
-            UserSettings userSettings = new UserSettings();
-            userSettings.setNotificationOn(switchButton.isChecked());
-            singleUser.setUserSettings(userSettings);
-            firebaseCloudDatabase.updateUser(singleUser);
+        firebaseCloudDatabase.listenToUser(userId, singleUser -> switchButton.setOnClickListener(view -> {
+            if (singleUser != null) {
+                UserSettings userSettings = singleUser.getUserSettings();
+                if (userSettings == null)
+                    userSettings = new UserSettings(true, Constants.SORT_BY_NAME);
+
+                userSettings.setNotificationOn(switchButton.isChecked());
+                singleUser.setUserSettings(userSettings);
+                firebaseCloudDatabase.updateUser(singleUser);
+            }
+
         }));
     }
 
@@ -76,6 +82,9 @@ public class SettingsActivity extends AppCompatActivity {
                 UserSettings userSettings = singleUser.getUserSettings();
                 if (userSettings != null){
                     String optionSelected = userSettings.getSortListOption();
+                    if (optionSelected == null)
+                        optionSelected = Constants.SORT_BY_NAME;
+
                     switch (optionSelected){
                         case Constants.SORT_BY_NAME:
                             sortingSpinner.setSelection(0);

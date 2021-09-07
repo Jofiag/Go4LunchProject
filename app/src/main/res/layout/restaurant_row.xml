@@ -83,12 +83,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/how_far_text_view"
-            android:layout_toStartOf="@id/restaurant_image_view"
             android:layout_marginTop="13dp"
             android:layout_marginEnd="11dp"
-            tools:text="@string/parentheses_text"
+            android:layout_toStartOf="@id/restaurant_image_view"
             android:textColor="#97000000"
-            android:textSize="12sp"/>
+            android:textSize="12sp"
+            android:text="@string/parentheses_text" />
 
         <ImageView
             android:id="@+id/avatar_image_view"

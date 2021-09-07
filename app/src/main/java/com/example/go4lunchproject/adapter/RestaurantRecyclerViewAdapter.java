@@ -19,8 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.controller.RestaurantDetailsActivity;
 import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
-import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.data.api.RestaurantSelectedApi;
+import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
+import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.MyOpeningHours;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
@@ -66,20 +67,41 @@ implements Filterable {
     private void showRestaurantAttributes(int position){
         myViewHolder.restaurantNameTextView.setText(currentRestaurant.getName());
 
-        showRate();
+        showNumberInterested();
         showYellowStar();
-        showHowFarFrom();
+        showProximity();
         showRestaurantImage();
         showRestaurantOpeningHours();
         showRestaurantFoodCountryAndAddress();
         saveRestaurantClickedAndStartDetailsActivity(position);
     }
 
-    private void showRate(){
-        int interested = 0;
-        if (currentRestaurant.getNumberOfInterestedWorkmate() != 0)
-            interested = currentRestaurant.getNumberOfInterestedWorkmate();
-        myViewHolder.numberOfInterestedWorkmateTextView.setText(MessageFormat.format("({0})", interested));
+    private void showNumberInterested(){
+        FirebaseCloudDatabase.getInstance().listenToAllRestaurantChosen(restaurantList1 -> {
+            String currentRestaurantAddress = currentRestaurant.getAddress();
+            for (Restaurant restaurant : restaurantList1) {
+                if (restaurant.getAddress().equals(currentRestaurantAddress)){
+                    int interested = 0;
+                    if (restaurant.getNumberOfInterestedWorkmate() != 0)
+                        interested = restaurant.getNumberOfInterestedWorkmate();
+                    myViewHolder.numberOfInterestedWorkmateTextView.setText(MessageFormat.format("({0})", interested));
+                    break;
+                }
+            }
+        });
+    }
+    private void showProximity(){
+        int howFarFromInMeters = currentRestaurant.getProximity();
+        String distanceFromDeviceLocation;
+
+        if (howFarFromInMeters >= 1000) {
+            float km = (float) howFarFromInMeters / 1000;
+            String kmWithTwoNumberAfterTheComma = new DecimalFormat("##.##").format(km);
+            distanceFromDeviceLocation = kmWithTwoNumberAfterTheComma + "km";
+        } else
+            distanceFromDeviceLocation = String.format("%sm", howFarFromInMeters);
+
+        myViewHolder.howFarFromRestaurantTextView.setText(distanceFromDeviceLocation);
     }
     private void showYellowStar(){
         int rate = currentRestaurant.getFavorableOpinion();
@@ -94,19 +116,6 @@ implements Filterable {
             myViewHolder.yellowStar2.setVisibility(View.VISIBLE);
             myViewHolder.yellowStar3.setVisibility(View.VISIBLE);
         }
-    }
-    private void showHowFarFrom(){
-        int howFarFromInMeters = currentRestaurant.getProximity();
-        String distanceFromDeviceLocation;
-
-        if (howFarFromInMeters >= 1000) {
-            float km = (float) howFarFromInMeters / 1000;
-            String kmWithTwoNumberAfterTheComma = new DecimalFormat("##.##").format(km);
-            distanceFromDeviceLocation = kmWithTwoNumberAfterTheComma + "km";
-        } else
-            distanceFromDeviceLocation = String.format("%sm", howFarFromInMeters);
-
-        myViewHolder.howFarFromRestaurantTextView.setText(distanceFromDeviceLocation);
     }
     private void showRestaurantImage(){
         if (currentRestaurant.getImageUrl() != null)

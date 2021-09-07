@@ -87,6 +87,7 @@ public class Constants {
     public static final String SORT_BY_RATING = "Rating";
     public static final String SORT_BY_PROXIMITY = "Proximity";
     public static final String SORT_BY_WORKMATES_INTERESTED = "Number of workmates interested";
+    public static final String RESTAURANT_NEARBY_REFERENCE = "Restaurant_nearby_ref";
 
     public static List<Restaurant> getRestaurantList(){
         List<Restaurant> restaurantList = new ArrayList<>();

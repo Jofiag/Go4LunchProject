@@ -102,7 +102,7 @@ public class RestaurantMapViewFragment extends Fragment {
     }
 
     private void addGreenMarkerOnRestaurantChosenByAllWorkmates(){
-        firebaseCloudDatabase.listenToAllRestaurant(restaurantList -> {
+        firebaseCloudDatabase.listenToAllRestaurantChosen(restaurantList -> {
             if (restaurantList != null  && !restaurantList.isEmpty()){
                 for (Restaurant restaurant : restaurantList) {
                     List<Workmate> workmateList = restaurant.getWorkmateList();

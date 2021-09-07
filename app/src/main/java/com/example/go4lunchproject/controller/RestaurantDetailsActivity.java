@@ -161,7 +161,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(RestaurantDetailsActivity.this));
 
         // Get the list of restaurant that chosen by all users from firebase each time it changes.
-        firebaseCloudDatabase.listenToAllRestaurant(restaurantList -> {
+        firebaseCloudDatabase.listenToAllRestaurantChosen(restaurantList -> {
             //if that list is not null and not empty
             if (restaurantList != null && !restaurantList.isEmpty()){
                 //then we check if that list contains the one actually showed.
@@ -303,7 +303,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
                         //Remove the actual workmate to the actual restaurant and update that restaurant
                         updateActualRestaurantAfterDeleteWorkmate(restaurantUpdated -> {
-                            firebaseCloudDatabase.updateRestaurant(restaurantUpdated);
+                            firebaseCloudDatabase.updateRestaurantChosen(restaurantUpdated);
                             //Set the restaurant chosen by the actual workmate as null if the actual restaurant was his/her choice and update the user in firebase.
                             Restaurant lastRestaurantChosen = singleUser.getRestaurantChosen();
                             if (lastRestaurantChosen != null && lastRestaurantChosen.getAddress().equals(restaurantActuallyShowed.getAddress()))
@@ -352,7 +352,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     private Restaurant updateRestaurantListAndRestaurant(List<Workmate> workmates, Restaurant restaurant){
         restaurant.setWorkmateList(workmates);
 //        firebaseCloudDatabase.updateRestaurant(restaurant);
-        firebaseCloudDatabase.updateRestaurantWorkmateList(restaurant.getRestaurantId(), workmates);
+        firebaseCloudDatabase.updateRestaurantChosenWorkmateList(restaurant.getRestaurantId(), workmates);
 
         return restaurant;
     }
@@ -393,7 +393,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         Workmate actualWorkmate = UtilMethods.setWorkmateCorresponding(user);
 
         //Add or remove the actual workmate to the actual restaurant showed workmate list.
-        firebaseCloudDatabase.getRestaurant(restaurantActuallyShowed.getRestaurantId(), restaurant -> {
+        firebaseCloudDatabase.getRestaurantChosen(restaurantActuallyShowed.getRestaurantId(), restaurant -> {
             Restaurant restaurantTemp;
 
             if (restaurant != null)
@@ -413,7 +413,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             restaurantTemp.setNumberOfInterestedWorkmate(interested);
 
             //update the restaurant in firebase
-            firebaseCloudDatabase.updateRestaurant(restaurantTemp);
+            firebaseCloudDatabase.updateRestaurantChosen(restaurantTemp);
 
             if (callback != null)
                 callback.onResponse(restaurantTemp);
@@ -425,7 +425,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
         //Remove the actual workmate to the actual restaurant showed workmate list.
-        firebaseCloudDatabase.getRestaurant(restaurantActuallyShowed.getRestaurantId(), restaurant -> {
+        firebaseCloudDatabase.getRestaurantChosen(restaurantActuallyShowed.getRestaurantId(), restaurant -> {
             Restaurant restaurantTemp;
 
             if (restaurant != null)
@@ -446,7 +446,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
             restaurantTemp.setNumberOfInterestedWorkmate(interested);
 
             //update the restaurant in firebase
-            firebaseCloudDatabase.updateRestaurant(restaurantTemp);
+            firebaseCloudDatabase.updateRestaurantChosen(restaurantTemp);
 
             if (callback != null)
                 callback.onResponse(restaurantTemp);
@@ -455,7 +455,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void retrieveActualWorkmateFromHisLastRestaurantChosen(){
-        firebaseCloudDatabase.listenToAllRestaurant(restaurantList -> {
+        firebaseCloudDatabase.listenToAllRestaurantChosen(restaurantList -> {
             if (restaurantList != null && !restaurantList.isEmpty()){
 
                 for (Restaurant restaurant : restaurantList) {
@@ -475,7 +475,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                             //then we remove the actual workmate from the list of the restaurant and update it in firebase.
                             if (containsActualWorkmate && !isTheSame) {
                                 List<Workmate> list = removeWorkmate(restaurant.getWorkmateList(), actualWorkmate);
-                                firebaseCloudDatabase.updateRestaurantWorkmateList(restaurant.getRestaurantId(), list);
+                                firebaseCloudDatabase.updateRestaurantChosenWorkmateList(restaurant.getRestaurantId(), list);
                             }
                         }
                     });
@@ -513,13 +513,13 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void deleteRestaurantThatAreNotChosenAnymore(){
-        firebaseCloudDatabase.listenToAllRestaurant(restaurantList -> {
+        firebaseCloudDatabase.listenToAllRestaurantChosen(restaurantList -> {
             if (restaurantList != null && !restaurantList.isEmpty()){
                 for (Restaurant restaurant : restaurantList) {
                     List<Workmate> workmateList = restaurant.getWorkmateList();
 
                     if (workmateList == null || workmateList.isEmpty())
-                        firebaseCloudDatabase.deleteRestaurant(restaurant.getRestaurantId());
+                        firebaseCloudDatabase.deleteRestaurantChosen(restaurant.getRestaurantId());
                 }
             }
         });

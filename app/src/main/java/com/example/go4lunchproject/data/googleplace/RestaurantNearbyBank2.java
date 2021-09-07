@@ -120,7 +120,6 @@ public class RestaurantNearbyBank2 {
 
                     setRestaurantPhoneWebsiteAndMyOpeningHours(restaurant, place, phoneNumber, Objects.requireNonNull(website), openingHours);
 
-
                     if (!mRestaurantList.contains(restaurant))
                         mRestaurantList.add(restaurant);
 

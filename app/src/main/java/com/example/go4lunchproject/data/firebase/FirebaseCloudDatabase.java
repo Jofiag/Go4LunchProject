@@ -1,7 +1,13 @@
 package com.example.go4lunchproject.data.firebase;
 
+import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
+import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
+import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 import com.example.go4lunchproject.model.UserSettings;
@@ -16,6 +22,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class FirebaseCloudDatabase {
     private static final String TAG = "CLOUDDATABASE";
 
@@ -37,12 +44,15 @@ public class FirebaseCloudDatabase {
 
     private final FirebaseFirestore cloudDatabase = FirebaseFirestore.getInstance();
     private final CollectionReference userCollectionRef = cloudDatabase.collection(Constants.USER_DATA_REF);
-    private final CollectionReference restaurantCollectionRef = cloudDatabase.collection(Constants.RESTAURANT_CHOSEN_REFERENCE);
+    private final CollectionReference restaurantChosenCollectionRef = cloudDatabase.collection(Constants.RESTAURANT_CHOSEN_REFERENCE);
+    private final CollectionReference restaurantNearbyCollectionRef = cloudDatabase.collection(Constants.RESTAURANT_NEARBY_REFERENCE);
 
     private String currentUserName;
     private static FirebaseCloudDatabase INSTANCE;
     private final FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private final String userId = this.getCurrentUserName() + "_" + this.getCurrentFirebaseUser().getUid();
+
+
 
     public FirebaseCloudDatabase() {
     }
@@ -52,6 +62,8 @@ public class FirebaseCloudDatabase {
             INSTANCE = new FirebaseCloudDatabase();
         return INSTANCE;
     }
+
+
 
     public void saveUser(User user){
         if (user.getId() != null) {
@@ -161,33 +173,41 @@ public class FirebaseCloudDatabase {
 
 
 
-    public void saveRestaurant(Restaurant restaurant){
-        if (restaurant != null && restaurant.getRestaurantId() != null) {
-            restaurantCollectionRef.document(restaurant.getRestaurantId())
-                    .set(restaurant)
-                    .addOnSuccessListener(unused -> Log.d(TAG, "saveRestaurant: Saving restaurant SUCCEED"))
-                    .addOnFailureListener(e -> Log.d(TAG, "saveRestaurant: " + e.getMessage()));
-        }
-        else throw new RuntimeException("The restaurant and it's id must not be null");
+    public void saveRestaurantNearbyList(Context context){
+        String url = RestaurantListUrlApi.getInstance(context).getUrlThroughDeviceLocation();
+        RestaurantNearbyBank2.getInstance(context).getRestaurantList(url,restaurantList -> {
+            if (restaurantList != null && !restaurantList.isEmpty()){
+                //We save each restaurant from the list instead of saving the list directly to prevent having redundant restaurant.
+                for (Restaurant restaurant : restaurantList) {
+                    restaurantNearbyCollectionRef.document(restaurant.getRestaurantId())
+                            .set(restaurant)
+                            .addOnSuccessListener(unused -> Log.d(TAG, "saveRestaurantNearbyList: Saving restaurant nearby SUCCEED"))
+                            .addOnFailureListener(e -> Log.d(TAG, "saveRestaurantNearbyList: " + e.getMessage()));
+                }
+            }
+        });
+
     }
 
-    public void getRestaurant(String restaurantId, RestaurantFromFirebase callback){
+    public void getRestaurantNearby(String restaurantId,RestaurantFromFirebase callback){
         if (restaurantId != null) {
-            restaurantCollectionRef.document(restaurantId).get()
+            restaurantNearbyCollectionRef.document(restaurantId)
+                    .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
                         if (callback != null)
                             callback.onRestaurantGotten(restaurant);
                     })
-                    .addOnFailureListener(e -> Log.d(TAG, "getRestaurant: " + e));
+                    .addOnFailureListener(e -> Log.d(TAG, "getRestaurantNearby: " + e));
         }
         else throw new RuntimeException("The restaurant id must not be null");
     }
 
-    public void getAllRestaurant(RestaurantListFromFirebase callback){
+    public void getAllRestaurantNearby(RestaurantListFromFirebase callback){
         List<Restaurant> restaurantList = new ArrayList<>();
 
-        restaurantCollectionRef.get()
+        restaurantNearbyCollectionRef
+                .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
@@ -198,11 +218,74 @@ public class FirebaseCloudDatabase {
                     if (callback != null)
                         callback.onListGotten(restaurantList);
                 })
-                .addOnFailureListener(e -> Log.d(TAG, "getAllUsers: " + e));
+                .addOnFailureListener(e -> Log.d(TAG, "getAllRestaurantNearby: " + e));
     }
 
-    public void listenToRestaurant(String restaurantId, RestaurantFromFirebase callback){
-        restaurantCollectionRef.document(restaurantId)
+    public void updateRestaurantNearby(Restaurant newRestaurant){
+        if (newRestaurant != null && newRestaurant.getRestaurantId() != null) {
+            restaurantNearbyCollectionRef
+                    .document(newRestaurant.getRestaurantId()).set(newRestaurant)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurantNearby: Updating restaurant SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "updateRestaurantNearby: " + e.getMessage()));
+        }
+        else throw new RuntimeException("The new restaurant and it's id must not be null");
+    }
+
+    public void updateRestaurantNearbyWorkmateList(String restaurantId, List<Workmate> workmateList){
+        if (restaurantId != null) {
+            restaurantNearbyCollectionRef.document(restaurantId)
+                    .update("workmateList", workmateList)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurantNearbyWorkmateList: Updating restaurant workmate list SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "updateRestaurantNearbyWorkmateList: " + e.getMessage()));
+        }
+        else throw new RuntimeException("The restaurant id must not be null");
+    }
+
+
+
+    public void saveRestaurantChosen(Restaurant restaurant){
+        if (restaurant != null && restaurant.getRestaurantId() != null) {
+            restaurantChosenCollectionRef.document(restaurant.getRestaurantId())
+                    .set(restaurant)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "saveRestaurantChosen: Saving restaurant SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "saveRestaurantChosen: " + e.getMessage()));
+        }
+        else throw new RuntimeException("The restaurant and it's id must not be null");
+    }
+
+    public void getRestaurantChosen(String restaurantId, RestaurantFromFirebase callback){
+        if (restaurantId != null) {
+            restaurantChosenCollectionRef.document(restaurantId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
+                        if (callback != null)
+                            callback.onRestaurantGotten(restaurant);
+                    })
+                    .addOnFailureListener(e -> Log.d(TAG, "getRestaurantChosen: " + e));
+        }
+        else throw new RuntimeException("The restaurant id must not be null");
+    }
+
+    public void getAllRestaurantChosen(RestaurantListFromFirebase callback){
+        List<Restaurant> restaurantList = new ArrayList<>();
+
+        restaurantChosenCollectionRef.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
+                            Restaurant restaurant = queryDocumentSnapshot.toObject(Restaurant.class);
+                            restaurantList.add(restaurant);
+                        }
+                    }
+                    if (callback != null)
+                        callback.onListGotten(restaurantList);
+                })
+                .addOnFailureListener(e -> Log.d(TAG, "getAllRestaurantChosen: " + e));
+    }
+
+    public void listenToRestaurantChosen(String restaurantId, RestaurantFromFirebase callback){
+        restaurantChosenCollectionRef.document(restaurantId)
                 .addSnapshotListener((value, error) -> {
                     if (value != null){
                         Restaurant restaurant = value.toObject(Restaurant.class);
@@ -215,8 +298,8 @@ public class FirebaseCloudDatabase {
                 });
     }
 
-    public void listenToAllRestaurant(RestaurantListFromFirebase callback){
-        restaurantCollectionRef.addSnapshotListener((value, error) -> {
+    public void listenToAllRestaurantChosen(RestaurantListFromFirebase callback){
+        restaurantChosenCollectionRef.addSnapshotListener((value, error) -> {
             if (value != null && !value.isEmpty()) {
                 List<Restaurant> restaurantList = new ArrayList<>();
 
@@ -232,30 +315,32 @@ public class FirebaseCloudDatabase {
         });
     }
 
-    public void updateRestaurant(Restaurant newRestaurant){
+    public void updateRestaurantChosen(Restaurant newRestaurant){
         if (newRestaurant != null && newRestaurant.getRestaurantId() != null) {
-            restaurantCollectionRef.document(newRestaurant.getRestaurantId()).set(newRestaurant)
-                    .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurant: Updating restaurant SUCCEED"))
-                    .addOnFailureListener(e -> Log.d(TAG, "updateRestaurant: " + e.getMessage()));
+            restaurantChosenCollectionRef.document(newRestaurant.getRestaurantId())
+                    .set(newRestaurant)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurantChosen: Updating restaurant SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "updateRestaurantChosen: " + e.getMessage()));
         }
         else throw new RuntimeException("The new restaurant and it's id must not be null");
     }
 
-    public void updateRestaurantWorkmateList(String restaurantId, List<Workmate> workmateList){
+    public void updateRestaurantChosenWorkmateList(String restaurantId, List<Workmate> workmateList){
         if (restaurantId != null) {
-            restaurantCollectionRef.document(restaurantId).update("workmateList", workmateList)
-                    .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurantWorkmateList: Updating restaurant workmate list SUCCEED"))
-                    .addOnFailureListener(e -> Log.d(TAG, "updateRestaurantWorkmateList: " + e.getMessage()));
+            restaurantChosenCollectionRef.document(restaurantId)
+                    .update("workmateList", workmateList)
+                    .addOnSuccessListener(unused -> Log.d(TAG, "updateRestaurantChosenWorkmateList: Updating restaurant workmate list SUCCEED"))
+                    .addOnFailureListener(e -> Log.d(TAG, "updateRestaurantChosenWorkmateList: " + e.getMessage()));
         }
         else throw new RuntimeException("The restaurant id must not be null");
     }
 
-    public void deleteRestaurant(String restaurantId){
+    public void deleteRestaurantChosen(String restaurantId){
         if (restaurantId != null) {
-            restaurantCollectionRef.document(restaurantId)
+            restaurantChosenCollectionRef.document(restaurantId)
                     .delete()
-                    .addOnSuccessListener(unused -> Log.d(TAG, "onSuccess: deleting user " + restaurantId + " succeed"))
-                    .addOnFailureListener(e -> Log.d(TAG, "onFailure" + e.getMessage()));
+                    .addOnSuccessListener(unused -> Log.d(TAG, "deleteRestaurantChosen: deleting user " + restaurantId + " succeed"))
+                    .addOnFailureListener(e -> Log.d(TAG, "deleteRestaurantChosen" + e.getMessage()));
         }
         else throw new RuntimeException("The restaurant id must not be null");
 

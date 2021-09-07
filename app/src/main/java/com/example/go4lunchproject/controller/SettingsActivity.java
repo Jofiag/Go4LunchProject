@@ -13,6 +13,7 @@ import com.example.go4lunchproject.R;
 import com.example.go4lunchproject.data.api.UserApi;
 import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.model.UserSettings;
+import com.example.go4lunchproject.util.Constants;
 
 public class SettingsActivity extends AppCompatActivity {
     private SwitchCompat switchButton;
@@ -68,6 +69,30 @@ public class SettingsActivity extends AppCompatActivity {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         sortingSpinner.setAdapter(arrayAdapter);
+
+        //Set the spinner selection on the last user option selected.
+        firebaseCloudDatabase.getUser(userId, singleUser -> {
+            if (singleUser != null){
+                UserSettings userSettings = singleUser.getUserSettings();
+                if (userSettings != null){
+                    String optionSelected = userSettings.getSortListOption();
+                    switch (optionSelected){
+                        case Constants.SORT_BY_NAME:
+                            sortingSpinner.setSelection(0);
+                            break;
+                        case Constants.SORT_BY_RATING:
+                            sortingSpinner.setSelection(1);
+                            break;
+                        case Constants.SORT_BY_PROXIMITY:
+                            sortingSpinner.setSelection(2);
+                            break;
+                        case Constants.SORT_BY_WORKMATES_INTERESTED:
+                            sortingSpinner.setSelection(3);
+                            break;
+                    }
+                }
+            }
+        });
     }
     private void responseToUserSpinnerSelection(){
         sortingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

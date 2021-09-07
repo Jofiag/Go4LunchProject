@@ -173,9 +173,23 @@ public class FirebaseCloudDatabase {
 
 
 
-    public void saveRestaurantNearbyList(Context context){
-        String url = RestaurantListUrlApi.getInstance(context).getUrlThroughDeviceLocation();
-        RestaurantNearbyBank2.getInstance(context).getRestaurantList(url,restaurantList -> {
+//    public void saveRestaurantNearbyList(Context context){
+//        String url = RestaurantListUrlApi.getInstance(context).getUrlThroughDeviceLocation();
+//        RestaurantNearbyBank2.getInstance(context).getRestaurantList(url,restaurantList -> {
+//            if (restaurantList != null && !restaurantList.isEmpty()){
+//                //We save each restaurant from the list instead of saving the list directly to prevent having redundant restaurant.
+//                for (Restaurant restaurant : restaurantList) {
+//                    restaurantNearbyCollectionRef.document(restaurant.getRestaurantId())
+//                            .set(restaurant)
+//                            .addOnSuccessListener(unused -> Log.d(TAG, "saveRestaurantNearbyList: Saving restaurant nearby SUCCEED"))
+//                            .addOnFailureListener(e -> Log.d(TAG, "saveRestaurantNearbyList: " + e.getMessage()));
+//                }
+//            }
+//        });
+//
+//    }
+
+    public void saveRestaurantNearbyList(ArrayList<Restaurant> restaurantList){
             if (restaurantList != null && !restaurantList.isEmpty()){
                 //We save each restaurant from the list instead of saving the list directly to prevent having redundant restaurant.
                 for (Restaurant restaurant : restaurantList) {
@@ -185,8 +199,6 @@ public class FirebaseCloudDatabase {
                             .addOnFailureListener(e -> Log.d(TAG, "saveRestaurantNearbyList: " + e.getMessage()));
                 }
             }
-        });
-
     }
 
     public void getRestaurantNearby(String restaurantId,RestaurantFromFirebase callback){

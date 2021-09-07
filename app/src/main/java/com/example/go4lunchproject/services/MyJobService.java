@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
+import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.util.Constants;
@@ -56,7 +57,10 @@ public class MyJobService extends android.app.job.JobService {
 
         String url = RestaurantListUrlApi.getInstance(getApplicationContext()).getUrlThroughDeviceLocation();
         RestaurantNearbyBank2 bank = RestaurantNearbyBank2.getInstance(getApplication());
-        bank.getRestaurantList(url, this::sendListToTheMainThread);
+        bank.getRestaurantList(url, restaurantArrayList -> {
+            FirebaseCloudDatabase.getInstance().saveRestaurantNearbyList(restaurantArrayList);
+            sendListToTheMainThread(restaurantArrayList);
+        });
     }
 
     private void sendListToTheMainThread(ArrayList<Restaurant> restaurantArrayList){

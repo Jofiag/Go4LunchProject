@@ -93,7 +93,6 @@ public class HomepageActivity extends AppCompatActivity
         setMyDrawerLayout();
         setMyNavigationView();
 
-//        alarmNotification();
     }
 
     @Override

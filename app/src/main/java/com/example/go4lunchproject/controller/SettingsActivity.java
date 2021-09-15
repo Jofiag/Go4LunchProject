@@ -44,7 +44,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setSwitchButtonState(){
-        firebaseCloudDatabase.getUser(singleUser -> {
+        firebaseCloudDatabase.getCurrentUser(singleUser -> {
             if (singleUser != null){
                 UserSettings userSettings = singleUser.getUserSettings();
                 if (userSettings != null)
@@ -78,7 +78,7 @@ public class SettingsActivity extends AppCompatActivity {
         sortingSpinner.setAdapter(arrayAdapter);
 
         //Set the spinner selection on the last user option selected.
-        firebaseCloudDatabase.getUser(singleUser -> {
+        firebaseCloudDatabase.getCurrentUser(singleUser -> {
             if (singleUser != null){
                 UserSettings userSettings = singleUser.getUserSettings();
                 if (userSettings != null){
@@ -120,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
     private void saveSortOptionSelectedInFirebase(String option){
-        firebaseCloudDatabase.getUser(singleUser -> {
+        firebaseCloudDatabase.getCurrentUser(singleUser -> {
             if (singleUser != null){
                 UserSettings userSettings = singleUser.getUserSettings();
                 if (userSettings == null)

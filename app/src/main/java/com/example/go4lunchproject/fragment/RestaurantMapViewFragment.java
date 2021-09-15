@@ -305,7 +305,7 @@ public class RestaurantMapViewFragment extends Fragment {
     }
     private void zoomOnRestaurantChosenWhenNotificationIsClicked(){
         if (isStartedFromNotification()) {
-            firebaseCloudDatabase.getUser(singleUser -> {
+            firebaseCloudDatabase.getCurrentUser(singleUser -> {
                 if (singleUser != null) {
                     Restaurant restaurant = singleUser.getRestaurantChosen();
                     if (restaurant != null && restaurant.getAddress() != null){

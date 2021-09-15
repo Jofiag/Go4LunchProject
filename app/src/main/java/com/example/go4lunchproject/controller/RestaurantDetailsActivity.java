@@ -128,7 +128,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void setYellowStarVisibility(){
-        firebaseCloudDatabase.getUser(singleUser -> {
+        firebaseCloudDatabase.getCurrentUser(singleUser -> {
             List<Restaurant> list = singleUser.getRestaurantLikedList();
             boolean isFavorite = false;
             if (list != null){
@@ -238,7 +238,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
     }
 
     private void setLikeRestaurantFunction(){
-        firebaseCloudDatabase.getUser(singleUser -> starImageView.setOnClickListener(v -> {
+        firebaseCloudDatabase.getCurrentUser(singleUser -> starImageView.setOnClickListener(v -> {
 
             int visibility = yellowStar.getVisibility();
             List<Restaurant> list = singleUser.getRestaurantLikedList();
@@ -276,7 +276,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
         greenCheck = AppCompatResources.getDrawable(RestaurantDetailsActivity.this, R.mipmap.green_check);
         redUncheck = AppCompatResources.getDrawable(RestaurantDetailsActivity.this, R.mipmap.red_unchecked);
 
-        firebaseCloudDatabase.getUser(singleUser -> {
+        firebaseCloudDatabase.getCurrentUser(singleUser -> {
             Restaurant restaurantChosenFromFirebase = singleUser.getRestaurantChosen();
             if (restaurantChosenFromFirebase != null){
                 if (restaurantChosenFromFirebase.getAddress().equals(restaurantActuallyShowed.getAddress()))
@@ -293,7 +293,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
 
 
     private void indicateIfRestaurantIsChosenByWorkmate(){
-        firebaseCloudDatabase.getUser(singleUser ->
+        firebaseCloudDatabase.getCurrentUser(singleUser ->
                 chosenImageView.setOnClickListener(view -> {
                     Restaurant restaurantChosen = singleUser.getRestaurantChosen();
                     if (restaurantChosen != null && restaurantChosen.getAddress().equals(restaurantActuallyShowed.getAddress())){
@@ -460,7 +460,7 @@ public class RestaurantDetailsActivity extends AppCompatActivity {
                     boolean containsActualWorkmate = containsWorkmate(restaurant.getWorkmateList(), actualWorkmate);
 
                     //We get the actual restaurant chosen by the actual workmate
-                    firebaseCloudDatabase.getUser(singleUser -> {
+                    firebaseCloudDatabase.getCurrentUser(singleUser -> {
                         Restaurant userRestaurant = singleUser.getRestaurantChosen();
 
                         if (userRestaurant != null){

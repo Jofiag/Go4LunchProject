@@ -81,7 +81,17 @@ public class FirebaseCloudDatabase {
         else throw new RuntimeException("The user id must not be null");
     }
 
-    public void getUser(SingleUserFromFirebase callback){
+    public void getCurrentUser(SingleUserFromFirebase callback){
+        userCollectionRef.document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    User user = documentSnapshot.toObject(User.class);
+                    if (callback != null)
+                        callback.onSingleUserGotten(user);
+                })
+                .addOnFailureListener(e -> Log.d(TAG, "onFailure: " + e));
+    }
+
+    public void getUser(String userId, SingleUserFromFirebase callback){
         userCollectionRef.document(userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     User user = documentSnapshot.toObject(User.class);

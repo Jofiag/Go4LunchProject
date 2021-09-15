@@ -25,9 +25,7 @@ public class MyUnitTest extends TestCase {
     private Context context;
     private String url;
 
-    private FirebaseCloudDatabase firebaseCloudDatabase;
     private RestaurantNearbyBank2 restaurantNearbyBank;
-    private User testingUser;
 
 
     @Rule
@@ -60,20 +58,12 @@ public class MyUnitTest extends TestCase {
 
     }
 
-    public void testSavingUserInFirebase(){
-        //Saving the testingUser in firebase
-        firebaseCloudDatabase.saveUser(testingUser);
-
-        //Get that user from firebase
-        firebaseCloudDatabase.getUser(testingUser.getId(), singleUser -> assertEquals(singleUser.getId(), testingUser.getId()));
-    }
-
 
     /////PRIVATE FUNCTION
     private void initializeRestaurantBankAndFirebaseCloudDb(){
         context = ApplicationProvider.getApplicationContext();
         restaurantNearbyBank = RestaurantNearbyBank2.getInstance(context);
-        firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
+        FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
     }
     private void initializeUrlForNearbyRestaurant(){
         //Setting a fake device position needed to get the url that is going to be used to have the restaurants nearby
@@ -86,7 +76,7 @@ public class MyUnitTest extends TestCase {
         url = RestaurantListUrlApi.getInstance(context).getUrlThroughDeviceLocation();
     }
     private void initializeTestingUser(){
-        testingUser = new User();
+        User testingUser = new User();
         testingUser.setName("Testing User");
         testingUser.setUserEmail("testing.user@gmail.com");
         testingUser.setFirebaseId("K4pny0E9MtY2cL7RGn8ji8grpcC3");

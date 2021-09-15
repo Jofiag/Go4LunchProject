@@ -46,12 +46,15 @@ public class FirebaseCloudDatabase {
 
     private String currentUserName;
     private static FirebaseCloudDatabase INSTANCE;
-    private final FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-    private final String userId = this.getCurrentUserName() + "_" + this.getCurrentFirebaseUser().getUid();
+    private final FirebaseUser currentFirebaseUser;
+    private String userId;
 
 
 
     public FirebaseCloudDatabase() {
+        currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentFirebaseUser != null)
+            userId = getCurrentUserName() + "_" + currentFirebaseUser.getUid();
     }
 
     public static FirebaseCloudDatabase getInstance() {

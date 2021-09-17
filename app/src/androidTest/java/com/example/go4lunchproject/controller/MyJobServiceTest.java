@@ -11,21 +11,14 @@ import com.example.go4lunchproject.data.api.RestaurantListUrlApi;
 import com.example.go4lunchproject.data.firebase.FirebaseCloudDatabase;
 import com.example.go4lunchproject.data.googleplace.RestaurantNearbyBank2;
 import com.example.go4lunchproject.model.MyPositionObject;
-import com.example.go4lunchproject.model.Restaurant;
 import com.example.go4lunchproject.model.User;
 
 import junit.framework.TestCase;
 
 import org.junit.Rule;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MyUnitTest extends TestCase {
+public class MyJobServiceTest extends TestCase {
     private Context context;
-    private String url;
-
-    private RestaurantNearbyBank2 restaurantNearbyBank;
 
 
     @Rule
@@ -42,27 +35,13 @@ public class MyUnitTest extends TestCase {
     public void tearDown() {
     }
 
-    public void testGettingRestaurantNearby() {
-        assertNotNull(context);
-        assertNotNull(url);
 
-        List<Restaurant>[] restaurantList = new List[]{new ArrayList<>()};
-        assertEquals(restaurantList[0].size(), 0);
-
-        restaurantNearbyBank.getRestaurantList(url, restaurantList1 -> {
-            assertNotNull(restaurantList1);
-
-            restaurantList[0] = restaurantList1;
-            assertTrue(restaurantList[0].size() != 0);
-        });
-
-    }
 
 
     /////PRIVATE FUNCTION
     private void initializeRestaurantBankAndFirebaseCloudDb(){
         context = ApplicationProvider.getApplicationContext();
-        restaurantNearbyBank = RestaurantNearbyBank2.getInstance(context);
+        RestaurantNearbyBank2 restaurantNearbyBank = RestaurantNearbyBank2.getInstance(context);
         FirebaseCloudDatabase firebaseCloudDatabase = FirebaseCloudDatabase.getInstance();
     }
     private void initializeUrlForNearbyRestaurant(){
@@ -73,7 +52,7 @@ public class MyUnitTest extends TestCase {
         LocationApi.getInstance(context).setPosition(fakeDevicePosition);
 
         //Finally, we can get the url required using the device position
-        url = RestaurantListUrlApi.getInstance(context).getUrlThroughDeviceLocation();
+        String url = RestaurantListUrlApi.getInstance(context).getUrlThroughDeviceLocation();
     }
     private void initializeTestingUser(){
         User testingUser = new User();

@@ -87,6 +87,8 @@ public class RestaurantListManager{
         RestaurantNearbyBank2.getInstance(mContext).getRestaurantList(url, restaurantList -> {
                     if (restaurantArrayList.size() == restaurantList.size())
                         jobScheduler.cancelAll();
+
+                    return restaurantList;
         });
     }
 

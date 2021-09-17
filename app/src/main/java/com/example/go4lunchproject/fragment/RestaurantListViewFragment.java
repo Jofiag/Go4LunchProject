@@ -80,6 +80,8 @@ public class RestaurantListViewFragment extends Fragment{
 
             sortListDependingOnUserOptionSelected(restaurantList);
 
+            return restaurantList;
+
         });
 
     }
@@ -129,6 +131,8 @@ public class RestaurantListViewFragment extends Fragment{
             }
 
             sortListDependingOnUserOptionSelected(listFiltered);
+
+            return restaurantList;
 
         });
 

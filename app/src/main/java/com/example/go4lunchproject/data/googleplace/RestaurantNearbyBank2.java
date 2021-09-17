@@ -46,7 +46,7 @@ import java.util.Objects;
 public class RestaurantNearbyBank2 {
 
     public interface OnRestaurantListCallback{
-        void onListReady(ArrayList<Restaurant> restaurantList);
+        ArrayList<Restaurant> onListReady(ArrayList<Restaurant> restaurantList);
     }
 
     private final Context mContext;

@@ -207,7 +207,11 @@ implements Filterable {
                 FilterResults filterResults = new FilterResults();
 
                 RestaurantNearbyBank2.getInstance(activity.getApplication()).getRestaurantList(url,
-                        restaurantList -> filterResults.values = getFilteredList(constraint, restaurantList));
+                        restaurantList -> {
+                            filterResults.values = getFilteredList(constraint, restaurantList);
+
+                            return restaurantList;
+                        });
 
                 return filterResults;
             }

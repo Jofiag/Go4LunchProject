@@ -60,6 +60,7 @@ public class MyJobService extends android.app.job.JobService {
         bank.getRestaurantList(url, restaurantArrayList -> {
             FirebaseCloudDatabase.getInstance().saveRestaurantNearbyList(restaurantArrayList);
             sendListToTheMainThread(UtilMethods.removeRedundantRestaurant(restaurantArrayList));
+            return restaurantArrayList;
         });
     }
 

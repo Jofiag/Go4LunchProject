@@ -287,6 +287,8 @@ public class RestaurantMapViewFragment extends Fragment {
 
                     getFromQuery(query, NAME);
                 }
+
+                return restaurantList;
             });
 
         }
@@ -504,6 +506,7 @@ public class RestaurantMapViewFragment extends Fragment {
                 if (searchView != null)
                     searchView.setSuggestionsAdapter(adapter);
             }
+            return restaurantList;
         });
         /*//
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();

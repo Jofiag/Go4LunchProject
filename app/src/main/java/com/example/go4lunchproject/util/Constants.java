@@ -89,8 +89,8 @@ public class Constants {
     public static final String SORT_BY_WORKMATES_INTERESTED = "Number of workmates interested";
     public static final String RESTAURANT_NEARBY_REFERENCE = "Restaurant_nearby_ref";
 
-    public static List<Restaurant> getRestaurantList(){
-        List<Restaurant> restaurantList = new ArrayList<>();
+    public static ArrayList<Restaurant> getRestaurantList(){
+        ArrayList<Restaurant> restaurantList = new ArrayList<>();
         restaurantList.add(createCRestaurant("Safari", "French", "1 Rue Faubourg"));
         restaurantList.add(createCRestaurant("Flunch", "Italian", "67 Rue Vincent"));
         restaurantList.add(createCRestaurant("La mama", "French", "13 Ter Richard Mille "));

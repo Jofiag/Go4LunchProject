@@ -25,7 +25,7 @@ import org.mockito.stubbing.Answer;
 import java.util.ArrayList;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MyUnitTest {
+public class MyRestaurantBankUnitTest {
     private String url;
 
     @Mock

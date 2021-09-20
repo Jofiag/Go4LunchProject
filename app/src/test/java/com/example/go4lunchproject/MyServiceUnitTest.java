@@ -22,9 +22,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-
 @RunWith(AndroidJUnit4.class)
 @Config(minSdk = LOLLIPOP)
+
+
 public class MyServiceUnitTest {
     private JobInfo restaurantListJobInfo;
     private JobScheduler jobScheduler;

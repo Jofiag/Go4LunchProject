@@ -73,7 +73,7 @@ public class RestaurantListManager{
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED) //The action will stop if there is no more internet
 //                .setPersisted(true) //Set if the action will continue to be executed even when the device is rebooting
 //                .setPeriodic(15 * 60 * 1000)  //Set the interval of time that the action will be executed, here it's every 15 minutes
-                .setMinimumLatency(1)
+                .setMinimumLatency(2000)
                 .build();
     }
 

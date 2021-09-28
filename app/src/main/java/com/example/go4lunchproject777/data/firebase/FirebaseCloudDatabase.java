@@ -46,15 +46,13 @@ public class FirebaseCloudDatabase {
 
     private String currentUserName;
     private static FirebaseCloudDatabase INSTANCE;
-    private final FirebaseUser currentFirebaseUser;
+    private FirebaseUser currentFirebaseUser;
     private String userId;
 
 
 
     public FirebaseCloudDatabase() {
-        currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentFirebaseUser != null)
-            userId = getCurrentUserName() + "_" + currentFirebaseUser.getUid();
+        setFirebaseUserAndOurUserId();
     }
 
     public static FirebaseCloudDatabase getInstance() {
@@ -122,6 +120,9 @@ public class FirebaseCloudDatabase {
     }
 
     public void listenToUser(SingleUserFromFirebase callback){
+        if (userId == null)
+            setFirebaseUserAndOurUserId();
+
         userCollectionRef.document(userId)
                 .addSnapshotListener((value, error) -> {
                     if (value != null){
@@ -129,8 +130,7 @@ public class FirebaseCloudDatabase {
                         if (callback != null)
                             callback.onSingleUserGotten(user);
                     }
-                    else
-                    if (callback != null)
+                    else if (callback != null)
                         callback.onSingleUserGotten(null);
                 });
     }
@@ -375,5 +375,12 @@ public class FirebaseCloudDatabase {
 
     public String getUserId() {
         return userId;
+    }
+
+
+    private void setFirebaseUserAndOurUserId(){
+        currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentFirebaseUser != null)
+            userId = getCurrentUserName() + "_" + currentFirebaseUser.getUid();
     }
 }

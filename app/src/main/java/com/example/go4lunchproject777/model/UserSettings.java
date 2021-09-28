@@ -3,6 +3,7 @@ package com.example.go4lunchproject777.model;
 public class UserSettings {
     private boolean isNotificationOn;
     private String sortListOption;
+    private String language;
 
     public UserSettings() {
     }
@@ -14,6 +15,12 @@ public class UserSettings {
     public UserSettings(boolean isNotificationOn, String sortListOption) {
         this.isNotificationOn = isNotificationOn;
         this.sortListOption = sortListOption;
+    }
+
+    public UserSettings(boolean isNotificationOn, String sortListOption, String language) {
+        this.isNotificationOn = isNotificationOn;
+        this.sortListOption = sortListOption;
+        this.language = language;
     }
 
     public boolean isNotificationOn() {
@@ -28,5 +35,13 @@ public class UserSettings {
     }
     public void setSortListOption(String sortListBy) {
         this.sortListOption = sortListBy;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }
